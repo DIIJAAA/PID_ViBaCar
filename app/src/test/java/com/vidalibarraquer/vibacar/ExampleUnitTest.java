@@ -1,4 +1,4 @@
-package com.example.vibacar;
+package com.vidalibarraquer.vibacar;
 
 import org.junit.Test;
 

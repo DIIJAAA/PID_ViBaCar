@@ -1,4 +1,4 @@
-package com.example.vibacar;
+package com.vidalibarraquer.vibacar;
 
 import android.content.Context;
 
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.vibacar", appContext.getPackageName());
+        assertEquals("com.vidalibarraquer.vibacar", appContext.getPackageName());
     }
 }

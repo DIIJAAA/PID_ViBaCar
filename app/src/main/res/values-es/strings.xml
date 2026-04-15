@@ -1,0 +1,147 @@
+<resources>
+    <string name="app_name">ViBaCar</string>
+    <string name="nom_marca">ViBaCar</string>
+    <string name="selecciona_idioma">Idioma</string>
+    <string name="boto_enrere">Volver</string>
+    <string name="boto_tancar_sessio">Cerrar sesion</string>
+    <string name="boto_enviar">Enviar</string>
+    <string name="icona_correu">@"</string>
+
+    <string name="benvinguda_titol">Tu viaje, tu comunidad</string>
+    <string name="benvinguda_subtitol">Encuentra alumnado del Vidal i Barraquer para compartir coche de forma simple y segura.</string>
+    <string name="benvinguda_ilustracio">Viajad juntos cada mañana</string>
+    <string name="boto_crear_compte_gratis">Crear cuenta gratis</string>
+    <string name="boto_buscar_viatge">Buscar viaje</string>
+    <string name="ja_tinc_compte">Ya tengo cuenta</string>
+
+    <string name="inici_titol">Inicio de sesion</string>
+    <string name="inici_subtitol">Entra con el correo del centro para ver viajes y hablar con conductores.</string>
+    <string name="etiqueta_correu">Correo del centro</string>
+    <string name="etiqueta_contrasenya">Contrasena</string>
+    <string name="boto_iniciar_sessio">Iniciar sesion</string>
+    <string name="boto_he_oblidat">He olvidado la contrasena</string>
+    <string name="recupera_titol">Recuperar contrasena</string>
+    <string name="recupera_subtitol">Escribe tu correo del centro y te enviaremos el enlace para cambiar la contrasena.</string>
+    <string name="boto_envia_recuperacio">Enviar correo de recuperacion</string>
+    <string name="no_tens_compte">Todavia no tienes cuenta</string>
+
+    <string name="registre_titol">Crear cuenta</string>
+    <string name="registre_subtitol">Primero creamos la cuenta y despues completamos tu perfil.</string>
+    <string name="etiqueta_nom">Nombre completo</string>
+    <string name="etiqueta_repeteix_contrasenya">Repite la contrasena</string>
+    <string name="registre_info_domini">Solo aceptamos correos con dominio vidalibarraquer.net</string>
+    <string name="boto_continua_perfil">Continuar con el perfil</string>
+
+    <string name="perfil_config_titol">Configura tu perfil</string>
+    <string name="perfil_config_subtitol">Escoge como te mueves, la zona y una foto si quieres.</string>
+    <string name="boto_tria_foto">Elegir foto opcional</string>
+    <string name="etiqueta_telefon">Telefono</string>
+    <string name="etiqueta_rol">Rol</string>
+    <string name="rol_conductor">Conductor o conductora</string>
+    <string name="rol_passatger">Pasajero o pasajera</string>
+    <string name="etiqueta_zona">Zona habitual</string>
+    <string name="etiqueta_hora_habitual">Hora habitual de salida</string>
+    <string name="etiqueta_punt_trobada">Punto de encuentro habitual</string>
+    <string name="titol_dades_conductor">Datos de conductor/a</string>
+    <string name="etiqueta_model_cotxe">Modelo del coche</string>
+    <string name="etiqueta_places_habituals">Plazas que puedes ofrecer</string>
+    <string name="etiqueta_bio">Presentacion breve</string>
+    <string name="boto_desar_perfil">Guardar perfil</string>
+
+    <string name="verifica_titol">Verifica el correo</string>
+    <string name="text_info_verificacio_format">Hemos enviado un correo de verificacion a %1$s. Revisa la bandeja de entrada y vuelve aqui cuando lo valides.</string>
+    <string name="boto_reenviar_verificacio">Reenviar verificacion</string>
+    <string name="boto_ja_he_verificat">Ya he verificado el correo</string>
+
+    <string name="principal_salutacio_format">Hola %1$s</string>
+    <string name="principal_subtitol">Busca un viaje o publica el tuyo.</string>
+    <string name="principal_cerca_hint">Origen, destino o fecha</string>
+    <string name="principal_buit">Todavia no hay viajes disponibles. Puedes crear el primero.</string>
+    <string name="boto_crear_viatge">Crear viaje</string>
+
+    <string name="text_mapa_resum">Ruta y punto de encuentro</string>
+    <string name="detall_perque_titol">Por que viajar con esta persona</string>
+    <string name="qualitat_puntual">Puntual</string>
+    <string name="qualitat_bon_ambient">Buen ambiente</string>
+    <string name="qualitat_fiable">Fiable</string>
+    <string name="boto_reservar_placa">Reservar plaza</string>
+    <string name="boto_obrir_xat">Abrir chat</string>
+
+    <string name="crear_viatge_titol">Publicar un viaje</string>
+    <string name="etiqueta_origen">Origen</string>
+    <string name="etiqueta_desti">Destino</string>
+    <string name="etiqueta_data">Fecha</string>
+    <string name="etiqueta_hora_sortida">Hora salida</string>
+    <string name="etiqueta_hora_arribada">Hora llegada</string>
+    <string name="etiqueta_places">Plazas</string>
+    <string name="etiqueta_aportacio">Aportacion</string>
+    <string name="etiqueta_observacions">Observaciones</string>
+    <string name="boto_publicar_viatge">Publicar viaje</string>
+
+    <string name="perfil_titol">Mi perfil</string>
+    <string name="boto_editar_perfil">Editar perfil</string>
+    <string name="perfil_proxims">Proximos</string>
+    <string name="perfil_passats">Pasados</string>
+    <string name="perfil_cap_element">No hay ningun elemento para mostrar.</string>
+    <string name="text_resum_perfil_format">Correo: %1$s | Rol: %2$s | Zona: %3$s | Telefono: %4$s</string>
+    <string name="text_resum_mobilitat_format">Hora habitual: %1$s | Punto encuentro: %2$s</string>
+    <string name="text_resum_conductor_format">Coche: %1$s | Plazas habituales: %2$s</string>
+
+    <string name="xat_hint">Escribe un mensaje</string>
+
+    <string name="boto_puntuar">Valorar</string>
+    <string name="dialog_puntuacio_titol">Valora el viaje</string>
+    <string name="dialog_puntuacio_subtitol">Marca de 1 a 5 estrellas como ha ido el trayecto.</string>
+
+    <string name="text_valoracio_format">%1$.1f ★ (%2$d)</string>
+    <string name="text_ruta_format">%1$s → %2$s</string>
+    <string name="text_horari_viatge_format">%1$s | %2$s - %3$s</string>
+    <string name="text_reserva_subtitol_format">%1$s | con %2$s</string>
+    <string name="text_places_format">Plazas libres: %1$d</string>
+    <string name="text_info_detall_format">%1$s | %2$s - %3$s | %4$s plazas</string>
+    <string name="text_model_cotxe_format">Coche: %1$s</string>
+    <string name="text_observacions_format">Observaciones: %1$s</string>
+    <string name="text_observacions_punt_trobada_format">Punto de encuentro habitual: %1$s</string>
+    <string name="text_estat_proper">Viaje proximo</string>
+    <string name="text_estat_passat">Viaje pasado</string>
+    <string name="text_sense_valoracio">Todavia sin valoracion</string>
+    <string name="text_sense_observacions">Sin observaciones adicionales</string>
+    <string name="text_no_definit">No definido</string>
+
+    <string name="error_domini_correu">Debes usar un correo del Vidal i Barraquer</string>
+    <string name="error_contrasenya_curta">La contrasena debe tener al menos 6 caracteres</string>
+    <string name="error_contrasenyes_diferents">Las contrasenas no coinciden</string>
+    <string name="error_nom_buit">Escribe el nombre completo</string>
+    <string name="error_zona_buida">Escoge una zona</string>
+    <string name="error_hora_habitual_buida">Escoge una hora habitual de salida</string>
+    <string name="error_punt_trobada_buit">Escribe el punto de encuentro habitual</string>
+    <string name="error_rol_buit">Selecciona el rol</string>
+    <string name="error_model_cotxe_buit">Si eres conductor/a, indica el modelo del coche</string>
+    <string name="error_places_habituals_buides">Si eres conductor/a, indica cuantas plazas puedes ofrecer</string>
+    <string name="error_origen_buit">Escribe el origen</string>
+    <string name="error_desti_buit">Escribe el destino</string>
+    <string name="error_data_buida">Escoge la fecha</string>
+    <string name="error_hora_buida">Escoge las horas</string>
+    <string name="error_places_buides">Pon un numero valido de plazas</string>
+    <string name="error_aportacio_buida">Pon una aportacion valida</string>
+    <string name="error_missatge_buit">Escribe algun mensaje</string>
+    <string name="error_no_usuari">No hay ningun usuario autenticado</string>
+    <string name="error_base_dades_permis">No tenemos permiso para leer tu perfil. Revisa las reglas de Firestore.</string>
+    <string name="error_base_dades_connexio">No hay conexion con la base de datos. Vuelve a intentarlo.</string>
+    <string name="error_generica">No se ha podido completar la operacion</string>
+
+    <string name="missatge_compte_creat">Cuenta creada correctamente</string>
+    <string name="missatge_correu_verificacio">Hemos enviado el correo de verificacion</string>
+    <string name="missatge_verificacio_necessaria">Antes de entrar debes verificar el correo</string>
+    <string name="missatge_login_correcte">Sesion iniciada correctamente</string>
+    <string name="missatge_perfil_guardat">Perfil guardado correctamente</string>
+    <string name="missatge_viatge_creat">Viaje publicado correctamente</string>
+    <string name="missatge_reserva_feta">Reserva hecha y chat abierto</string>
+    <string name="missatge_puntuacio_guardada">Valoracion guardada</string>
+    <string name="missatge_recuperacio_contrasenya">Hemos enviado el correo para recuperar la contrasena</string>
+    <string name="missatge_places_esgotades">Este viaje ya no tiene plazas libres</string>
+    <string name="missatge_no_et_pots_reservar">No puedes reservar tu propio viaje</string>
+    <string name="missatge_ja_reservat">Ya tienes una reserva para este viaje</string>
+    <string name="missatge_primer_reserva">Primero debes reservar la plaza para abrir el chat</string>
+    <string name="missatge_nomes_conductors">Para publicar un viaje debes tener rol de conductor</string>
+</resources>
