@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_principal">#44C3D6</color>
+    <color name="color_principal_fosc">#2DA5BB</color>
+    <color name="color_secundari">#78D6A2</color>
+    <color name="color_secundari_fosc">#58BB84</color>
+    <color name="color_fons">#EAF8F8</color>
+    <color name="color_fons_suau">#F7FCFC</color>
+    <color name="color_targeta">#FDFEFE</color>
+    <color name="color_text_principal">#17354A</color>
+    <color name="color_text_secundari">#547283</color>
+    <color name="color_text_clar">#FFFFFF</color>
+    <color name="color_avisos">#F4C861</color>
+    <color name="color_exit">#2E9D63</color>
+    <color name="color_error">#C74E4E</color>
+    <color name="color_linia">#CDE8EA</color>
+    <color name="color_avatar">#8CDDE6</color>
+    <color name="color_xip">#DFF5EA</color>
+    <color name="color_xat_meu">#CDEFF6</color>
+    <color name="color_xat_altre">#FFFFFF</color>
+</resources>

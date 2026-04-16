@@ -1,0 +1,147 @@
+<resources>
+    <string name="app_name">ViBaCar</string>
+    <string name="nom_marca">ViBaCar</string>
+    <string name="selecciona_idioma">Language</string>
+    <string name="boto_enrere">Go back</string>
+    <string name="boto_tancar_sessio">Sign out</string>
+    <string name="boto_enviar">Send</string>
+    <string name="icona_correu">@"</string>
+
+    <string name="benvinguda_titol">Your ride, your community</string>
+    <string name="benvinguda_subtitol">Find students from Vidal i Barraquer to share a car in a simple and safe way.</string>
+    <string name="benvinguda_ilustracio">Travel together every morning</string>
+    <string name="boto_crear_compte_gratis">Create free account</string>
+    <string name="boto_buscar_viatge">Find ride</string>
+    <string name="ja_tinc_compte">I already have an account</string>
+
+    <string name="inici_titol">Sign in</string>
+    <string name="inici_subtitol">Use your school email to view rides and chat with drivers.</string>
+    <string name="etiqueta_correu">School email</string>
+    <string name="etiqueta_contrasenya">Password</string>
+    <string name="boto_iniciar_sessio">Sign in</string>
+    <string name="boto_he_oblidat">I forgot my password</string>
+    <string name="recupera_titol">Recover password</string>
+    <string name="recupera_subtitol">Type your school email and we will send the link to change your password.</string>
+    <string name="boto_envia_recuperacio">Send recovery email</string>
+    <string name="no_tens_compte">You do not have an account yet</string>
+
+    <string name="registre_titol">Create account</string>
+    <string name="registre_subtitol">First we create the account and then we complete your profile.</string>
+    <string name="etiqueta_nom">Full name</string>
+    <string name="etiqueta_repeteix_contrasenya">Repeat password</string>
+    <string name="registre_info_domini">Only emails with the domain vidalibarraquer.net are accepted</string>
+    <string name="boto_continua_perfil">Continue to profile</string>
+
+    <string name="perfil_config_titol">Set up your profile</string>
+    <string name="perfil_config_subtitol">Choose how you travel, your area and a photo if you want.</string>
+    <string name="boto_tria_foto">Choose optional photo</string>
+    <string name="etiqueta_telefon">Phone</string>
+    <string name="etiqueta_rol">Role</string>
+    <string name="rol_conductor">Driver</string>
+    <string name="rol_passatger">Passenger</string>
+    <string name="etiqueta_zona">Usual area</string>
+    <string name="etiqueta_hora_habitual">Usual departure time</string>
+    <string name="etiqueta_punt_trobada">Usual meeting point</string>
+    <string name="titol_dades_conductor">Driver details</string>
+    <string name="etiqueta_model_cotxe">Car model</string>
+    <string name="etiqueta_places_habituals">Seats you can offer</string>
+    <string name="etiqueta_bio">Short bio</string>
+    <string name="boto_desar_perfil">Save profile</string>
+
+    <string name="verifica_titol">Verify email</string>
+    <string name="text_info_verificacio_format">We sent a verification email to %1$s. Check your inbox and come back here once you validate it.</string>
+    <string name="boto_reenviar_verificacio">Resend verification</string>
+    <string name="boto_ja_he_verificat">I have already verified it</string>
+
+    <string name="principal_salutacio_format">Hi %1$s</string>
+    <string name="principal_subtitol">Search for a ride or publish yours.</string>
+    <string name="principal_cerca_hint">Origin, destination or date</string>
+    <string name="principal_buit">There are no rides available yet. You can create the first one.</string>
+    <string name="boto_crear_viatge">Create ride</string>
+
+    <string name="text_mapa_resum">Route and meeting point</string>
+    <string name="detall_perque_titol">Why travel with this person</string>
+    <string name="qualitat_puntual">Punctual</string>
+    <string name="qualitat_bon_ambient">Friendly</string>
+    <string name="qualitat_fiable">Reliable</string>
+    <string name="boto_reservar_placa">Book seat</string>
+    <string name="boto_obrir_xat">Open chat</string>
+
+    <string name="crear_viatge_titol">Publish a ride</string>
+    <string name="etiqueta_origen">Origin</string>
+    <string name="etiqueta_desti">Destination</string>
+    <string name="etiqueta_data">Date</string>
+    <string name="etiqueta_hora_sortida">Departure time</string>
+    <string name="etiqueta_hora_arribada">Arrival time</string>
+    <string name="etiqueta_places">Seats</string>
+    <string name="etiqueta_aportacio">Contribution</string>
+    <string name="etiqueta_observacions">Notes</string>
+    <string name="boto_publicar_viatge">Publish ride</string>
+
+    <string name="perfil_titol">My profile</string>
+    <string name="boto_editar_perfil">Edit profile</string>
+    <string name="perfil_proxims">Upcoming</string>
+    <string name="perfil_passats">Past</string>
+    <string name="perfil_cap_element">There is nothing to show.</string>
+    <string name="text_resum_perfil_format">Email: %1$s | Role: %2$s | Area: %3$s | Phone: %4$s</string>
+    <string name="text_resum_mobilitat_format">Usual time: %1$s | Meeting point: %2$s</string>
+    <string name="text_resum_conductor_format">Car: %1$s | Usual seats: %2$s</string>
+
+    <string name="xat_hint">Write a message</string>
+
+    <string name="boto_puntuar">Rate</string>
+    <string name="dialog_puntuacio_titol">Rate the ride</string>
+    <string name="dialog_puntuacio_subtitol">Choose from 1 to 5 stars for the trip.</string>
+
+    <string name="text_valoracio_format">%1$.1f ★ (%2$d)</string>
+    <string name="text_ruta_format">%1$s → %2$s</string>
+    <string name="text_horari_viatge_format">%1$s | %2$s - %3$s</string>
+    <string name="text_reserva_subtitol_format">%1$s | with %2$s</string>
+    <string name="text_places_format">Free seats: %1$d</string>
+    <string name="text_info_detall_format">%1$s | %2$s - %3$s | %4$s seats</string>
+    <string name="text_model_cotxe_format">Car: %1$s</string>
+    <string name="text_observacions_format">Notes: %1$s</string>
+    <string name="text_observacions_punt_trobada_format">Usual meeting point: %1$s</string>
+    <string name="text_estat_proper">Upcoming ride</string>
+    <string name="text_estat_passat">Past ride</string>
+    <string name="text_sense_valoracio">No rating yet</string>
+    <string name="text_sense_observacions">No additional notes</string>
+    <string name="text_no_definit">Not set</string>
+
+    <string name="error_domini_correu">You must use a Vidal i Barraquer email</string>
+    <string name="error_contrasenya_curta">Password must be at least 6 characters long</string>
+    <string name="error_contrasenyes_diferents">Passwords do not match</string>
+    <string name="error_nom_buit">Write your full name</string>
+    <string name="error_zona_buida">Choose an area</string>
+    <string name="error_hora_habitual_buida">Choose a usual departure time</string>
+    <string name="error_punt_trobada_buit">Write your usual meeting point</string>
+    <string name="error_rol_buit">Choose a role</string>
+    <string name="error_model_cotxe_buit">If you are a driver, write the car model</string>
+    <string name="error_places_habituals_buides">If you are a driver, choose how many seats you can offer</string>
+    <string name="error_origen_buit">Write the origin</string>
+    <string name="error_desti_buit">Write the destination</string>
+    <string name="error_data_buida">Choose the date</string>
+    <string name="error_hora_buida">Choose the times</string>
+    <string name="error_places_buides">Enter a valid number of seats</string>
+    <string name="error_aportacio_buida">Enter a valid contribution</string>
+    <string name="error_missatge_buit">Write a message</string>
+    <string name="error_no_usuari">There is no authenticated user</string>
+    <string name="error_base_dades_permis">We do not have permission to read your profile. Check Firestore rules.</string>
+    <string name="error_base_dades_connexio">Database connection is not available. Please try again.</string>
+    <string name="error_generica">The operation could not be completed</string>
+
+    <string name="missatge_compte_creat">Account created successfully</string>
+    <string name="missatge_correu_verificacio">We have sent the verification email</string>
+    <string name="missatge_verificacio_necessaria">Before entering you must verify the email</string>
+    <string name="missatge_login_correcte">Signed in successfully</string>
+    <string name="missatge_perfil_guardat">Profile saved successfully</string>
+    <string name="missatge_viatge_creat">Ride published successfully</string>
+    <string name="missatge_reserva_feta">Seat booked and chat opened</string>
+    <string name="missatge_puntuacio_guardada">Rating saved</string>
+    <string name="missatge_recuperacio_contrasenya">We sent the password recovery email</string>
+    <string name="missatge_places_esgotades">This ride has no free seats left</string>
+    <string name="missatge_no_et_pots_reservar">You cannot book your own ride</string>
+    <string name="missatge_ja_reservat">You already have a booking for this ride</string>
+    <string name="missatge_primer_reserva">You must book the seat before opening the chat</string>
+    <string name="missatge_nomes_conductors">You need the driver role to publish a ride</string>
+</resources>

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "70040389779",
+    "firebase_url": "https://pid-damingo-default-rtdb.firebaseio.com",
+    "project_id": "pid-damingo",
+    "storage_bucket": "pid-damingo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70040389779:android:6826e20e46dbe251d6a566",
+        "android_client_info": {
+          "package_name": "com.vidalibarraquer.vibacar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxIGVXoyagLB8XX73XM9lyQeJ8td07z0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

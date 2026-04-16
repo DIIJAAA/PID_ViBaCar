@@ -1,0 +1,18 @@
+<resources>
+    <style name="Base.Theme.ViBaCar" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/color_principal</item>
+        <item name="colorOnPrimary">@color/color_text_clar</item>
+        <item name="colorSecondary">@color/color_secundari</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/color_fons</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/color_fons</item>
+    </style>
+
+    <style name="Theme.ViBaCar" parent="Base.Theme.ViBaCar" />
+
+    <style name="FormaAvatarCercle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>

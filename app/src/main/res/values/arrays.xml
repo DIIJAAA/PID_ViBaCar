@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="zones_trobada">
+        <item>Tarragona Centre</item>
+        <item>Sant Pere i Sant Pau</item>
+        <item>Torreforta</item>
+        <item>Campclar</item>
+        <item>Bonavista</item>
+        <item>La Canonja</item>
+        <item>Reus</item>
+        <item>Valls</item>
+        <item>Salou</item>
+    </string-array>
+
+    <string-array name="idiomes_llista">
+        <item>Català</item>
+        <item>Castellano</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="idiomes_codis">
+        <item>ca</item>
+        <item>es</item>
+        <item>en</item>
+    </string-array>
+
+    <string-array name="hores_habituals_sortida">
+        <item>06:30</item>
+        <item>07:00</item>
+        <item>07:30</item>
+        <item>08:00</item>
+        <item>08:30</item>
+        <item>09:00</item>
+    </string-array>
+
+    <string-array name="places_habituals_conductor">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+</resources>
