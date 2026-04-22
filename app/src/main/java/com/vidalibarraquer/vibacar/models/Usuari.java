@@ -13,6 +13,8 @@ public class Usuari {
     private String fotoUri;
     private String bio;
     private String modelCotxe;
+    private String dataNaixement;
+    private String sexe;
     private int placesHabituals;
     private boolean perfilCompletat;
     private double valoracioMitjana;
@@ -108,6 +110,22 @@ public class Usuari {
 
     public void setModelCotxe(String modelCotxe) {
         this.modelCotxe = modelCotxe;
+    }
+
+    public String getDataNaixement() {
+        return dataNaixement;
+    }
+
+    public void setDataNaixement(String dataNaixement) {
+        this.dataNaixement = dataNaixement;
+    }
+
+    public String getSexe() {
+        return sexe;
+    }
+
+    public void setSexe(String sexe) {
+        this.sexe = sexe;
     }
 
     public int getPlacesHabituals() {

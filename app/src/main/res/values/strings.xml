@@ -15,7 +15,7 @@
     <string name="ja_tinc_compte">Ja tinc compte</string>
 
     <string name="inici_titol">Inici de sessio</string>
-    <string name="inici_subtitol">Entra amb el correu del centre per veure viatges i parlar amb conductors.</string>
+    <string name="inici_subtitol">Entra amb el correu del centre per verure viatges i parlar amb conductors.</string>
     <string name="etiqueta_correu">Correu del centre</string>
     <string name="etiqueta_contrasenya">Contrasenya</string>
     <string name="boto_iniciar_sessio">Iniciar sessio</string>
@@ -47,6 +47,12 @@
     <string name="etiqueta_places_habituals">Places que pots oferir</string>
     <string name="etiqueta_bio">Presentacio breu</string>
     <string name="boto_desar_perfil">Desar perfil</string>
+    <string name="etiqueta_data_naixement">Data de naixement</string>
+    <string name="etiqueta_sexe">Sexe</string>
+    <string name="sexe_home">Home</string>
+    <string name="sexe_dona">Dona</string>
+    <string name="sexe_no_dir">Prefereixo no dir-ho</string>
+    <string name="sexe_altre">Altre</string>
 
     <string name="verifica_titol">Verifica el correu</string>
     <string name="text_info_verificacio_format">Hem enviat un correu de verificacio a %1$s. Revisa la safata dentrada i torna aqui quan el validis.</string>
@@ -109,7 +115,7 @@
     <string name="text_no_definit">No definit</string>
 
     <string name="error_domini_correu">Has de fer servir un correu del Vidal i Barraquer</string>
-    <string name="error_contrasenya_curta">La contrasenya ha de tenir almenys 6 caracters</string>
+    <string name="error_contrasenya_curta">La contrasenya ha de tener almenys 6 caracters</string>
     <string name="error_contrasenyes_diferents">Les contrasenyes no coincideixen</string>
     <string name="error_nom_buit">Escriu el nom complet</string>
     <string name="error_zona_buida">Escull una zona</string>
@@ -129,6 +135,8 @@
     <string name="error_base_dades_permis">No tenim permis per llegir el teu perfil. Revisa les regles de Firestore.</string>
     <string name="error_base_dades_connexio">No hi ha connexio amb la base de dades. Torna-ho a provar.</string>
     <string name="error_generica">No sha pogut completar la operacio</string>
+    <string name="error_data_naixement_buida">Indica la teva data de naixement</string>
+    <string name="error_sexe_buit">Selecciona el teu sexe</string>
 
     <string name="missatge_compte_creat">Compte creat correctament</string>
     <string name="missatge_correu_verificacio">Hem enviat el correu de verificacio</string>
@@ -139,9 +147,9 @@
     <string name="missatge_reserva_feta">Reserva feta i xat obert</string>
     <string name="missatge_puntuacio_guardada">Puntuacio desada</string>
     <string name="missatge_recuperacio_contrasenya">Hem enviat el correu per recuperar la contrasenya</string>
-    <string name="missatge_places_esgotades">Aquest viatge ja no te places lliures</string>
+    <string name="missatge_places_esgotades">Aquest viatge ya no te places lliures</string>
     <string name="missatge_no_et_pots_reservar">No et pots reservar el teu propi viatge</string>
-    <string name="missatge_ja_reservat">Ja tens una reserva per aquest viatge</string>
+    <string name="missatge_ja_reservat">Ya tens una reserva per aquest viatge</string>
     <string name="missatge_primer_reserva">Primer has de reservar la placa per obrir el xat</string>
     <string name="missatge_nomes_conductors">Per publicar un viatge has de tenir rol de conductor</string>
 </resources>
