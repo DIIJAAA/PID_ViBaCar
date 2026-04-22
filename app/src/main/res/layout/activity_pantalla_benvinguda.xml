@@ -74,7 +74,7 @@
             android:text="@string/boto_crear_compte_gratis"
             android:textAllCaps="false"
             android:textColor="@color/color_text_clar"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:backgroundTint="@null" />
 
@@ -87,7 +87,7 @@
             android:text="@string/boto_iniciar_sessio"
             android:textAllCaps="false"
             android:textColor="@color/color_text_clar"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:backgroundTint="@null" />
 
