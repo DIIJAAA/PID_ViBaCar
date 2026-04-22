@@ -25,6 +25,7 @@ import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorReserves;
 import com.vidalibarraquer.vibacar.models.Reserva;
 import com.vidalibarraquer.vibacar.models.Usuari;
+import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.GestorIdioma;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
@@ -33,11 +34,10 @@ import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PerfilActivity extends AppCompatActivity implements AdaptadorReserves.AccionsReservaListener {
+public class PerfilActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -67,11 +67,8 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
         imatgePerfil = findViewById(R.id.imatgePerfil);
         campIdioma = findViewById(R.id.campIdioma);
 
-        FirebaseUser usuariActual = auth.getCurrentUser();
-        String uidActual = usuariActual == null ? "" : usuariActual.getUid();
-
         RecyclerView llistaReserves = findViewById(R.id.llistaReserves);
-        adaptadorReserves = new AdaptadorReserves(this, uidActual, this);
+        adaptadorReserves = new AdaptadorReserves(this, this::obreDialegPuntuacio);
         llistaReserves.setLayoutManager(new LinearLayoutManager(this));
         llistaReserves.setAdapter(adaptadorReserves);
 
@@ -81,7 +78,6 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         findViewById(R.id.botoEditarPerfil).setOnClickListener(v -> startActivity(new Intent(this, ConfiguraPerfilActivity.class)));
-        findViewById(R.id.botoBustiaXats).setOnClickListener(v -> startActivity(new Intent(this, BustiaXatsActivity.class)));
         findViewById(R.id.botoTancarSessio).setOnClickListener(v -> {
             auth.signOut();
             Intent intent = new Intent(this, PantallaBenvingudaActivity.class);
@@ -150,9 +146,10 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
                     txtNom.setText(perfil.getNom());
                     txtDades.setText(getString(
                             R.string.text_resum_perfil_format,
-                            valorPerMostrar(perfil.getCorreu()),
-                            valorPerMostrar(perfil.getZona()),
-                            valorPerMostrar(perfil.getTelefon())
+                            perfil.getCorreu(),
+                            UtilitatsFirebase.etiquetaRol(this, perfil.getRol()),
+                            perfil.getZona(),
+                            perfil.getTelefon() == null ? "-" : perfil.getTelefon()
                     ));
                     txtDades.append("\n");
                     txtDades.append(getString(
@@ -160,11 +157,10 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
                             valorPerMostrar(perfil.getHoraSortidaHabitual()),
                             valorPerMostrar(perfil.getPuntTrobadaHabitual())
                     ));
-                    if ((perfil.getModelCotxe() != null && !perfil.getModelCotxe().trim().isEmpty())
-                            || perfil.getPlacesHabituals() > 0) {
+                    if (UtilitatsFirebase.esRolConductor(perfil.getRol())) {
                         txtDades.append("\n");
                         txtDades.append(getString(
-                            R.string.text_resum_conductor_format,
+                                R.string.text_resum_conductor_format,
                                 valorPerMostrar(perfil.getModelCotxe()),
                                 perfil.getPlacesHabituals() > 0 ? String.valueOf(perfil.getPlacesHabituals()) : "-"
                         ));
@@ -179,35 +175,41 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
             return;
         }
 
-        Map<String, Reserva> indexReserves = new LinkedHashMap<>();
+        List<Reserva> resultat = new ArrayList<>();
 
         db.collection(UtilitatsFirebase.COL_RESERVES)
                 .whereEqualTo("passatgerId", usuari.getUid())
                 .get()
-                .addOnSuccessListener(passatgerDocs -> {
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : passatgerDocs) {
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Reserva reserva = doc.toObject(Reserva.class);
                         reserva.setId(doc.getId());
-                        reserva.setSocConductor(false);
-                        if (filtreReserva(reserva)) {
-                            indexReserves.put(reserva.getId(), reserva);
+                        if (filtreData(reserva.getSortidaMillis())) {
+                            resultat.add(reserva);
                         }
                     }
 
-                    db.collection(UtilitatsFirebase.COL_RESERVES)
+                    db.collection(UtilitatsFirebase.COL_VIATGES)
                             .whereEqualTo("conductorId", usuari.getUid())
                             .get()
-                            .addOnSuccessListener(conductorDocs -> {
-                                for (com.google.firebase.firestore.QueryDocumentSnapshot doc : conductorDocs) {
-                                    Reserva reserva = doc.toObject(Reserva.class);
-                                    reserva.setId(doc.getId());
-                                    reserva.setSocConductor(true);
-                                    if (filtreReserva(reserva)) {
-                                        indexReserves.put(reserva.getId(), reserva);
+                            .addOnSuccessListener(viatgesDocs -> {
+                                for (com.google.firebase.firestore.QueryDocumentSnapshot doc : viatgesDocs) {
+                                    Viatge viatge = doc.toObject(Viatge.class);
+                                    Reserva reservaPropia = new Reserva();
+                                    reservaPropia.setId("viatge_" + doc.getId());
+                                    reservaPropia.setViatgeId(doc.getId());
+                                    reservaPropia.setConductorId(usuari.getUid());
+                                    reservaPropia.setConductorNom(getString(R.string.nom_marca));
+                                    reservaPropia.setOrigen(viatge.getOrigen());
+                                    reservaPropia.setDesti(viatge.getDesti());
+                                    reservaPropia.setSortidaMillis(viatge.getSortidaMillis());
+                                    reservaPropia.setValorada(true);
+                                    reservaPropia.setPuntuacio(0f);
+                                    if (filtreData(viatge.getSortidaMillis())) {
+                                        resultat.add(reservaPropia);
                                     }
                                 }
 
-                                List<Reserva> resultat = new ArrayList<>(indexReserves.values());
                                 resultat.sort(Comparator.comparingLong(Reserva::getSortidaMillis));
                                 adaptadorReserves.actualitzaDades(resultat, mostraPassats);
                                 txtBuit.setVisibility(resultat.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
@@ -215,12 +217,9 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
                 });
     }
 
-    private boolean filtreReserva(Reserva reserva) {
-        boolean esPassat = UtilitatsData.esPassat(reserva.getSortidaMillis());
-        if (mostraPassats) {
-            return esPassat && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(reserva.getEstat());
-        }
-        return !esPassat || UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(reserva.getEstat());
+    private boolean filtreData(long sortidaMillis) {
+        boolean esPassat = UtilitatsData.esPassat(sortidaMillis);
+        return mostraPassats == esPassat;
     }
 
     private void actualitzaBotonsFiltre() {
@@ -240,8 +239,11 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
         }
     }
 
-    @Override
-    public void onPuntua(Reserva reserva) {
+    private void obreDialegPuntuacio(Reserva reserva) {
+        if (reserva.getId().startsWith("viatge_")) {
+            return;
+        }
+
         android.view.View vista = LayoutInflater.from(this).inflate(R.layout.dialog_puntuacio, null, false);
         RatingBar barraPuntuacio = vista.findViewById(R.id.barraPuntuacio);
 
@@ -250,116 +252,6 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
                 .setPositiveButton(R.string.boto_puntuar, (dialog, which) -> desaPuntuacio(reserva, barraPuntuacio.getRating()))
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
-    }
-
-    @Override
-    public void onAccepta(Reserva reserva) {
-        DocumentReference reservaRef = db.collection(UtilitatsFirebase.COL_RESERVES).document(reserva.getId());
-        DocumentReference viatgeRef = db.collection(UtilitatsFirebase.COL_VIATGES).document(reserva.getViatgeId());
-
-        db.runTransaction(transaction -> {
-            com.google.firebase.firestore.DocumentSnapshot reservaDoc = transaction.get(reservaRef);
-            if (!reservaDoc.exists()) {
-                throw new IllegalStateException("NO_RESERVA");
-            }
-            String estatActual = reservaDoc.getString("estat");
-            if (!UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(estatActual)) {
-                throw new IllegalStateException("NO_PENDENT");
-            }
-
-            com.google.firebase.firestore.DocumentSnapshot viatgeDoc = transaction.get(viatgeRef);
-            Long placesDisponibles = viatgeDoc.getLong("placesDisponibles");
-            if (placesDisponibles == null || placesDisponibles <= 0) {
-                throw new IllegalStateException("SENSE_PLACES");
-            }
-
-            transaction.update(reservaRef, "estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA);
-            transaction.update(viatgeRef, "placesDisponibles", placesDisponibles - 1);
-            return true;
-        }).addOnSuccessListener(unused -> {
-            creaXatSiNoExisteix(reserva);
-            Toast.makeText(this, R.string.missatge_reserva_acceptada, Toast.LENGTH_SHORT).show();
-            carregaLlista();
-        }).addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
-    }
-
-    @Override
-    public void onRebutja(Reserva reserva) {
-        db.collection(UtilitatsFirebase.COL_RESERVES)
-                .document(reserva.getId())
-                .update("estat", UtilitatsFirebase.ESTAT_RESERVA_REBUTJADA)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, R.string.missatge_reserva_rebutjada, Toast.LENGTH_SHORT).show();
-                    carregaLlista();
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
-    }
-
-    @Override
-    public void onCancela(Reserva reserva) {
-        DocumentReference reservaRef = db.collection(UtilitatsFirebase.COL_RESERVES).document(reserva.getId());
-        DocumentReference viatgeRef = db.collection(UtilitatsFirebase.COL_VIATGES).document(reserva.getViatgeId());
-
-        db.runTransaction(transaction -> {
-            com.google.firebase.firestore.DocumentSnapshot reservaDoc = transaction.get(reservaRef);
-            if (!reservaDoc.exists()) {
-                throw new IllegalStateException("NO_RESERVA");
-            }
-            String estatActual = reservaDoc.getString("estat");
-            if (UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(estatActual)) {
-                com.google.firebase.firestore.DocumentSnapshot viatgeDoc = transaction.get(viatgeRef);
-                Long placesDisponibles = viatgeDoc.getLong("placesDisponibles");
-                long novesPlaces = placesDisponibles == null ? 1 : placesDisponibles + 1;
-                transaction.update(viatgeRef, "placesDisponibles", novesPlaces);
-            }
-            transaction.update(reservaRef, "estat", UtilitatsFirebase.ESTAT_RESERVA_CANCELADA);
-            return true;
-        }).addOnSuccessListener(unused -> {
-            Toast.makeText(this, R.string.missatge_reserva_cancelada, Toast.LENGTH_SHORT).show();
-            carregaLlista();
-        }).addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
-    }
-
-    @Override
-    public void onObreXat(Reserva reserva) {
-        if (!UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(reserva.getEstat())) {
-            Toast.makeText(this, R.string.missatge_xat_despres_acceptar, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String idXat = UtilitatsFirebase.creaIdXat(reserva.getViatgeId(), reserva.getPassatgerId());
-        Map<String, Object> dadesXat = construeixDadesXat(reserva);
-
-        db.collection(UtilitatsFirebase.COL_XATS)
-                .document(idXat)
-                .set(dadesXat, SetOptions.merge())
-                .addOnSuccessListener(unused -> {
-                    Intent intent = new Intent(this, XatActivity.class);
-                    intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
-                    String nomXat = reserva.isSocConductor() ? valorPerMostrar(reserva.getPassatgerNom()) : valorPerMostrar(reserva.getConductorNom());
-                    intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomXat);
-                    startActivity(intent);
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
-    }
-
-    private void creaXatSiNoExisteix(Reserva reserva) {
-        String idXat = UtilitatsFirebase.creaIdXat(reserva.getViatgeId(), reserva.getPassatgerId());
-        db.collection(UtilitatsFirebase.COL_XATS).document(idXat).set(construeixDadesXat(reserva), SetOptions.merge());
-    }
-
-    private Map<String, Object> construeixDadesXat(Reserva reserva) {
-        Map<String, Object> dadesXat = new HashMap<>();
-        dadesXat.put("viatgeId", reserva.getViatgeId());
-        dadesXat.put("conductorId", reserva.getConductorId());
-        dadesXat.put("passatgerId", reserva.getPassatgerId());
-        dadesXat.put("nomConductor", reserva.getConductorNom());
-        dadesXat.put("nomPassatger", reserva.getPassatgerNom());
-        dadesXat.put("origen", reserva.getOrigen());
-        dadesXat.put("desti", reserva.getDesti());
-        dadesXat.put("sortidaMillis", reserva.getSortidaMillis());
-        dadesXat.put("darreraActualitzacio", System.currentTimeMillis());
-        return dadesXat;
     }
 
     private void desaPuntuacio(Reserva reserva, float puntuacio) {
@@ -398,6 +290,6 @@ public class PerfilActivity extends AppCompatActivity implements AdaptadorReserv
     }
 
     private String valorPerMostrar(String valor) {
-        return valor == null || valor.trim().isEmpty() ? getString(R.string.text_no_definit) : valor.trim();
+        return valor == null || valor.trim().isEmpty() ? "-" : valor.trim();
     }
 }

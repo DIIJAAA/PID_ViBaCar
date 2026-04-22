@@ -14,34 +14,23 @@ import com.google.android.material.button.MaterialButton;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Reserva;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
-import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.ReservaViewHolder> {
 
-    public interface AccionsReservaListener {
+    public interface AlPuntuarReserva {
         void onPuntua(Reserva reserva);
-
-        void onAccepta(Reserva reserva);
-
-        void onRebutja(Reserva reserva);
-
-        void onCancela(Reserva reserva);
-
-        void onObreXat(Reserva reserva);
     }
 
     private final Context context;
-    private final AccionsReservaListener listener;
+    private final AlPuntuarReserva listener;
     private final List<Reserva> reserves = new ArrayList<>();
-    private final String uidActual;
     private boolean mostraPassats;
 
-    public AdaptadorReserves(Context context, String uidActual, AccionsReservaListener listener) {
+    public AdaptadorReserves(Context context, AlPuntuarReserva listener) {
         this.context = context;
-        this.uidActual = uidActual;
         this.listener = listener;
     }
 
@@ -62,45 +51,17 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
     @Override
     public void onBindViewHolder(@NonNull ReservaViewHolder holder, int position) {
         Reserva reserva = reserves.get(position);
-        boolean socConductor = uidActual != null && uidActual.equals(reserva.getConductorId());
-        reserva.setSocConductor(socConductor);
-
         holder.txtTitol.setText(context.getString(R.string.text_ruta_format, reserva.getOrigen(), reserva.getDesti()));
-        String nomContrapart = socConductor ? valorDefecte(reserva.getPassatgerNom()) : valorDefecte(reserva.getConductorNom());
         holder.txtSubtitol.setText(context.getString(
                 R.string.text_reserva_subtitol_format,
                 UtilitatsData.formatData(reserva.getSortidaMillis()),
-                nomContrapart
+                reserva.getConductorNom()
         ));
 
-        holder.txtEstat.setText(textEstat(reserva.getEstat()));
+        holder.txtEstat.setText(mostraPassats ? R.string.text_estat_passat : R.string.text_estat_proper);
         holder.barraValoracio.setRating(reserva.getPuntuacio());
-        holder.barraValoracio.setVisibility(mostraPassats && reserva.getPuntuacio() > 0f ? View.VISIBLE : View.GONE);
-
-        amagaBotons(holder);
-
-        boolean esPendent = UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(reserva.getEstat());
-        boolean esAcceptada = UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(reserva.getEstat());
-
-        if (mostraPassats && !socConductor && esAcceptada && !reserva.isValorada()) {
-            holder.botoPuntuar.setVisibility(View.VISIBLE);
-            holder.botoPuntuar.setOnClickListener(v -> listener.onPuntua(reserva));
-        }
-
-        if (!mostraPassats && socConductor && esPendent) {
-            mostraBoto(holder.botoPrincipal, R.string.boto_acceptar_reserva, v -> listener.onAccepta(reserva));
-            mostraBoto(holder.botoSecundari, R.string.boto_rebutjar_reserva, v -> listener.onRebutja(reserva));
-            return;
-        }
-
-        if (!mostraPassats && !socConductor && esPendent) {
-            mostraBoto(holder.botoPrincipal, R.string.boto_cancelar_reserva, v -> listener.onCancela(reserva));
-            return;
-        }
-
-        if (!mostraPassats && esAcceptada) {
-            mostraBoto(holder.botoPrincipal, R.string.boto_obrir_xat, v -> listener.onObreXat(reserva));
-        }
+        holder.botoPuntuar.setVisibility(mostraPassats && !reserva.isValorada() ? View.VISIBLE : View.GONE);
+        holder.botoPuntuar.setOnClickListener(v -> listener.onPuntua(reserva));
     }
 
     @Override
@@ -108,61 +69,19 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
         return reserves.size();
     }
 
-    private void amagaBotons(ReservaViewHolder holder) {
-        holder.botoPrincipal.setVisibility(View.GONE);
-        holder.botoSecundari.setVisibility(View.GONE);
-        holder.botoPuntuar.setVisibility(View.GONE);
-        holder.botoPrincipal.setOnClickListener(null);
-        holder.botoSecundari.setOnClickListener(null);
-        holder.botoPuntuar.setOnClickListener(null);
-    }
-
-    private void mostraBoto(MaterialButton boto, int idText, View.OnClickListener accio) {
-        boto.setText(idText);
-        boto.setVisibility(View.VISIBLE);
-        boto.setOnClickListener(accio);
-    }
-
-    private String valorDefecte(String text) {
-        if (text == null || text.trim().isEmpty()) {
-            return context.getString(R.string.text_usuari);
-        }
-        return text.trim();
-    }
-
-    private String textEstat(String estat) {
-        if (UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(estat)) {
-            return context.getString(R.string.estat_pendent);
-        }
-        if (UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(estat)) {
-            return context.getString(R.string.estat_acceptada);
-        }
-        if (UtilitatsFirebase.ESTAT_RESERVA_REBUTJADA.equals(estat)) {
-            return context.getString(R.string.estat_rebutjada);
-        }
-        if (UtilitatsFirebase.ESTAT_RESERVA_CANCELADA.equals(estat)) {
-            return context.getString(R.string.estat_cancelada);
-        }
-        return context.getString(R.string.text_no_definit);
-    }
-
     static class ReservaViewHolder extends RecyclerView.ViewHolder {
         final TextView txtTitol;
         final TextView txtSubtitol;
-        final TextView txtEstat;
         final RatingBar barraValoracio;
-        final MaterialButton botoPrincipal;
-        final MaterialButton botoSecundari;
+        final TextView txtEstat;
         final MaterialButton botoPuntuar;
 
         ReservaViewHolder(@NonNull View itemView) {
             super(itemView);
             txtTitol = itemView.findViewById(R.id.txtTitol);
             txtSubtitol = itemView.findViewById(R.id.txtSubtitol);
-            txtEstat = itemView.findViewById(R.id.txtEstat);
             barraValoracio = itemView.findViewById(R.id.barraValoracio);
-            botoPrincipal = itemView.findViewById(R.id.botoPrincipal);
-            botoSecundari = itemView.findViewById(R.id.botoSecundari);
+            txtEstat = itemView.findViewById(R.id.txtEstat);
             botoPuntuar = itemView.findViewById(R.id.botoPuntuar);
         }
     }

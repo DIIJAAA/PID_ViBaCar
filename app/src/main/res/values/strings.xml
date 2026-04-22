@@ -33,7 +33,7 @@
     <string name="boto_continua_perfil">Continua amb el perfil</string>
 
     <string name="perfil_config_titol">Configura el teu perfil</string>
-    <string name="perfil_config_subtitol">Posa la teva zona, el punt de trobada i una foto si et ve de gust.</string>
+    <string name="perfil_config_subtitol">Escull com et mous, la zona i una foto si en vols.</string>
     <string name="boto_tria_foto">Tria foto opcional</string>
     <string name="etiqueta_telefon">Telefon</string>
     <string name="etiqueta_rol">Rol</string>
@@ -48,6 +48,12 @@
     <string name="etiqueta_places_habituals">Places que pots oferir</string>
     <string name="etiqueta_bio">Presentacio breu</string>
     <string name="boto_desar_perfil">Desar perfil</string>
+    <string name="etiqueta_data_naixement">Data de naixement</string>
+    <string name="etiqueta_sexe">Sexe</string>
+    <string name="sexe_home">Home</string>
+    <string name="sexe_dona">Dona</string>
+    <string name="sexe_no_dir">Prefereixo no dir-ho</string>
+    <string name="sexe_altre">Altre</string>
 
     <string name="verifica_titol">Verifica el correu</string>
     <string name="text_info_verificacio_format">Hem enviat un correu de verificacio a %1$s. Revisa la safata dentrada i torna aqui quan el validis.</string>
@@ -125,10 +131,6 @@
     <string name="crear_viatge_pas_quan">3. Quan surts</string>
     <string name="crear_viatge_pas_places">4. Places i preu</string>
     <string name="crear_viatge_ruta_pendent">Tria sentit i zona per veure la ruta</string>
-    <string name="crear_viatge_arribada_estimada_format">Arribada estimada: %1$s (%2$d min)</string>
-    <string name="crear_viatge_arribada_estimada_pendent">Arribada estimada: pendent (%1$d min)</string>
-    <string name="error_falta_model_cotxe">Has dafegir el model del cotxe al perfil abans de publicar.</string>
-    <string name="error_preu_buit">Posa un preu valid</string>
     <string name="etiqueta_observacions">Observacions</string>
     <string name="boto_publicar_viatge">Publicar viatge</string>
 
@@ -137,7 +139,7 @@
     <string name="perfil_proxims">Proxims</string>
     <string name="perfil_passats">Passats</string>
     <string name="perfil_cap_element">No hi ha cap element per mostrar.</string>
-    <string name="text_resum_perfil_format">Correu: %1$s | Zona: %2$s | Telefon: %3$s</string>
+    <string name="text_resum_perfil_format">Correu: %1$s | Rol: %2$s | Zona: %3$s | Telefon: %4$s</string>
     <string name="text_resum_mobilitat_format">Hora habitual: %1$s | Punt trobada: %2$s</string>
     <string name="text_resum_conductor_format">Cotxe: %1$s | Places habituals: %2$s</string>
 
@@ -153,8 +155,8 @@
     <string name="dialog_puntuacio_titol">Puntua el viatge</string>
     <string name="dialog_puntuacio_subtitol">Marca de 1 a 5 estrelles com ha anat el trajecte.</string>
 
-    <string name="text_valoracio_format">%1$.1f * (%2$d)</string>
-    <string name="text_ruta_format">%1$s -> %2$s</string>
+    <string name="text_valoracio_format">%1$.1f ★ (%2$d)</string>
+    <string name="text_ruta_format">%1$s → %2$s</string>
     <string name="text_horari_viatge_format">%1$s | %2$s - %3$s</string>
     <string name="text_reserva_subtitol_format">%1$s | amb %2$s</string>
     <string name="text_usuari">Usuari</string>
@@ -182,8 +184,8 @@
     <string name="error_hora_habitual_buida">Escull una hora habitual de sortida</string>
     <string name="error_punt_trobada_buit">Escriu el punt de trobada habitual</string>
     <string name="error_rol_buit">Selecciona el rol</string>
-    <string name="error_model_cotxe_buit">Per publicar un viatge, indica el model del cotxe</string>
-    <string name="error_places_habituals_buides">Si condueixes sovint, indica quantes places pots oferir</string>
+    <string name="error_model_cotxe_buit">Si ets conductor/a, indica el model del cotxe</string>
+    <string name="error_places_habituals_buides">Si ets conductor/a, indica quantes places pots oferir</string>
     <string name="error_origen_buit">Escriu el lloc dorigen</string>
     <string name="error_desti_buit">Escriu el desti</string>
     <string name="error_data_buida">Escull la data</string>
@@ -195,6 +197,9 @@
     <string name="error_base_dades_permis">No tenim permis per llegir el teu perfil. Revisa les regles de Firestore.</string>
     <string name="error_base_dades_connexio">No hi ha connexio amb la base de dades. Torna-ho a provar.</string>
     <string name="error_generica">No sha pogut completar la operacio</string>
+    <string name="error_data_naixement_buida">Indica la teva data de naixement</string>
+    <string name="error_sexe_buit">Selecciona el teu sexe</string>
+    <string name="error_preu_buit">Posa un preu valid</string>
 
     <string name="missatge_compte_creat">Compte creat correctament</string>
     <string name="missatge_correu_verificacio">Hem enviat el correu de verificacio</string>

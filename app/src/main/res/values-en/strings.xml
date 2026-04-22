@@ -33,7 +33,7 @@
     <string name="boto_continua_perfil">Continue to profile</string>
 
     <string name="perfil_config_titol">Set up your profile</string>
-    <string name="perfil_config_subtitol">Add your area, meeting point and a photo if you want.</string>
+    <string name="perfil_config_subtitol">Choose how you travel, your area and a photo if you want.</string>
     <string name="boto_tria_foto">Choose optional photo</string>
     <string name="etiqueta_telefon">Phone</string>
     <string name="etiqueta_rol">Role</string>
@@ -43,11 +43,17 @@
     <string name="etiqueta_hora_habitual">Usual departure time</string>
     <string name="etiqueta_punt_trobada">Usual meeting point</string>
     <string name="titol_dades_conductor">Driver details</string>
-    <string name="titol_dades_vehicle">If you sometimes publish rides</string>
+    <string name="titol_dades_vehicle">If you ever publish rides</string>
     <string name="etiqueta_model_cotxe">Car model</string>
     <string name="etiqueta_places_habituals">Seats you can offer</string>
     <string name="etiqueta_bio">Short bio</string>
     <string name="boto_desar_perfil">Save profile</string>
+    <string name="etiqueta_data_naixement">Date of birth</string>
+    <string name="etiqueta_sexe">Gender</string>
+    <string name="sexe_home">Male</string>
+    <string name="sexe_dona">Female</string>
+    <string name="sexe_no_dir">Prefer not to say</string>
+    <string name="sexe_altre">Other</string>
 
     <string name="verifica_titol">Verify email</string>
     <string name="text_info_verificacio_format">We sent a verification email to %1$s. Check your inbox and come back here once you validate it.</string>
@@ -56,16 +62,15 @@
 
     <string name="principal_salutacio_format">Hi %1$s</string>
     <string name="principal_hub_salutacio_format">Hi %1$s</string>
-    <string name="principal_hub_subtitol">Choose how you want to use ViBaCar today.</string>
-    <string name="principal_hub_text_intro">A Housr-style flow adapted to sharing rides to Vidal i Barraquer.</string>
+    <string name="principal_hub_subtitol">Choose how you want to enter ViBaCar today.</string>
     <string name="principal_hub_passatger_titol">I want to find a ride</string>
-    <string name="principal_hub_passatger_subtitol">Browse available trips, view the agreed route and chat with the driver once you are accepted.</string>
+    <string name="principal_hub_passatger_subtitol">Browse available rides, see the agreed route and chat with the driver once accepted.</string>
     <string name="principal_hub_passatger_info_format">You have %1$d active bookings</string>
-    <string name="principal_hub_passatger_info_buit">You do not have any active booking yet</string>
+    <string name="principal_hub_passatger_info_buit">You have no active bookings yet</string>
     <string name="principal_hub_conductor_titol">I want to publish a ride</string>
-    <string name="principal_hub_conductor_subtitol">Publish seats, review requests and manage your trips as a driver.</string>
+    <string name="principal_hub_conductor_subtitol">Publish seats, review requests and manage your rides as a driver.</string>
     <string name="principal_hub_conductor_info_format">You have %1$d pending requests</string>
-    <string name="principal_hub_conductor_info_buit">You do not have pending requests</string>
+    <string name="principal_hub_conductor_info_buit">You have no pending requests</string>
     <string name="principal_subtitol">Search for a ride or publish yours.</string>
     <string name="principal_cerca_hint">Origin, destination or date</string>
     <string name="principal_buit">There are no rides available yet. You can create the first one.</string>
@@ -78,14 +83,14 @@
     <string name="filtre_zona_titol">Filter by area of interest</string>
     <string name="zones_totes">All areas</string>
     <string name="passatger_titol">Find a ride</string>
-    <string name="passatger_subtitol">Filter by area or meeting point and book when you find a trip that fits.</string>
+    <string name="passatger_subtitol">Filter by area or meeting point and book when you find a matching ride.</string>
     <string name="passatger_llista_titol">Published rides</string>
-    <string name="passatger_buit">There is no ride matching your search right now.</string>
+    <string name="passatger_buit">There are currently no rides matching your search.</string>
     <string name="conductor_titol">Publish a ride</string>
-    <string name="conductor_subtitol">Review your trips and add new seats whenever you want.</string>
+    <string name="conductor_subtitol">Review your rides and create new seats when it suits you.</string>
     <string name="conductor_llista_titol">Rides published by you</string>
     <string name="conductor_sense_valoracions">No ratings yet</string>
-    <string name="conductor_buit">You have not published any ride yet.</string>
+    <string name="conductor_buit">You have not published any rides yet.</string>
     <string name="conductor_resum_publicats_format">%1$d published</string>
     <string name="conductor_resum_publicats_buit">0 published</string>
     <string name="conductor_resum_reservats_format">%1$d booked</string>
@@ -96,7 +101,7 @@
     <string name="conductor_resum_sollicituds_buit">No pending requests</string>
 
     <string name="text_mapa_resum">Route and meeting point</string>
-    <string name="text_mapa_sense_dades">When the departure point matches one of ViBaCar\'s known areas, the agreed route will appear here.</string>
+    <string name="text_mapa_sense_dades">When the departure point matches one of ViBaCar\'s areas, you will see the agreed route here.</string>
     <string name="detall_perque_titol">Why travel with this person</string>
     <string name="qualitat_puntual">Punctual</string>
     <string name="qualitat_bon_ambient">Friendly</string>
@@ -107,9 +112,9 @@
     <string name="mapa_desti">Arrival point</string>
 
     <string name="crear_viatge_titol">Publish a ride</string>
-    <string name="etiqueta_sentit_trajecte">Trip direction</string>
-    <string name="sentit_cap_institut">To the institute</string>
-    <string name="sentit_tornada_casa">From institute to home</string>
+    <string name="etiqueta_sentit_trajecte">Direction</string>
+    <string name="sentit_cap_institut">To school</string>
+    <string name="sentit_tornada_casa">Return from school home</string>
     <string name="etiqueta_origen">Origin</string>
     <string name="etiqueta_desti">Destination</string>
     <string name="desti_per_defecte">Institut Vidal i Barraquer</string>
@@ -120,15 +125,11 @@
     <string name="etiqueta_aportacio">Price</string>
     <string name="etiqueta_preu">Price</string>
     <string name="etiqueta_preu_sufix">EUR</string>
-    <string name="crear_viatge_pas_sentit">1. Direction</string>
+    <string name="crear_viatge_pas_sentit">1. Where are you going</string>
     <string name="crear_viatge_pas_zona">2. Your area</string>
-    <string name="crear_viatge_pas_quan">3. Departure time</string>
+    <string name="crear_viatge_pas_quan">3. When do you leave</string>
     <string name="crear_viatge_pas_places">4. Seats and price</string>
     <string name="crear_viatge_ruta_pendent">Choose direction and area to see the route</string>
-    <string name="crear_viatge_arribada_estimada_format">Estimated arrival: %1$s (%2$d min)</string>
-    <string name="crear_viatge_arribada_estimada_pendent">Estimated arrival: pending (%1$d min)</string>
-    <string name="error_falta_model_cotxe">You need to add the car model in your profile before publishing.</string>
-    <string name="error_preu_buit">Enter a valid price</string>
     <string name="etiqueta_observacions">Notes</string>
     <string name="boto_publicar_viatge">Publish ride</string>
 
@@ -137,13 +138,13 @@
     <string name="perfil_proxims">Upcoming</string>
     <string name="perfil_passats">Past</string>
     <string name="perfil_cap_element">There is nothing to show.</string>
-    <string name="text_resum_perfil_format">Email: %1$s | Area: %2$s | Phone: %3$s</string>
+    <string name="text_resum_perfil_format">Email: %1$s | Role: %2$s | Area: %3$s | Phone: %4$s</string>
     <string name="text_resum_mobilitat_format">Usual time: %1$s | Meeting point: %2$s</string>
     <string name="text_resum_conductor_format">Car: %1$s | Usual seats: %2$s</string>
 
     <string name="xat_hint">Write a message</string>
     <string name="bustia_titol">My chats</string>
-    <string name="bustia_buit">You do not have chats yet. They will open when someone accepts a booking.</string>
+    <string name="bustia_buit">No chats yet. They will open when someone accepts a booking.</string>
     <string name="boto_bustia_xats">Chat inbox</string>
     <string name="xat_sense_missatges">No messages yet</string>
     <string name="xat_subtitol_format">%1$s | %2$s</string>
@@ -153,8 +154,8 @@
     <string name="dialog_puntuacio_titol">Rate the ride</string>
     <string name="dialog_puntuacio_subtitol">Choose from 1 to 5 stars for the trip.</string>
 
-    <string name="text_valoracio_format">%1$.1f * (%2$d)</string>
-    <string name="text_ruta_format">%1$s -> %2$s</string>
+    <string name="text_valoracio_format">%1$.1f ★ (%2$d)</string>
+    <string name="text_ruta_format">%1$s → %2$s</string>
     <string name="text_horari_viatge_format">%1$s | %2$s - %3$s</string>
     <string name="text_reserva_subtitol_format">%1$s | with %2$s</string>
     <string name="text_usuari">User</string>
@@ -166,7 +167,7 @@
     <string name="text_observacions_punt_trobada_format">Usual meeting point: %1$s</string>
     <string name="text_estat_proper">Upcoming ride</string>
     <string name="text_estat_passat">Past ride</string>
-    <string name="estat_pendent">Pending response</string>
+    <string name="estat_pendent">Pending reply</string>
     <string name="estat_acceptada">Accepted</string>
     <string name="estat_rebutjada">Rejected</string>
     <string name="estat_cancelada">Cancelled</string>
@@ -182,8 +183,8 @@
     <string name="error_hora_habitual_buida">Choose a usual departure time</string>
     <string name="error_punt_trobada_buit">Write your usual meeting point</string>
     <string name="error_rol_buit">Choose a role</string>
-    <string name="error_model_cotxe_buit">To publish a ride, write the car model</string>
-    <string name="error_places_habituals_buides">If you drive often, choose how many seats you can offer</string>
+    <string name="error_model_cotxe_buit">If you are a driver, write the car model</string>
+    <string name="error_places_habituals_buides">If you are a driver, choose how many seats you can offer</string>
     <string name="error_origen_buit">Write the origin</string>
     <string name="error_desti_buit">Write the destination</string>
     <string name="error_data_buida">Choose the date</string>
@@ -195,6 +196,9 @@
     <string name="error_base_dades_permis">We do not have permission to read your profile. Check Firestore rules.</string>
     <string name="error_base_dades_connexio">Database connection is not available. Please try again.</string>
     <string name="error_generica">The operation could not be completed</string>
+    <string name="error_data_naixement_buida">Please enter your date of birth</string>
+    <string name="error_sexe_buit">Please select your gender</string>
+    <string name="error_preu_buit">Enter a valid price</string>
 
     <string name="missatge_compte_creat">Account created successfully</string>
     <string name="missatge_correu_verificacio">We have sent the verification email</string>
@@ -203,20 +207,20 @@
     <string name="missatge_perfil_guardat">Profile saved successfully</string>
     <string name="missatge_viatge_creat">Ride published successfully</string>
     <string name="missatge_reserva_feta">Seat booked and chat opened</string>
-    <string name="missatge_solicitud_enviada">Request sent to the driver</string>
-    <string name="missatge_reserva_acceptada">Reservation accepted</string>
-    <string name="missatge_reserva_rebutjada">Reservation rejected</string>
-    <string name="missatge_reserva_cancelada">Reservation cancelled</string>
+    <string name="missatge_solicitud_enviada">Request sent to driver</string>
+    <string name="missatge_reserva_acceptada">Booking accepted</string>
+    <string name="missatge_reserva_rebutjada">Booking rejected</string>
+    <string name="missatge_reserva_cancelada">Booking cancelled</string>
     <string name="missatge_puntuacio_guardada">Rating saved</string>
     <string name="missatge_recuperacio_contrasenya">We sent the password recovery email</string>
     <string name="missatge_places_esgotades">This ride has no free seats left</string>
     <string name="missatge_no_et_pots_reservar">You cannot book your own ride</string>
     <string name="missatge_ja_reservat">You already have a booking for this ride</string>
     <string name="missatge_primer_reserva">You must book the seat before opening the chat</string>
-    <string name="missatge_xat_despres_acceptar">Chat opens when the driver accepts your request</string>
+    <string name="missatge_xat_despres_acceptar">The chat will open when the driver accepts the booking</string>
     <string name="missatge_nomes_conductors">You need the driver role to publish a ride</string>
 
-    <string name="etiqueta_color_cotxe">Car color (optional)</string>
+    <string name="etiqueta_color_cotxe">Car colour (optional)</string>
     <string name="boto_eliminar_viatge">Delete ride</string>
     <string name="confirma_eliminar_viatge">Are you sure you want to delete this ride? All associated bookings will be cancelled.</string>
     <string name="missatge_viatge_eliminat">Ride deleted successfully</string>

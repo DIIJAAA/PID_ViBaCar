@@ -99,7 +99,7 @@ public class VerificaCorreuActivity extends AppCompatActivity {
 
                     Boolean perfilCompletat = documentSnapshot.getBoolean("perfilCompletat");
                     Class<?> desti = Boolean.TRUE.equals(perfilCompletat)
-                            ? PantallaPassatgerActivity.class
+                            ? PantallaPrincipalActivity.class
                             : ConfiguraPerfilActivity.class;
                     startActivity(new Intent(this, desti));
                     finish();

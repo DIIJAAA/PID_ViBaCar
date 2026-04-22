@@ -10,6 +10,7 @@
     <color name="color_text_principal">#17354A</color>
     <color name="color_text_secundari">#547283</color>
     <color name="color_text_clar">#FFFFFF</color>
+    <color name="color_text_fosc">#000000</color>
     <color name="color_avisos">#F4C861</color>
     <color name="color_exit">#2E9D63</color>
     <color name="color_error">#C74E4E</color>

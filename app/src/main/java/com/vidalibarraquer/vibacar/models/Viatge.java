@@ -72,6 +72,7 @@ public class Viatge {
         this.colorCotxeConductor = colorCotxeConductor;
     }
 
+
     public double getConductorValoracio() {
         return conductorValoracio;
     }
