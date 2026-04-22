@@ -3,15 +3,27 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="end"
+    android:orientation="vertical"
     android:paddingVertical="4dp">
 
     <TextView
         android:id="@+id/txtMissatge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="end"
         android:background="@drawable/fons_missatge_meu"
         android:maxWidth="250dp"
         android:paddingHorizontal="14dp"
         android:paddingVertical="10dp"
         android:textColor="@color/color_text_principal" />
+
+    <TextView
+        android:id="@+id/txtHora"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="6dp"
+        android:textColor="@color/color_text_secundari"
+        android:textSize="11sp" />
 </LinearLayout>

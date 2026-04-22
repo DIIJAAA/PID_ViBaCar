@@ -1,0 +1,130 @@
+package com.vidalibarraquer.vibacar.adaptadors;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.vidalibarraquer.vibacar.R;
+import com.vidalibarraquer.vibacar.models.Xat;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class AdaptadorXats extends RecyclerView.Adapter<AdaptadorXats.XatViewHolder> {
+
+    public interface OnXatClickListener {
+        void onXatClick(Xat xat, String nomMostrat);
+    }
+
+    private final Context context;
+    private final String uidActual;
+    private final OnXatClickListener listener;
+    private final List<Xat> xats = new ArrayList<>();
+
+    public AdaptadorXats(Context context, String uidActual, OnXatClickListener listener) {
+        this.context = context;
+        this.uidActual = uidActual;
+        this.listener = listener;
+    }
+
+    public void actualitzaDades(List<Xat> dadesNoves) {
+        xats.clear();
+        xats.addAll(dadesNoves);
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public XatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View vista = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_xat, parent, false);
+        return new XatViewHolder(vista);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull XatViewHolder holder, int position) {
+        Xat xat = xats.get(position);
+        boolean socConductor = uidActual != null && uidActual.equals(xat.getConductorId());
+        String nomAltre = socConductor ? valorDefecte(xat.getNomPassatger()) : valorDefecte(xat.getNomConductor());
+
+        holder.txtNom.setText(nomAltre);
+        holder.txtInicial.setText(inicial(nomAltre));
+
+        String origen = valorDefecte(xat.getOrigen());
+        String desti = valorDefecte(xat.getDesti());
+        if (xat.getSortidaMillis() > 0) {
+            holder.txtRuta.setText(context.getString(
+                    R.string.xat_subtitol_format,
+                    context.getString(R.string.text_ruta_format, origen, desti),
+                    UtilitatsData.formatData(xat.getSortidaMillis())
+            ));
+        } else {
+            holder.txtRuta.setText(context.getString(R.string.text_ruta_format, origen, desti));
+        }
+
+        if (TextUtils.isEmpty(xat.getDarrerMissatge())) {
+            holder.txtDarrerMissatge.setText(R.string.xat_sense_missatges);
+        } else {
+            boolean meu = uidActual != null && uidActual.equals(xat.getDarrerEmissorId());
+            holder.txtDarrerMissatge.setText(meu
+                    ? context.getString(R.string.xat_darrer_missatge_meu_format, xat.getDarrerMissatge())
+                    : xat.getDarrerMissatge());
+        }
+
+        if (xat.getDarreraActualitzacio() > 0) {
+            holder.txtHora.setText(UtilitatsData.formatHora(xat.getDarreraActualitzacio()));
+            holder.txtHora.setVisibility(View.VISIBLE);
+        } else {
+            holder.txtHora.setVisibility(View.GONE);
+        }
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onXatClick(xat, nomAltre);
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return xats.size();
+    }
+
+    private String valorDefecte(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return context.getString(R.string.text_usuari);
+        }
+        return text.trim();
+    }
+
+    private String inicial(String text) {
+        if (TextUtils.isEmpty(text)) {
+            return "?";
+        }
+        return text.trim().substring(0, 1).toUpperCase(Locale.ROOT);
+    }
+
+    static class XatViewHolder extends RecyclerView.ViewHolder {
+        final TextView txtInicial;
+        final TextView txtNom;
+        final TextView txtRuta;
+        final TextView txtDarrerMissatge;
+        final TextView txtHora;
+
+        XatViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txtInicial = itemView.findViewById(R.id.txtInicial);
+            txtNom = itemView.findViewById(R.id.txtNom);
+            txtRuta = itemView.findViewById(R.id.txtRuta);
+            txtDarrerMissatge = itemView.findViewById(R.id.txtDarrerMissatge);
+            txtHora = itemView.findViewById(R.id.txtHora);
+        }
+    }
+}

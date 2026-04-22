@@ -17,6 +17,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        manifestPlaceholders["MAPS_API_KEY"] = providers.gradleProperty("MAPS_API_KEY").orNull ?: ""
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,6 +46,7 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_fons_suau">
+
+    <LinearLayout
+        android:id="@+id/capcalera"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="18dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tabPassatger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fons_xip"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="8dp"
+            android:text="@string/tab_passatger"
+            android:textColor="@color/color_text_principal"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tabConductor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="8dp"
+            android:text="@string/tab_conductor"
+            android:textColor="@color/color_text_secundari"
+            android:textStyle="bold" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <FrameLayout
+            android:id="@+id/botoPerfil"
+            android:layout_width="48dp"
+            android:layout_height="48dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imatgePerfil"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/FormaAvatarCercle" />
+
+            <TextView
+                android:id="@+id/txtInicialAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/fons_avatar"
+                android:gravity="center"
+                android:text="V"
+                android:textColor="@color/color_text_clar"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutCerca"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="18dp"
+        android:hint="@string/principal_cerca_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/capcalera"
+        app:startIconDrawable="@android:drawable/ic_menu_search">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/campCerca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutZona"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="18dp"
+        android:hint="@string/filtre_zona_titol"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutCerca">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/campFiltreZona"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/txtTitolLlista"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="18dp"
+        android:text="@string/passatger_llista_titol"
+        android:textColor="@color/color_text_principal"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutZona" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/llistaViatges"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="18dp"
+        android:clipToPadding="false"
+        android:paddingBottom="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtTitolLlista" />
+
+    <TextView
+        android:id="@+id/txtBuit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="28dp"
+        android:gravity="center"
+        android:text="@string/passatger_buit"
+        android:textColor="@color/color_text_secundari"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/llistaViatges"
+        app:layout_constraintEnd_toEndOf="@id/llistaViatges"
+        app:layout_constraintStart_toStartOf="@id/llistaViatges"
+        app:layout_constraintTop_toTopOf="@id/llistaViatges" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

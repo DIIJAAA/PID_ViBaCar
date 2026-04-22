@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -45,9 +43,6 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
     private TextInputEditText campModelCotxe;
     private MaterialAutoCompleteTextView campPlacesHabituals;
     private TextInputEditText campBio;
-    private RadioGroup grupRol;
-    private LinearLayout layoutDadesConductor;
-    private TextView txtDadesConductor;
     private ShapeableImageView imatgePerfil;
     private TextView txtInicialAvatar;
     private TextView txtMissatge;
@@ -81,15 +76,11 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         campModelCotxe = findViewById(R.id.campModelCotxe);
         campPlacesHabituals = findViewById(R.id.campPlacesHabituals);
         campBio = findViewById(R.id.campBio);
-        grupRol = findViewById(R.id.grupRol);
-        layoutDadesConductor = findViewById(R.id.layoutDadesConductor);
-        txtDadesConductor = findViewById(R.id.txtDadesConductor);
         imatgePerfil = findViewById(R.id.imatgePerfil);
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
         txtMissatge = findViewById(R.id.txtMissatge);
 
         configuraLlistes();
-        grupRol.setOnCheckedChangeListener((group, checkedId) -> actualitzaBlocConductor());
         carregaPerfilSiExisteix();
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
@@ -141,14 +132,6 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
                         campPlacesHabituals.setText(String.valueOf(perfil.getPlacesHabituals()), false);
                     }
                     fotoUri = perfil.getFotoUri();
-
-                    if (UtilitatsFirebase.esRolConductor(perfil.getRol())) {
-                        grupRol.check(R.id.radioConductor);
-                    } else if (UtilitatsFirebase.esRolPassatger(perfil.getRol())) {
-                        grupRol.check(R.id.radioPassatger);
-                    }
-
-                    actualitzaBlocConductor();
                     actualitzaAvatar();
                 });
     }
@@ -168,7 +151,6 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         String modelCotxe = obteText(campModelCotxe);
         int placesHabituals = parseInt(campPlacesHabituals.getText() == null ? "" : campPlacesHabituals.getText().toString().trim());
         String bio = obteText(campBio);
-        String rol = obteRolSeleccionat();
 
         if (TextUtils.isEmpty(nom)) {
             txtMissatge.setText(R.string.error_nom_buit);
@@ -186,25 +168,13 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
             txtMissatge.setText(R.string.error_punt_trobada_buit);
             return;
         }
-        if (TextUtils.isEmpty(rol)) {
-            txtMissatge.setText(R.string.error_rol_buit);
-            return;
-        }
-        if (UtilitatsFirebase.esRolConductor(rol) && TextUtils.isEmpty(modelCotxe)) {
-            txtMissatge.setText(R.string.error_model_cotxe_buit);
-            return;
-        }
-        if (UtilitatsFirebase.esRolConductor(rol) && placesHabituals <= 0) {
-            txtMissatge.setText(R.string.error_places_habituals_buides);
-            return;
-        }
 
         Map<String, Object> dades = new HashMap<>();
         dades.put("uid", usuari.getUid());
         dades.put("nom", nom);
         dades.put("correu", usuari.getEmail());
         dades.put("telefon", telefon);
-        dades.put("rol", rol);
+        dades.put("rol", "");
         dades.put("zona", zona);
         dades.put("horaSortidaHabitual", horaHabitual);
         dades.put("puntTrobadaHabitual", puntTrobada);
@@ -213,13 +183,8 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         dades.put("idioma", GestorIdioma.obteIdiomaGuardat(this));
         dades.put("perfilCompletat", true);
         dades.put("emailVerified", usuari.isEmailVerified());
-        if (UtilitatsFirebase.esRolConductor(rol)) {
-            dades.put("modelCotxe", modelCotxe);
-            dades.put("placesHabituals", placesHabituals);
-        } else {
-            dades.put("modelCotxe", "");
-            dades.put("placesHabituals", 0);
-        }
+        dades.put("modelCotxe", modelCotxe);
+        dades.put("placesHabituals", placesHabituals);
 
         db.collection(UtilitatsFirebase.COL_USUARIS)
                 .document(usuari.getUid())
@@ -231,7 +196,7 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
                             finish();
                         });
                     } else if (usuari.isEmailVerified()) {
-                        startActivity(new Intent(this, PantallaPrincipalActivity.class));
+                        startActivity(new Intent(this, PantallaPassatgerActivity.class));
                         finish();
                     } else {
                         startActivity(new Intent(this, VerificaCorreuActivity.class));
@@ -241,26 +206,8 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> txtMissatge.setText(R.string.error_generica));
     }
 
-    private String obteRolSeleccionat() {
-        int id = grupRol.getCheckedRadioButtonId();
-        if (id == R.id.radioConductor) {
-            return UtilitatsFirebase.ROL_CONDUCTOR;
-        }
-        if (id == R.id.radioPassatger) {
-            return UtilitatsFirebase.ROL_PASSATGER;
-        }
-        return "";
-    }
-
     private void actualitzaAvatar() {
         UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, fotoUri, obteText(campNom));
-    }
-
-    private void actualitzaBlocConductor() {
-        boolean esConductor = grupRol.getCheckedRadioButtonId() == R.id.radioConductor;
-        int visibilitat = esConductor ? android.view.View.VISIBLE : android.view.View.GONE;
-        layoutDadesConductor.setVisibility(visibilitat);
-        txtDadesConductor.setVisibility(visibilitat);
     }
 
     private int parseInt(String text) {

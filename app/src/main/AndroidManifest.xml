@@ -14,8 +14,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ViBaCar">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
+        <activity
+            android:name=".activitats.BustiaXatsActivity"
+            android:exported="false" />
         <activity
             android:name=".activitats.XatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activitats.PantallaConductorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activitats.PantallaPassatgerActivity"
             android:exported="false" />
         <activity
             android:name=".activitats.RecuperaContrasenyaActivity"

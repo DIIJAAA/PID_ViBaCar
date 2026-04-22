@@ -143,6 +143,14 @@
                 android:text="@string/perfil_passats" />
         </LinearLayout>
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botoBustiaXats"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/boto_bustia_xats" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/llistaReserves"
             android:layout_width="match_parent"

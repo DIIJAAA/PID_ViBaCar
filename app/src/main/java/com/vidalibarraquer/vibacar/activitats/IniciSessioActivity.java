@@ -100,7 +100,7 @@ public class IniciSessioActivity extends AppCompatActivity {
 
                     Boolean perfilCompletat = documentSnapshot.getBoolean("perfilCompletat");
                     Class<?> desti = Boolean.TRUE.equals(perfilCompletat)
-                            ? PantallaPrincipalActivity.class
+                            ? PantallaPassatgerActivity.class
                             : ConfiguraPerfilActivity.class;
                     obrePantalla(desti);
                 })

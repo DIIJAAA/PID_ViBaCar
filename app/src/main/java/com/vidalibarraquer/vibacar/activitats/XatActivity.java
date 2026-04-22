@@ -117,6 +117,8 @@ public class XatActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentReference -> {
                     Map<String, Object> actualitzacio = new HashMap<>();
                     actualitzacio.put("darreraActualitzacio", System.currentTimeMillis());
+                    actualitzacio.put("darrerMissatge", text);
+                    actualitzacio.put("darrerEmissorId", usuari.getUid());
                     db.collection(UtilitatsFirebase.COL_XATS).document(idXat).set(actualitzacio, SetOptions.merge());
                     campMissatge.setText("");
                 })

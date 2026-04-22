@@ -10,72 +10,99 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
-
-        <ImageButton
-            android:id="@+id/botoEnrere"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/fons_capsula"
-            android:contentDescription="@string/boto_enrere"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_media_previous" />
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tabPassatger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:text="@string/tab_passatger"
+                android:textColor="@color/color_text_secundari"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tabConductor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fons_xip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:text="@string/tab_conductor"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:background="@drawable/fons_targeta"
             android:elevation="8dp"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="18dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/crear_viatge_titol"
                 android:textColor="@color/color_text_principal"
-                android:textSize="28sp"
+                android:textSize="26sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/txtMissatge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textColor="@color/color_error" />
+                android:layout_marginTop="14dp"
+                android:text="@string/crear_viatge_pas_sentit"
+                android:textColor="@color/color_text_secundari"
+                android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/grupSentit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/etiqueta_origen">
+                android:layout_marginTop="6dp"
+                app:selectionRequired="true"
+                app:singleSelection="true">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/campOrigen"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botoSentitInstitut"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sentit_cap_institut" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/botoSentitCasa"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/sentit_tornada_casa" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/etiqueta_desti">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/campDesti"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="14dp"
+                android:text="@string/crear_viatge_pas_zona"
+                android:textColor="@color/color_text_secundari"
+                android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="6dp"
                 android:hint="@string/etiqueta_zona">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -85,11 +112,62 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/txtRutaResum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/fons_xip"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/crear_viatge_ruta_pendent"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/fons_mapa">
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fragmentMapaCrear"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/txtMapaAlternatiu"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="@string/text_mapa_resum"
+                    android:textColor="@color/color_text_principal"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/txtMissatge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/color_error" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/crear_viatge_pas_quan"
+                android:textColor="@color/color_text_secundari"
+                android:textStyle="bold" />
+
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="6dp"
                 android:hint="@string/etiqueta_data">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -99,49 +177,40 @@
                     android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                android:layout_marginTop="10dp"
+                android:hint="@string/etiqueta_hora_sortida">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/campHoraSortida"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/etiqueta_hora_sortida">
+                    android:focusable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/campHoraSortida"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false" />
-                </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/txtArribadaResum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/color_text_secundari"
+                android:textSize="13sp" />
 
-                <Space
-                    android:layout_width="12dp"
-                    android:layout_height="1dp" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/etiqueta_hora_arribada">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/campHoraArribada"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/crear_viatge_pas_places"
+                android:textColor="@color/color_text_secundari"
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="6dp"
                 android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -159,7 +228,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Space
-                    android:layout_width="12dp"
+                    android:layout_width="10dp"
                     android:layout_height="1dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -167,10 +236,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="@string/etiqueta_aportacio">
+                    android:hint="@string/etiqueta_preu"
+                    app:suffixText="@string/etiqueta_preu_sufix">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/campAportacio"
+                        android:id="@+id/campPreu"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="numberDecimal" />
@@ -181,7 +251,7 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="14dp"
                 android:hint="@string/etiqueta_observacions">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -193,11 +263,20 @@
                     android:minLines="3" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/txtAvisCotxe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/color_text_secundari"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoPublicar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/boto_publicar_viatge"
                 android:textColor="@color/color_text_clar" />

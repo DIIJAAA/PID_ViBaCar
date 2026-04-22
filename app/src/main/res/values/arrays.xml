@@ -7,13 +7,15 @@
         <item>Campclar</item>
         <item>Bonavista</item>
         <item>La Canonja</item>
+        <item>Vila-seca</item>
+        <item>Cambrils</item>
         <item>Reus</item>
         <item>Valls</item>
         <item>Salou</item>
     </string-array>
 
     <string-array name="idiomes_llista">
-        <item>Català</item>
+        <item>Catala</item>
         <item>Castellano</item>
         <item>English</item>
     </string-array>

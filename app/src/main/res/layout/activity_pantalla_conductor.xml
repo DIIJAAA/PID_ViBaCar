@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_fons_suau">
+
+    <LinearLayout
+        android:id="@+id/capcaleraVerda"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/color_conductor_fons"
+        android:orientation="vertical"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="18dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tabPassatger"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:text="@string/tab_passatger"
+                android:textColor="@color/color_text_clar"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tabConductor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fons_xip"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="8dp"
+                android:text="@string/tab_conductor"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtNomConductor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/color_text_clar"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtValoracioConductor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/fons_xip"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:textColor="@color/color_text_principal"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/botoPerfil"
+                android:layout_width="64dp"
+                android:layout_height="64dp">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imatgePerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/FormaAvatarCercle" />
+
+                <TextView
+                    android:id="@+id/txtInicialAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/fons_avatar"
+                    android:gravity="center"
+                    android:text="V"
+                    android:textColor="@color/color_text_clar"
+                    android:textStyle="bold" />
+            </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/resums"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="18dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/capcaleraVerda">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardBackgroundColor="@color/color_targeta"
+            app:cardCornerRadius="20dp">
+
+            <TextView
+                android:id="@+id/txtResumPublicats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/conductor_resum_publicats_buit"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardBackgroundColor="@color/color_targeta"
+            app:cardCornerRadius="20dp">
+
+            <TextView
+                android:id="@+id/txtResumReservats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/conductor_resum_reservats_buit"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="1dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardBackgroundColor="@color/color_targeta"
+            app:cardCornerRadius="20dp">
+
+            <TextView
+                android:id="@+id/txtResumSollicituds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="12dp"
+                android:text="@string/conductor_resum_sollicituds_buit"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botoCrearViatge"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="18dp"
+        android:background="@drawable/fons_boto_principal"
+        android:text="@string/boto_crear_viatge"
+        android:textColor="@color/color_text_clar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/resums" />
+
+    <TextView
+        android:id="@+id/txtTitolLlistaConductor"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="18dp"
+        android:text="@string/conductor_llista_titol"
+        android:textColor="@color/color_text_principal"
+        android:textSize="21sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/botoCrearViatge" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/llistaViatges"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="18dp"
+        android:clipToPadding="false"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtTitolLlistaConductor" />
+
+    <TextView
+        android:id="@+id/txtBuit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="28dp"
+        android:gravity="center"
+        android:text="@string/conductor_buit"
+        android:textColor="@color/color_text_secundari"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/llistaViatges"
+        app:layout_constraintEnd_toEndOf="@id/llistaViatges"
+        app:layout_constraintStart_toStartOf="@id/llistaViatges"
+        app:layout_constraintTop_toTopOf="@id/llistaViatges" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

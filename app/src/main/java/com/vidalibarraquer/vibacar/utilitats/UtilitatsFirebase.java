@@ -18,6 +18,10 @@ public final class UtilitatsFirebase {
     public static final String COL_RESERVES = "reserves";
     public static final String COL_XATS = "xats";
     public static final String COL_MISSATGES = "missatges";
+    public static final String ESTAT_RESERVA_PENDENT = "pendent";
+    public static final String ESTAT_RESERVA_ACCEPTADA = "acceptada";
+    public static final String ESTAT_RESERVA_REBUTJADA = "rebutjada";
+    public static final String ESTAT_RESERVA_CANCELADA = "cancelada";
     public static final String ROL_CONDUCTOR = "conductor";
     public static final String ROL_PASSATGER = "passatger";
     public static final String DOMINI_CENTRE = "vidalibarraquer.net";

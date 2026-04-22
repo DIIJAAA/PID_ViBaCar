@@ -1,22 +1,21 @@
 package com.vidalibarraquer.vibacar.models;
 
-public class Reserva {
+public class Xat {
 
     private String id;
     private String viatgeId;
     private String conductorId;
     private String passatgerId;
-    private String passatgerNom;
-    private String conductorNom;
+    private String nomConductor;
+    private String nomPassatger;
     private String origen;
     private String desti;
     private long sortidaMillis;
-    private String estat;
-    private boolean valorada;
-    private float puntuacio;
-    private transient boolean socConductor;
+    private String darrerMissatge;
+    private String darrerEmissorId;
+    private long darreraActualitzacio;
 
-    public Reserva() {
+    public Xat() {
     }
 
     public String getId() {
@@ -51,20 +50,20 @@ public class Reserva {
         this.passatgerId = passatgerId;
     }
 
-    public String getConductorNom() {
-        return conductorNom;
+    public String getNomConductor() {
+        return nomConductor;
     }
 
-    public void setConductorNom(String conductorNom) {
-        this.conductorNom = conductorNom;
+    public void setNomConductor(String nomConductor) {
+        this.nomConductor = nomConductor;
     }
 
-    public String getPassatgerNom() {
-        return passatgerNom;
+    public String getNomPassatger() {
+        return nomPassatger;
     }
 
-    public void setPassatgerNom(String passatgerNom) {
-        this.passatgerNom = passatgerNom;
+    public void setNomPassatger(String nomPassatger) {
+        this.nomPassatger = nomPassatger;
     }
 
     public String getOrigen() {
@@ -91,35 +90,27 @@ public class Reserva {
         this.sortidaMillis = sortidaMillis;
     }
 
-    public String getEstat() {
-        return estat;
+    public String getDarrerMissatge() {
+        return darrerMissatge;
     }
 
-    public void setEstat(String estat) {
-        this.estat = estat;
+    public void setDarrerMissatge(String darrerMissatge) {
+        this.darrerMissatge = darrerMissatge;
     }
 
-    public boolean isValorada() {
-        return valorada;
+    public String getDarrerEmissorId() {
+        return darrerEmissorId;
     }
 
-    public void setValorada(boolean valorada) {
-        this.valorada = valorada;
+    public void setDarrerEmissorId(String darrerEmissorId) {
+        this.darrerEmissorId = darrerEmissorId;
     }
 
-    public float getPuntuacio() {
-        return puntuacio;
+    public long getDarreraActualitzacio() {
+        return darreraActualitzacio;
     }
 
-    public void setPuntuacio(float puntuacio) {
-        this.puntuacio = puntuacio;
-    }
-
-    public boolean isSocConductor() {
-        return socConductor;
-    }
-
-    public void setSocConductor(boolean socConductor) {
-        this.socConductor = socConductor;
+    public void setDarreraActualitzacio(long darreraActualitzacio) {
+        this.darreraActualitzacio = darreraActualitzacio;
     }
 }
