@@ -37,21 +37,20 @@ import java.util.Map;
 
 public class CrearViatgeActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private static final int MINUTS_TRAJECTE = 25;
-
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private MaterialButtonToggleGroup grupSentit;
     private MaterialAutoCompleteTextView campZona;
     private TextView txtRutaResum;
-    private TextView txtArribadaResum;
     private TextView txtMissatge;
     private TextView txtMapaAlternatiu;
-    private TextView txtAvisCotxe;
     private TextInputEditText campData;
     private TextInputEditText campHoraSortida;
+    private TextInputEditText campHoraArribada;
     private TextInputEditText campPlaces;
     private TextInputEditText campPreu;
+    private TextInputEditText campModelCotxe;
+    private TextInputEditText campColorCotxe;
     private TextInputEditText campObservacions;
     private MaterialButton botoPublicar;
 
@@ -74,14 +73,15 @@ public class CrearViatgeActivity extends AppCompatActivity implements OnMapReady
         grupSentit = findViewById(R.id.grupSentit);
         campZona = findViewById(R.id.campZona);
         txtRutaResum = findViewById(R.id.txtRutaResum);
-        txtArribadaResum = findViewById(R.id.txtArribadaResum);
         txtMissatge = findViewById(R.id.txtMissatge);
         txtMapaAlternatiu = findViewById(R.id.txtMapaAlternatiu);
-        txtAvisCotxe = findViewById(R.id.txtAvisCotxe);
         campData = findViewById(R.id.campData);
         campHoraSortida = findViewById(R.id.campHoraSortida);
+        campHoraArribada = findViewById(R.id.campHoraArribada);
         campPlaces = findViewById(R.id.campPlaces);
         campPreu = findViewById(R.id.campPreu);
+        campModelCotxe = findViewById(R.id.campModelCotxe);
+        campColorCotxe = findViewById(R.id.campColorCotxe);
         campObservacions = findViewById(R.id.campObservacions);
         botoPublicar = findViewById(R.id.botoPublicar);
 
@@ -103,10 +103,10 @@ public class CrearViatgeActivity extends AppCompatActivity implements OnMapReady
         });
         botoPublicar.setOnClickListener(v -> publicaViatge());
         campData.setOnClickListener(v -> obreSelectorData());
-        campHoraSortida.setOnClickListener(v -> obreSelectorHora());
+        campHoraSortida.setOnClickListener(v -> obreSelectorHoraSortida());
+        campHoraArribada.setOnClickListener(v -> obreSelectorHoraArribada());
 
         actualitzaResumRuta();
-        actualitzaResumArribada();
     }
 
     @Override
@@ -154,21 +154,10 @@ public class CrearViatgeActivity extends AppCompatActivity implements OnMapReady
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     usuariPerfil = documentSnapshot.toObject(Usuari.class);
-                    validaCotxeAlPerfil();
+                    if (usuariPerfil != null && !TextUtils.isEmpty(usuariPerfil.getModelCotxe())) {
+                        campModelCotxe.setText(usuariPerfil.getModelCotxe());
+                    }
                 });
-    }
-
-    private void validaCotxeAlPerfil() {
-        if (usuariPerfil == null || TextUtils.isEmpty(usuariPerfil.getModelCotxe())) {
-            botoPublicar.setEnabled(false);
-            txtAvisCotxe.setVisibility(View.VISIBLE);
-            txtAvisCotxe.setText(R.string.error_falta_model_cotxe);
-            txtAvisCotxe.setOnClickListener(v -> startActivity(new Intent(this, ConfiguraPerfilActivity.class)));
-        } else {
-            botoPublicar.setEnabled(true);
-            txtAvisCotxe.setVisibility(View.GONE);
-            txtAvisCotxe.setOnClickListener(null);
-        }
     }
 
     private void actualitzaResumRuta() {
@@ -218,69 +207,83 @@ public class CrearViatgeActivity extends AppCompatActivity implements OnMapReady
             calendariBase.set(Calendar.MONTH, month);
             calendariBase.set(Calendar.DAY_OF_MONTH, dayOfMonth);
             campData.setText(UtilitatsData.formatData(calendariBase.getTimeInMillis()));
-            recalculaSortidaIArribada();
+            recalculaMillisAmbNovaDada();
         }, calendariBase.get(Calendar.YEAR), calendariBase.get(Calendar.MONTH), calendariBase.get(Calendar.DAY_OF_MONTH));
         dialog.show();
     }
 
-    private void obreSelectorHora() {
+    private void obreSelectorHoraSortida() {
+        int initH = 8, initM = 0;
+        if (sortidaMillis != null) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(sortidaMillis);
+            initH = c.get(Calendar.HOUR_OF_DAY);
+            initM = c.get(Calendar.MINUTE);
+        }
         TimePickerDialog dialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-            calendariBase.set(Calendar.HOUR_OF_DAY, hourOfDay);
-            calendariBase.set(Calendar.MINUTE, minute);
-            calendariBase.set(Calendar.SECOND, 0);
-            calendariBase.set(Calendar.MILLISECOND, 0);
-            sortidaMillis = calendariBase.getTimeInMillis();
+            Calendar c = (Calendar) calendariBase.clone();
+            c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            c.set(Calendar.MINUTE, minute);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            sortidaMillis = c.getTimeInMillis();
             campHoraSortida.setText(UtilitatsData.formatHora(sortidaMillis));
-            recalculaArribada();
-            actualitzaResumArribada();
-        }, 8, 0, true);
+        }, initH, initM, true);
         dialog.show();
     }
 
-    private void recalculaSortidaIArribada() {
-        if (sortidaMillis == null) {
-            return;
+    private void obreSelectorHoraArribada() {
+        int initH = 8, initM = 25;
+        if (arribadaMillis != null) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(arribadaMillis);
+            initH = c.get(Calendar.HOUR_OF_DAY);
+            initM = c.get(Calendar.MINUTE);
+        } else if (sortidaMillis != null) {
+            Calendar c = Calendar.getInstance();
+            c.setTimeInMillis(sortidaMillis + 25 * 60_000L);
+            initH = c.get(Calendar.HOUR_OF_DAY);
+            initM = c.get(Calendar.MINUTE);
         }
-        Calendar copia = (Calendar) calendariBase.clone();
-        Calendar antic = Calendar.getInstance();
-        antic.setTimeInMillis(sortidaMillis);
-        copia.set(Calendar.HOUR_OF_DAY, antic.get(Calendar.HOUR_OF_DAY));
-        copia.set(Calendar.MINUTE, antic.get(Calendar.MINUTE));
-        copia.set(Calendar.SECOND, 0);
-        copia.set(Calendar.MILLISECOND, 0);
-        sortidaMillis = copia.getTimeInMillis();
-        recalculaArribada();
-        actualitzaResumArribada();
+        TimePickerDialog dialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            Calendar c = (Calendar) calendariBase.clone();
+            c.set(Calendar.HOUR_OF_DAY, hourOfDay);
+            c.set(Calendar.MINUTE, minute);
+            c.set(Calendar.SECOND, 0);
+            c.set(Calendar.MILLISECOND, 0);
+            arribadaMillis = c.getTimeInMillis();
+            campHoraArribada.setText(UtilitatsData.formatHora(arribadaMillis));
+        }, initH, initM, true);
+        dialog.show();
     }
 
-    private void recalculaArribada() {
-        if (sortidaMillis == null) {
-            arribadaMillis = null;
-            return;
+    private void recalculaMillisAmbNovaDada() {
+        if (sortidaMillis != null) {
+            Calendar antic = Calendar.getInstance();
+            antic.setTimeInMillis(sortidaMillis);
+            Calendar nou = (Calendar) calendariBase.clone();
+            nou.set(Calendar.HOUR_OF_DAY, antic.get(Calendar.HOUR_OF_DAY));
+            nou.set(Calendar.MINUTE, antic.get(Calendar.MINUTE));
+            nou.set(Calendar.SECOND, 0);
+            nou.set(Calendar.MILLISECOND, 0);
+            sortidaMillis = nou.getTimeInMillis();
         }
-        arribadaMillis = sortidaMillis + MINUTS_TRAJECTE * 60_000L;
-    }
-
-    private void actualitzaResumArribada() {
-        if (arribadaMillis == null) {
-            txtArribadaResum.setText(getString(R.string.crear_viatge_arribada_estimada_pendent, MINUTS_TRAJECTE));
-            return;
+        if (arribadaMillis != null) {
+            Calendar antic = Calendar.getInstance();
+            antic.setTimeInMillis(arribadaMillis);
+            Calendar nou = (Calendar) calendariBase.clone();
+            nou.set(Calendar.HOUR_OF_DAY, antic.get(Calendar.HOUR_OF_DAY));
+            nou.set(Calendar.MINUTE, antic.get(Calendar.MINUTE));
+            nou.set(Calendar.SECOND, 0);
+            nou.set(Calendar.MILLISECOND, 0);
+            arribadaMillis = nou.getTimeInMillis();
         }
-        txtArribadaResum.setText(getString(
-                R.string.crear_viatge_arribada_estimada_format,
-                UtilitatsData.formatHora(arribadaMillis),
-                MINUTS_TRAJECTE
-        ));
     }
 
     private void publicaViatge() {
         FirebaseUser usuari = auth.getCurrentUser();
         if (usuari == null) {
             txtMissatge.setText(R.string.error_no_usuari);
-            return;
-        }
-        if (usuariPerfil == null || TextUtils.isEmpty(usuariPerfil.getModelCotxe())) {
-            txtMissatge.setText(R.string.error_falta_model_cotxe);
             return;
         }
 
@@ -309,17 +312,30 @@ public class CrearViatgeActivity extends AppCompatActivity implements OnMapReady
             return;
         }
 
+        String modelCotxe = obteText(campModelCotxe);
+        if (TextUtils.isEmpty(modelCotxe)) {
+            txtMissatge.setText(R.string.error_model_cotxe_buit);
+            return;
+        }
+
+        String nomConductor = (usuariPerfil != null && usuariPerfil.getNom() != null)
+                ? usuariPerfil.getNom() : getString(R.string.nom_marca);
+        String fotoConductor = usuariPerfil != null ? usuariPerfil.getFotoUri() : null;
+        double valoracio = usuariPerfil != null ? usuariPerfil.getValoracioMitjana() : 0d;
+        long totalValoracios = usuariPerfil != null ? usuariPerfil.getTotalValoracions() : 0L;
+
         String origen = obteOrigen(zona);
         String desti = obteDesti(zona);
         String zonaSortida = tornadaCasa ? getString(R.string.desti_per_defecte) : zona;
 
         Map<String, Object> viatge = new HashMap<>();
         viatge.put("conductorId", usuari.getUid());
-        viatge.put("conductorNom", usuariPerfil.getNom() != null ? usuariPerfil.getNom() : getString(R.string.nom_marca));
-        viatge.put("conductorFotoUri", usuariPerfil.getFotoUri());
-        viatge.put("modelCotxeConductor", usuariPerfil.getModelCotxe());
-        viatge.put("conductorValoracio", usuariPerfil.getValoracioMitjana());
-        viatge.put("conductorValoracions", usuariPerfil.getTotalValoracions());
+        viatge.put("conductorNom", nomConductor);
+        viatge.put("conductorFotoUri", fotoConductor);
+        viatge.put("modelCotxeConductor", modelCotxe);
+        viatge.put("colorCotxeConductor", obteText(campColorCotxe));
+        viatge.put("conductorValoracio", valoracio);
+        viatge.put("conductorValoracions", totalValoracios);
         viatge.put("origen", origen);
         viatge.put("desti", desti);
         viatge.put("zonaSortida", zonaSortida);

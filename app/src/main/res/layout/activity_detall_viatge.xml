@@ -31,10 +31,14 @@
             android:padding="20dp">
 
             <LinearLayout
+                android:id="@+id/seccioConductor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackground">
 
                 <FrameLayout
                     android:layout_width="60dp"
@@ -190,6 +194,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/boto_obrir_xat" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/botoEliminarViatge"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/boto_eliminar_viatge"
+                android:textColor="@color/color_error"
+                android:visibility="gone"
+                app:strokeColor="@color/color_error" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

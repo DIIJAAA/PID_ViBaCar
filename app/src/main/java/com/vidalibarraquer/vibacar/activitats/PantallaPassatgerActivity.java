@@ -144,6 +144,9 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
     }
 
     private void carregaViatges() {
+        FirebaseUser usuariActual = auth.getCurrentUser();
+        String uidActual = usuariActual == null ? "" : usuariActual.getUid();
+
         db.collection(UtilitatsFirebase.COL_VIATGES)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -151,6 +154,9 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Viatge viatge = document.toObject(Viatge.class);
                         viatge.setId(document.getId());
+                        if (uidActual.equals(viatge.getConductorId())) {
+                            continue;
+                        }
                         if (!"disponible".equalsIgnoreCase(viatge.getEstat())) {
                             continue;
                         }

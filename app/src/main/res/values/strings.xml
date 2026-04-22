@@ -215,4 +215,9 @@
     <string name="missatge_primer_reserva">Primer has de reservar la placa per obrir el xat</string>
     <string name="missatge_xat_despres_acceptar">El xat sobrira quan el conductor accepti la reserva</string>
     <string name="missatge_nomes_conductors">Per publicar un viatge has de tenir rol de conductor</string>
+
+    <string name="etiqueta_color_cotxe">Color del cotxe (opcional)</string>
+    <string name="boto_eliminar_viatge">Eliminar trajecte</string>
+    <string name="confirma_eliminar_viatge">Segur que vols eliminar aquest trajecte? Totes les reserves associades quedaran cancelades.</string>
+    <string name="missatge_viatge_eliminat">Trajecte eliminat correctament</string>
 </resources>

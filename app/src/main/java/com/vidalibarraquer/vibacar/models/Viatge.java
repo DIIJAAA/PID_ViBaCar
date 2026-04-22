@@ -7,6 +7,7 @@ public class Viatge {
     private String conductorNom;
     private String conductorFotoUri;
     private String modelCotxeConductor;
+    private String colorCotxeConductor;
     private double conductorValoracio;
     private long conductorValoracions;
     private String origen;
@@ -61,6 +62,14 @@ public class Viatge {
 
     public void setModelCotxeConductor(String modelCotxeConductor) {
         this.modelCotxeConductor = modelCotxeConductor;
+    }
+
+    public String getColorCotxeConductor() {
+        return colorCotxeConductor;
+    }
+
+    public void setColorCotxeConductor(String colorCotxeConductor) {
+        this.colorCotxeConductor = colorCotxeConductor;
     }
 
     public double getConductorValoracio() {

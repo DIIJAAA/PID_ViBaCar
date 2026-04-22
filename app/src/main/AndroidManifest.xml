@@ -44,6 +44,9 @@
             android:name=".activitats.DetallViatgeActivity"
             android:exported="false" />
         <activity
+            android:name=".activitats.VeurePerfilActivity"
+            android:exported="false" />
+        <activity
             android:name=".activitats.CrearViatgeActivity"
             android:exported="false" />
         <activity

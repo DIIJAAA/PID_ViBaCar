@@ -27,7 +27,7 @@
             <TextView
                 android:id="@+id/tabPassatger"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:paddingHorizontal="14dp"
                 android:paddingVertical="8dp"
                 android:text="@string/tab_passatger"

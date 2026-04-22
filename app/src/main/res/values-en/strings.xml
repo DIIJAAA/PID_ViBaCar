@@ -215,4 +215,9 @@
     <string name="missatge_primer_reserva">You must book the seat before opening the chat</string>
     <string name="missatge_xat_despres_acceptar">Chat opens when the driver accepts your request</string>
     <string name="missatge_nomes_conductors">You need the driver role to publish a ride</string>
+
+    <string name="etiqueta_color_cotxe">Car color (optional)</string>
+    <string name="boto_eliminar_viatge">Delete ride</string>
+    <string name="confirma_eliminar_viatge">Are you sure you want to delete this ride? All associated bookings will be cancelled.</string>
+    <string name="missatge_viatge_eliminat">Ride deleted successfully</string>
 </resources>

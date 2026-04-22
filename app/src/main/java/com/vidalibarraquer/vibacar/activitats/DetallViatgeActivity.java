@@ -1,9 +1,11 @@
 package com.vidalibarraquer.vibacar.activitats;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +21,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
@@ -52,6 +53,8 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
     private ShapeableImageView imatgeConductor;
     private MaterialButton botoReservar;
     private MaterialButton botoObrirXat;
+    private MaterialButton botoEliminarViatge;
+    private LinearLayout seccioConductor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,6 +75,8 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         imatgeConductor = findViewById(R.id.imatgeConductor);
         botoReservar = findViewById(R.id.botoReservar);
         botoObrirXat = findViewById(R.id.botoObrirXat);
+        botoEliminarViatge = findViewById(R.id.botoEliminarViatge);
+        seccioConductor = findViewById(R.id.seccioConductor);
 
         SupportMapFragment fragmentMapa = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentMapa);
@@ -84,6 +89,7 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         botoReservar.setOnClickListener(v -> reservaViatge());
         botoObrirXat.setOnClickListener(v -> obreXatSiExisteix());
+        botoEliminarViatge.setOnClickListener(v -> confirmaEliminacio());
     }
 
     @Override
@@ -143,7 +149,11 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         txtInfoGeneral.append(getString(R.string.text_zona_sortida_format, valorPerMostrar(viatgeActual.getZonaSortida())));
         if (!TextUtils.isEmpty(viatgeActual.getModelCotxeConductor())) {
             txtInfoGeneral.append("\n");
-            txtInfoGeneral.append(getString(R.string.text_model_cotxe_format, viatgeActual.getModelCotxeConductor()));
+            String cotxe = viatgeActual.getModelCotxeConductor();
+            if (!TextUtils.isEmpty(viatgeActual.getColorCotxeConductor())) {
+                cotxe = cotxe + " · " + viatgeActual.getColorCotxeConductor();
+            }
+            txtInfoGeneral.append(getString(R.string.text_model_cotxe_format, cotxe));
         }
 
         String observacions = TextUtils.isEmpty(viatgeActual.getObservacions())
@@ -168,9 +178,18 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         if (esConductorDelViatge) {
             botoReservar.setVisibility(View.GONE);
             botoObrirXat.setVisibility(View.GONE);
+            botoEliminarViatge.setVisibility(View.VISIBLE);
+            seccioConductor.setClickable(false);
         } else {
             botoReservar.setVisibility(View.VISIBLE);
             botoObrirXat.setVisibility(View.VISIBLE);
+            botoEliminarViatge.setVisibility(View.GONE);
+            seccioConductor.setOnClickListener(v -> {
+                if (viatgeActual == null) return;
+                Intent intent = new Intent(this, VeurePerfilActivity.class);
+                intent.putExtra(VeurePerfilActivity.EXTRA_UID, viatgeActual.getConductorId());
+                startActivity(intent);
+            });
         }
     }
 
@@ -208,60 +227,55 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
             Toast.makeText(this, R.string.error_no_usuari, Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (usuari.getUid().equals(viatgeActual.getConductorId())) {
             Toast.makeText(this, R.string.missatge_no_et_pots_reservar, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (viatgeActual.getPlacesDisponibles() <= 0) {
+            Toast.makeText(this, R.string.missatge_places_esgotades, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        String idReserva = viatgeActual.getId() + "_" + usuari.getUid();
-        DocumentReference refViatge = db.collection(UtilitatsFirebase.COL_VIATGES).document(viatgeActual.getId());
+        botoReservar.setEnabled(false);
+        final String emailFallback = usuari.getEmail() != null ? usuari.getEmail() : getString(R.string.text_usuari);
+
+        db.collection(UtilitatsFirebase.COL_USUARIS).document(usuari.getUid()).get()
+                .addOnSuccessListener(usuariDoc -> {
+                    String nomPassatger = usuariDoc.contains("nom")
+                            ? String.valueOf(usuariDoc.get("nom"))
+                            : emailFallback;
+                    creaReserva(usuari.getUid(), nomPassatger);
+                })
+                .addOnFailureListener(e -> creaReserva(usuari.getUid(), emailFallback));
+    }
+
+    private void creaReserva(String passatgerId, String nomPassatger) {
+        if (viatgeActual == null) return;
+
+        String idReserva = viatgeActual.getId() + "_" + passatgerId;
         DocumentReference refReserva = db.collection(UtilitatsFirebase.COL_RESERVES).document(idReserva);
-        DocumentReference refUsuari = db.collection(UtilitatsFirebase.COL_USUARIS).document(usuari.getUid());
 
-        db.runTransaction(transaction -> {
-            com.google.firebase.firestore.DocumentSnapshot reservaDoc = transaction.get(refReserva);
-            if (reservaDoc.exists()) {
-                throw new IllegalStateException("JA_RESERVAT");
-            }
+        Map<String, Object> reserva = new HashMap<>();
+        reserva.put("viatgeId", viatgeActual.getId());
+        reserva.put("conductorId", viatgeActual.getConductorId());
+        reserva.put("passatgerId", passatgerId);
+        reserva.put("passatgerNom", nomPassatger);
+        reserva.put("conductorNom", viatgeActual.getConductorNom());
+        reserva.put("origen", viatgeActual.getOrigen());
+        reserva.put("desti", viatgeActual.getDesti());
+        reserva.put("sortidaMillis", viatgeActual.getSortidaMillis());
+        reserva.put("estat", UtilitatsFirebase.ESTAT_RESERVA_PENDENT);
+        reserva.put("valorada", false);
+        reserva.put("puntuacio", 0f);
 
-            com.google.firebase.firestore.DocumentSnapshot viatgeDoc = transaction.get(refViatge);
-            Viatge viatge = viatgeDoc.toObject(Viatge.class);
-            if (viatge == null || viatge.getPlacesDisponibles() <= 0) {
-                throw new IllegalStateException("SENSE_PLACES");
-            }
-
-            com.google.firebase.firestore.DocumentSnapshot usuariDoc = transaction.get(refUsuari);
-            String nomPassatger = usuariDoc.contains("nom")
-                    ? String.valueOf(usuariDoc.get("nom"))
-                    : (usuari.getEmail() == null ? getString(R.string.text_usuari) : usuari.getEmail());
-
-            Map<String, Object> reserva = new HashMap<>();
-            reserva.put("viatgeId", viatgeActual.getId());
-            reserva.put("conductorId", viatgeActual.getConductorId());
-            reserva.put("passatgerId", usuari.getUid());
-            reserva.put("passatgerNom", nomPassatger);
-            reserva.put("conductorNom", viatgeActual.getConductorNom());
-            reserva.put("origen", viatgeActual.getOrigen());
-            reserva.put("desti", viatgeActual.getDesti());
-            reserva.put("sortidaMillis", viatgeActual.getSortidaMillis());
-            reserva.put("estat", UtilitatsFirebase.ESTAT_RESERVA_PENDENT);
-            reserva.put("valorada", false);
-            reserva.put("puntuacio", 0f);
-
-            transaction.set(refReserva, reserva);
-            return true;
-        }).addOnSuccessListener(unused ->
-                        Toast.makeText(this, R.string.missatge_solicitud_enviada, Toast.LENGTH_SHORT).show())
+        refReserva.set(reserva)
+                .addOnSuccessListener(unused -> {
+                    botoReservar.setEnabled(true);
+                    Toast.makeText(this, R.string.missatge_solicitud_enviada, Toast.LENGTH_SHORT).show();
+                })
                 .addOnFailureListener(e -> {
-                    String marca = e.getMessage() == null ? "" : e.getMessage();
-                    if (marca.contains("JA_RESERVAT")) {
-                        Toast.makeText(this, R.string.missatge_ja_reservat, Toast.LENGTH_SHORT).show();
-                    } else if (marca.contains("SENSE_PLACES")) {
-                        Toast.makeText(this, R.string.missatge_places_esgotades, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show();
-                    }
+                    botoReservar.setEnabled(true);
+                    Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -311,6 +325,31 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
 
                     String idXat = UtilitatsFirebase.creaIdXat(viatgeActual.getId(), usuari.getUid());
                     creaXatIObre(idXat, viatgeActual.getConductorNom(), viatgeActual.getConductorId(), usuari.getUid());
+                });
+    }
+
+    private void confirmaEliminacio() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.confirma_eliminar_viatge)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> eliminaViatge())
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void eliminaViatge() {
+        if (viatgeActual == null) return;
+        botoEliminarViatge.setEnabled(false);
+
+        db.collection(UtilitatsFirebase.COL_VIATGES)
+                .document(viatgeActual.getId())
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, R.string.missatge_viatge_eliminat, Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    botoEliminarViatge.setEnabled(true);
+                    Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show();
                 });
     }
 

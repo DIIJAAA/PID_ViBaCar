@@ -215,4 +215,9 @@
     <string name="missatge_primer_reserva">Primero debes reservar la plaza para abrir el chat</string>
     <string name="missatge_xat_despres_acceptar">El chat se abrira cuando el conductor acepte la reserva</string>
     <string name="missatge_nomes_conductors">Para publicar un viaje debes tener rol de conductor</string>
+
+    <string name="etiqueta_color_cotxe">Color del coche (opcional)</string>
+    <string name="boto_eliminar_viatge">Eliminar viaje</string>
+    <string name="confirma_eliminar_viatge">¿Seguro que quieres eliminar este viaje? Todas las reservas asociadas quedarán canceladas.</string>
+    <string name="missatge_viatge_eliminat">Viaje eliminado correctamente</string>
 </resources>
