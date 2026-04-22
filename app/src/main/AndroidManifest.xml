@@ -56,6 +56,9 @@
             android:name=".activitats.VerificaCorreuActivity"
             android:exported="false" />
         <activity
+            android:name=".activitats.EditaPerfilActivity"
+            android:exported="false" />
+        <activity
             android:name=".activitats.ConfiguraPerfilActivity"
             android:exported="false" />
         <activity
