@@ -67,7 +67,7 @@ public class EditaPerfilActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_configura_perfil);
+        setContentView(R.layout.activity_edita_perfil);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();

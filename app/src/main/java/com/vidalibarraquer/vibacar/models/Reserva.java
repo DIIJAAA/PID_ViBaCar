@@ -6,6 +6,7 @@ public class Reserva {
     private String viatgeId;
     private String conductorId;
     private String passatgerId;
+    private String passatgerNom;
     private String conductorNom;
     private String origen;
     private String desti;
@@ -13,6 +14,7 @@ public class Reserva {
     private String estat;
     private boolean valorada;
     private float puntuacio;
+    private transient boolean socConductor;
 
     public Reserva() {
     }
@@ -55,6 +57,14 @@ public class Reserva {
 
     public void setConductorNom(String conductorNom) {
         this.conductorNom = conductorNom;
+    }
+
+    public String getPassatgerNom() {
+        return passatgerNom;
+    }
+
+    public void setPassatgerNom(String passatgerNom) {
+        this.passatgerNom = passatgerNom;
     }
 
     public String getOrigen() {
@@ -103,5 +113,13 @@ public class Reserva {
 
     public void setPuntuacio(float puntuacio) {
         this.puntuacio = puntuacio;
+    }
+
+    public boolean isSocConductor() {
+        return socConductor;
+    }
+
+    public void setSocConductor(boolean socConductor) {
+        this.socConductor = socConductor;
     }
 }

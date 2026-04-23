@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Missatge;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,14 @@ public class AdaptadorMissatges extends RecyclerView.Adapter<AdaptadorMissatges.
 
     @Override
     public void onBindViewHolder(@NonNull MissatgeViewHolder holder, int position) {
-        holder.txtMissatge.setText(missatges.get(position).getText());
+        Missatge missatge = missatges.get(position);
+        holder.txtMissatge.setText(missatge.getText());
+        if (missatge.getDataMillis() > 0) {
+            holder.txtHora.setText(UtilitatsData.formatHora(missatge.getDataMillis()));
+            holder.txtHora.setVisibility(View.VISIBLE);
+        } else {
+            holder.txtHora.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -57,10 +65,12 @@ public class AdaptadorMissatges extends RecyclerView.Adapter<AdaptadorMissatges.
 
     static class MissatgeViewHolder extends RecyclerView.ViewHolder {
         final TextView txtMissatge;
+        final TextView txtHora;
 
         MissatgeViewHolder(@NonNull View itemView) {
             super(itemView);
             txtMissatge = itemView.findViewById(R.id.txtMissatge);
+            txtHora = itemView.findViewById(R.id.txtHora);
         }
     }
 }
