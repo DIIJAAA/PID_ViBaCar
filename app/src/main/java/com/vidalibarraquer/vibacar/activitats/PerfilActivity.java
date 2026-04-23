@@ -274,15 +274,13 @@ public class PerfilActivity extends AppCompatActivity {
 
         View vista = LayoutInflater.from(this).inflate(R.layout.dialog_puntuacio, null, false);
         RatingBar barraPuntuacio = vista.findViewById(R.id.barraPuntuacio);
-        com.google.android.material.textfield.TextInputEditText campComentari = vista.findViewById(R.id.campComentari);
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.boto_puntuar)
                 .setView(vista)
-                .setPositiveButton(R.string.boto_puntuar, (dialog, which) -> {
-                    String comentari = campComentari.getText() != null ? campComentari.getText().toString() : "";
-                    desaPuntuacio(reserva, barraPuntuacio.getRating(), comentari);
-                })
+                .setPositiveButton(R.string.boto_puntuar, (dialog, which) ->
+                    desaPuntuacio(reserva, barraPuntuacio.getRating(), "")
+                )
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
