@@ -165,13 +165,15 @@ public class PerfilActivity extends AppCompatActivity {
     private void obreDialegInfo(Usuari perfil) {
         View vista = LayoutInflater.from(this).inflate(R.layout.dialog_perfil_detall, null);
         TextView txtNomDetall = vista.findViewById(R.id.txtNomDetall);
-        TextView txtEdatDetall = vista.findViewById(R.id.txtEdatDetall);
+        TextView txtDataNaixementDetall = vista.findViewById(R.id.txtDataNaixementDetall);
+        TextView txtSexeDetall = vista.findViewById(R.id.txtSexeDetall);
         TextView txtBioDetall = vista.findViewById(R.id.txtBioDetall);
         TextView txtCorreuDetall = vista.findViewById(R.id.txtCorreuDetall);
         TextView txtTelDetall = vista.findViewById(R.id.txtTelDetall);
 
         txtNomDetall.setText(perfil.getNom());
-        txtEdatDetall.setText(perfil.getEdat() > 0 ? perfil.getEdat() + " anys" : "No definida");
+        txtDataNaixementDetall.setText(perfil.getDataNaixement() != null && !perfil.getDataNaixement().isEmpty() ? perfil.getDataNaixement() : "-");
+        txtSexeDetall.setText(perfil.getSexe() != null && !perfil.getSexe().isEmpty() ? perfil.getSexe() : "-");
         txtBioDetall.setText(perfil.getBio() != null && !perfil.getBio().isEmpty() ? perfil.getBio() : "Sense biografia.");
         txtCorreuDetall.setText(perfil.getCorreu());
         txtTelDetall.setText(perfil.getTelefon() != null && !perfil.getTelefon().isEmpty() ? perfil.getTelefon() : "-");
