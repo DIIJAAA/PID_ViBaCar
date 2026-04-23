@@ -167,4 +167,25 @@ public class Usuari {
     public void setIdioma(String idioma) {
         this.idioma = idioma;
     }
+
+    public int getEdat() {
+        if (dataNaixement == null || dataNaixement.isEmpty()) return 0;
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+            java.util.Date data = sdf.parse(dataNaixement);
+            if (data == null) return 0;
+            java.util.Calendar naixement = java.util.Calendar.getInstance();
+            naixement.setTime(data);
+            java.util.Calendar avui = java.util.Calendar.getInstance();
+            int edat = avui.get(java.util.Calendar.YEAR) - naixement.get(java.util.Calendar.YEAR);
+            if (avui.get(java.util.Calendar.MONTH) < naixement.get(java.util.Calendar.MONTH) ||
+                (avui.get(java.util.Calendar.MONTH) == naixement.get(java.util.Calendar.MONTH) &&
+                 avui.get(java.util.Calendar.DAY_OF_MONTH) < naixement.get(java.util.Calendar.DAY_OF_MONTH))) {
+                edat--;
+            }
+            return edat;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }

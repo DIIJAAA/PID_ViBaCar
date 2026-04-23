@@ -67,7 +67,7 @@ public class EditaPerfilActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edita_perfil);
+        setContentView(R.layout.activity_configura_perfil);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -93,7 +93,7 @@ public class EditaPerfilActivity extends AppCompatActivity {
         carregaPerfilSiExisteix();
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
-        ((MaterialButton) findViewById(R.id.botoTriaFoto)).setOnClickListener(v -> selectorFoto.launch("image/*"));
+        findViewById(R.id.botoTriaFoto).setOnClickListener(v -> selectorFoto.launch("image/*"));
         ((MaterialButton) findViewById(R.id.botoDesarPerfil)).setOnClickListener(v -> desaPerfil());
     }
 
@@ -124,13 +124,9 @@ public class EditaPerfilActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     Usuari perfil = documentSnapshot.toObject(Usuari.class);
-                    if (perfil == null) {
-                        return;
-                    }
+                    if (perfil == null) return;
 
-                    if (!TextUtils.isEmpty(perfil.getNom())) {
-                        campNom.setText(perfil.getNom());
-                    }
+                    if (!TextUtils.isEmpty(perfil.getNom())) campNom.setText(perfil.getNom());
                     campTelefon.setText(perfil.getTelefon());
                     campZona.setText(perfil.getZona(), false);
                     campHoraHabitual.setText(perfil.getHoraSortidaHabitual(), false);
@@ -231,7 +227,10 @@ public class EditaPerfilActivity extends AppCompatActivity {
                             finish();
                         });
                     } else if (usuari.isEmailVerified()) {
-                        startActivity(new Intent(this, PantallaPrincipalActivity.class));
+                        Class<?> desti = UtilitatsFirebase.esRolConductor(rol)
+                                ? PantallaConductorActivity.class
+                                : PantallaPassatgerActivity.class;
+                        startActivity(new Intent(this, desti));
                         finish();
                     } else {
                         startActivity(new Intent(this, VerificaCorreuActivity.class));
@@ -243,12 +242,8 @@ public class EditaPerfilActivity extends AppCompatActivity {
 
     private String obteRolSeleccionat() {
         int id = grupRol.getCheckedRadioButtonId();
-        if (id == R.id.radioConductor) {
-            return UtilitatsFirebase.ROL_CONDUCTOR;
-        }
-        if (id == R.id.radioPassatger) {
-            return UtilitatsFirebase.ROL_PASSATGER;
-        }
+        if (id == R.id.radioConductor) return UtilitatsFirebase.ROL_CONDUCTOR;
+        if (id == R.id.radioPassatger) return UtilitatsFirebase.ROL_PASSATGER;
         return "";
     }
 

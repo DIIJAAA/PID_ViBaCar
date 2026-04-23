@@ -74,7 +74,6 @@ public class IniciSessioActivity extends AppCompatActivity {
                         mostraError(getString(R.string.error_no_usuari));
                         return;
                     }
-
                     usuari.reload().addOnSuccessListener(unused -> obreSeguentPantalla(usuari));
                 })
                 .addOnFailureListener(e -> mostraError(e.getLocalizedMessage() != null ? e.getLocalizedMessage() : getString(R.string.error_generica)));
@@ -87,11 +86,9 @@ public class IniciSessioActivity extends AppCompatActivity {
             return;
         }
 
-        DocumentReference refPerfil = db.collection(UtilitatsFirebase.COL_USUARIS)
-                .document(usuari.getUid());
+        DocumentReference refPerfil = db.collection(UtilitatsFirebase.COL_USUARIS).document(usuari.getUid());
 
-        refPerfil
-                .get()
+        refPerfil.get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         creaPerfilBase(refPerfil, usuari);
@@ -99,9 +96,15 @@ public class IniciSessioActivity extends AppCompatActivity {
                     }
 
                     Boolean perfilCompletat = documentSnapshot.getBoolean("perfilCompletat");
-                    Class<?> desti = Boolean.TRUE.equals(perfilCompletat)
-                            ? PantallaPrincipalActivity.class
-                            : ConfiguraPerfilActivity.class;
+                    if (!Boolean.TRUE.equals(perfilCompletat)) {
+                        obrePantalla(ConfiguraPerfilActivity.class);
+                        return;
+                    }
+
+                    String rol = documentSnapshot.getString("rol");
+                    Class<?> desti = UtilitatsFirebase.esRolConductor(rol)
+                            ? PantallaConductorActivity.class
+                            : PantallaPassatgerActivity.class;
                     obrePantalla(desti);
                 })
                 .addOnFailureListener(e -> mostraError(missatgeErrorFirestore(e)));

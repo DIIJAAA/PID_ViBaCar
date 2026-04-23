@@ -1,189 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fons_pantalla"
-    android:fillViewport="true">
+    android:background="@drawable/fons_pantalla">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:id="@+id/capcalera"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/txtSalutacio"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:textColor="@color/color_text_principal"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/txtSalutacio"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/color_text_principal"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="@string/principal_hub_subtitol"
-                    android:textColor="@color/color_text_secundari" />
-            </LinearLayout>
-
-            <FrameLayout
-                android:id="@+id/botoPerfil"
-                android:layout_width="54dp"
-                android:layout_height="54dp">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/imatgePerfil"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone"
-                    app:shapeAppearanceOverlay="@style/FormaAvatarCercle" />
-
-                <TextView
-                    android:id="@+id/txtInicialAvatar"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/fons_avatar"
-                    android:gravity="center"
-                    android:text="V"
-                    android:textColor="@color/color_text_clar"
-                    android:textStyle="bold" />
-            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/principal_subtitol"
+                android:textColor="@color/color_text_secundari" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="@string/principal_hub_text_intro"
-            android:textColor="@color/color_text_principal"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+        <FrameLayout
+            android:id="@+id/botoPerfil"
+            android:layout_width="54dp"
+            android:layout_height="54dp">
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/targetaPassatger"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/color_targeta"
-            app:cardCornerRadius="28dp">
-
-            <LinearLayout
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imatgePerfil"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="22dp">
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/FormaAvatarCercle" />
 
-                <TextView
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
-                    android:background="@drawable/fons_avatar"
-                    android:gravity="center"
-                    android:text="P"
-                    android:textColor="@color/color_text_clar"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/principal_hub_passatger_titol"
-                    android:textColor="@color/color_text_principal"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/principal_hub_passatger_subtitol"
-                    android:textColor="@color/color_text_secundari" />
-
-                <TextView
-                    android:id="@+id/txtInfoPassatger"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/fons_xip"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="@string/principal_hub_passatger_info_buit"
-                    android:textColor="@color/color_text_principal"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/targetaConductor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:cardBackgroundColor="@color/color_targeta"
-            app:cardCornerRadius="28dp">
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/txtInicialAvatar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="22dp">
-
-                <TextView
-                    android:layout_width="52dp"
-                    android:layout_height="52dp"
-                    android:background="@drawable/fons_boto_secundari"
-                    android:gravity="center"
-                    android:text="C"
-                    android:textColor="@color/color_text_clar"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/principal_hub_conductor_titol"
-                    android:textColor="@color/color_text_principal"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="@string/principal_hub_conductor_subtitol"
-                    android:textColor="@color/color_text_secundari" />
-
-                <TextView
-                    android:id="@+id/txtInfoConductor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/fons_xip"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="@string/principal_hub_conductor_info_buit"
-                    android:textColor="@color/color_text_principal"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_height="match_parent"
+                android:background="@drawable/fons_avatar"
+                android:gravity="center"
+                android:text="V"
+                android:textColor="@color/color_text_clar"
+                android:textStyle="bold" />
+        </FrameLayout>
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/layoutCerca"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="20dp"
+        android:hint="@string/principal_cerca_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/capcalera"
+        app:startIconDrawable="@android:drawable/ic_menu_search">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/campCerca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/llistaViatges"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="20dp"
+        android:clipToPadding="false"
+        android:paddingBottom="100dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutCerca" />
+
+    <TextView
+        android:id="@+id/txtBuit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="28dp"
+        android:gravity="center"
+        android:text="@string/principal_buit"
+        android:textColor="@color/color_text_secundari"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/llistaViatges"
+        app:layout_constraintEnd_toEndOf="@id/llistaViatges"
+        app:layout_constraintStart_toStartOf="@id/llistaViatges"
+        app:layout_constraintTop_toTopOf="@id/llistaViatges" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/botoCrearViatge"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/fons_boto_principal"
+        android:text="@string/boto_crear_viatge"
+        android:textColor="@color/color_text_clar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
