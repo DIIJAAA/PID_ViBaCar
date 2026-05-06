@@ -1,5 +1,6 @@
 package com.vidalibarraquer.vibacar.models;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class Usuari {
 
     private String uid;

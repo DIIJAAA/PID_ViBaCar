@@ -3,10 +3,8 @@ package com.vidalibarraquer.vibacar.activitats;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -19,7 +17,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,6 +35,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class IniciSessioActivity extends AppCompatActivity {
 
     private static final String TAG = "IniciSessioActivity";
@@ -89,8 +87,8 @@ public class IniciSessioActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
-        ((MaterialButton) findViewById(R.id.botoIniciarSessio)).setOnClickListener(v -> iniciaSessio());
-        ((MaterialButton) findViewById(R.id.botoRecorda)).setOnClickListener(v -> {
+        findViewById(R.id.botoIniciarSessio).setOnClickListener(v -> iniciaSessio());
+        findViewById(R.id.botoRecorda).setOnClickListener(v -> {
             Intent intent = new Intent(this, RecuperaContrasenyaActivity.class);
             intent.putExtra(RecuperaContrasenyaActivity.EXTRA_CORREU_INICIAL, obteText(campCorreu));
             startActivity(intent);
