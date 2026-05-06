@@ -73,6 +73,7 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
         });
         findViewById(R.id.botoPerfil).setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
 
+        configuraBotomNav();
         configuraFiltreZones();
 
         campCerca.addTextChangedListener(new TextWatcher() {
@@ -196,6 +197,24 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
 
         adaptadorViatges.actualitzaDades(filtrats);
         txtBuit.setVisibility(filtrats.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+    }
+
+    private void configuraBotomNav() {
+        android.view.View navBuscar = findViewById(R.id.navBuscar);
+        android.view.View navNotificacions = findViewById(R.id.navNotificacions);
+        android.view.View navMissatges = findViewById(R.id.navMissatges);
+
+        if (navBuscar != null) {
+            navBuscar.setAlpha(1f);
+        }
+        if (navNotificacions != null) {
+            navNotificacions.setOnClickListener(v ->
+                    startActivity(new Intent(this, NotificacionsActivity.class)));
+        }
+        if (navMissatges != null) {
+            navMissatges.setOnClickListener(v ->
+                    startActivity(new Intent(this, BustiaXatsActivity.class)));
+        }
     }
 
     private String valorPerBuit(String text) {

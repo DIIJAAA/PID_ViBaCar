@@ -25,7 +25,7 @@
                 android:background="@drawable/fons_capsula"
                 android:contentDescription="@string/boto_enrere"
                 android:padding="10dp"
-                android:src="@android:drawable/ic_media_previous"
+                android:src="@drawable/ic_enrere"
                 app:tint="@color/color_principal" />
 
             <TextView

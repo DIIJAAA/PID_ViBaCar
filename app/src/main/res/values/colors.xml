@@ -19,4 +19,5 @@
     <color name="color_xat_meu">#CDEFF6</color>
     <color name="color_xat_altre">#FFFFFF</color>
     <color name="color_conductor_fons">#1E6A47</color>
+    <color name="color_text_fosc">#0D2030</color>
 </resources>

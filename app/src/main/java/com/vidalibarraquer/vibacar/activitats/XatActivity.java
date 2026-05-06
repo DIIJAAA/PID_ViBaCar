@@ -17,7 +17,9 @@ import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorMissatges;
 import com.vidalibarraquer.vibacar.models.Missatge;
+import com.vidalibarraquer.vibacar.models.Notificacio;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +37,9 @@ public class XatActivity extends AppCompatActivity {
     private AdaptadorMissatges adaptadorMissatges;
     private RecyclerView llistaMissatges;
     private com.google.android.material.textfield.TextInputEditText campMissatge;
+    private String conductorIdXat;
+    private String passatgerIdXat;
+    private String nomUsuariActual;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +67,30 @@ public class XatActivity extends AppCompatActivity {
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         findViewById(R.id.botoEnviar).setOnClickListener(v -> enviaMissatge());
+
+        carregaInfoXat();
+    }
+
+    private void carregaInfoXat() {
+        db.collection(UtilitatsFirebase.COL_XATS)
+                .document(idXat)
+                .get()
+                .addOnSuccessListener(xatDoc -> {
+                    if (xatDoc.exists()) {
+                        conductorIdXat = xatDoc.getString("conductorId");
+                        passatgerIdXat = xatDoc.getString("passatgerId");
+                    }
+                });
+
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null) return;
+        db.collection(UtilitatsFirebase.COL_USUARIS)
+                .document(usuari.getUid())
+                .get()
+                .addOnSuccessListener(usuariDoc -> {
+                    String nom = usuariDoc.getString("nom");
+                    nomUsuariActual = (nom != null && !nom.isEmpty()) ? nom : getString(R.string.text_usuari);
+                });
     }
 
     @Override
@@ -93,6 +122,23 @@ public class XatActivity extends AppCompatActivity {
                 });
     }
 
+    private void notificaAltreParticipant(String uidEmissor, String text) {
+        String altreUid = null;
+        if (conductorIdXat != null && passatgerIdXat != null) {
+            altreUid = uidEmissor.equals(conductorIdXat) ? passatgerIdXat : conductorIdXat;
+        }
+        if (altreUid == null || altreUid.isEmpty()) return;
+
+        String nom = nomUsuariActual != null ? nomUsuariActual : getString(R.string.text_usuari);
+        UtilitatsNotificacions.publica(
+                db,
+                altreUid,
+                Notificacio.TIPUS_NOU_MISSATGE,
+                getString(R.string.notif_nou_missatge, nom),
+                idXat
+        );
+    }
+
     private void enviaMissatge() {
         FirebaseUser usuari = auth.getCurrentUser();
         if (usuari == null) {
@@ -121,6 +167,7 @@ public class XatActivity extends AppCompatActivity {
                     actualitzacio.put("darrerEmissorId", usuari.getUid());
                     db.collection(UtilitatsFirebase.COL_XATS).document(idXat).set(actualitzacio, SetOptions.merge());
                     campMissatge.setText("");
+                    notificaAltreParticipant(usuari.getUid(), text);
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
     }

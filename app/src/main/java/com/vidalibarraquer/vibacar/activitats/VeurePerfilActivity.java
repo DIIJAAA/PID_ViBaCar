@@ -1,13 +1,21 @@
 package com.vidalibarraquer.vibacar.activitats;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Usuari;
@@ -18,18 +26,26 @@ public class VeurePerfilActivity extends AppCompatActivity {
 
     public static final String EXTRA_UID = "uid_usuari";
 
+    private FirebaseAuth auth;
     private FirebaseFirestore db;
     private TextView txtNom;
     private TextView txtValoracio;
     private TextView txtDades;
     private TextView txtInicialAvatar;
     private ShapeableImageView imatgePerfil;
+    private RatingBar barraReputacio;
+    private MaterialButton botoObrirXat;
+    private View seccioSobreMi;
+    private View seccioComentaris;
+    private MaterialButton botoSeccioSobreMi;
+    private MaterialButton botoSeccioComentaris;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_veure_perfil);
 
+        auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
         txtNom = findViewById(R.id.txtNom);
@@ -37,8 +53,21 @@ public class VeurePerfilActivity extends AppCompatActivity {
         txtDades = findViewById(R.id.txtDades);
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
         imatgePerfil = findViewById(R.id.imatgePerfil);
+        barraReputacio = findViewById(R.id.barraReputacio);
+        botoObrirXat = findViewById(R.id.botoObrirXat);
+        seccioSobreMi = findViewById(R.id.seccioSobreMi);
+        seccioComentaris = findViewById(R.id.seccioComentaris);
+        botoSeccioSobreMi = findViewById(R.id.botoSeccioSobreMi);
+        botoSeccioComentaris = findViewById(R.id.botoSeccioComentaris);
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
+
+        if (botoSeccioSobreMi != null) {
+            botoSeccioSobreMi.setOnClickListener(v -> mostraSeccioSobreMi());
+        }
+        if (botoSeccioComentaris != null) {
+            botoSeccioComentaris.setOnClickListener(v -> mostraSeccioComentaris());
+        }
 
         String uid = getIntent().getStringExtra(EXTRA_UID);
         if (TextUtils.isEmpty(uid)) {
@@ -46,6 +75,44 @@ public class VeurePerfilActivity extends AppCompatActivity {
             return;
         }
         carregaPerfil(uid);
+    }
+
+    private void mostraSeccioSobreMi() {
+        if (seccioSobreMi != null) seccioSobreMi.setVisibility(View.VISIBLE);
+        if (seccioComentaris != null) seccioComentaris.setVisibility(View.GONE);
+
+        if (botoSeccioSobreMi != null) {
+            botoSeccioSobreMi.setBackgroundResource(R.drawable.fons_boto_principal);
+            botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_clar));
+            botoSeccioSobreMi.setStrokeWidth(0);
+            botoSeccioSobreMi.setBackgroundTintList(null);
+        }
+        if (botoSeccioComentaris != null) {
+            botoSeccioComentaris.setBackgroundResource(0);
+            botoSeccioComentaris.setStrokeWidth(2);
+            botoSeccioComentaris.setStrokeColor(getColorStateList(R.color.color_text_principal));
+            botoSeccioComentaris.setTextColor(getColor(R.color.color_text_principal));
+            botoSeccioComentaris.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        }
+    }
+
+    private void mostraSeccioComentaris() {
+        if (seccioSobreMi != null) seccioSobreMi.setVisibility(View.GONE);
+        if (seccioComentaris != null) seccioComentaris.setVisibility(View.VISIBLE);
+
+        if (botoSeccioComentaris != null) {
+            botoSeccioComentaris.setBackgroundResource(R.drawable.fons_boto_principal);
+            botoSeccioComentaris.setTextColor(getColor(R.color.color_text_clar));
+            botoSeccioComentaris.setStrokeWidth(0);
+            botoSeccioComentaris.setBackgroundTintList(null);
+        }
+        if (botoSeccioSobreMi != null) {
+            botoSeccioSobreMi.setBackgroundResource(0);
+            botoSeccioSobreMi.setStrokeWidth(2);
+            botoSeccioSobreMi.setStrokeColor(getColorStateList(R.color.color_text_principal));
+            botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_principal));
+            botoSeccioSobreMi.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+        }
     }
 
     private void carregaPerfil(String uid) {
@@ -59,6 +126,7 @@ public class VeurePerfilActivity extends AppCompatActivity {
                         return;
                     }
                     mostraDades(perfil);
+                    configuraXat(perfil);
                 })
                 .addOnFailureListener(e -> finish());
     }
@@ -73,14 +141,19 @@ public class VeurePerfilActivity extends AppCompatActivity {
                     perfil.getValoracioMitjana(),
                     (int) perfil.getTotalValoracions()
             ));
+            if (barraReputacio != null) {
+                barraReputacio.setRating((float) perfil.getValoracioMitjana());
+            }
         } else {
             txtValoracio.setText(R.string.conductor_sense_valoracions);
+            if (barraReputacio != null) {
+                barraReputacio.setRating(0);
+            }
         }
 
         UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, perfil.getFotoUri(), nom);
 
         StringBuilder dades = new StringBuilder();
-
         if (!TextUtils.isEmpty(perfil.getZona())) {
             dades.append(getString(R.string.text_zona_sortida_format, perfil.getZona()));
         }
@@ -93,11 +166,24 @@ public class VeurePerfilActivity extends AppCompatActivity {
             dades.append(getString(R.string.text_model_cotxe_format, perfil.getModelCotxe()));
         }
         if (!TextUtils.isEmpty(perfil.getBio())) {
-            if (dades.length() > 0) dades.append("\n");
+            if (dades.length() > 0) dades.append("\n\n");
             dades.append(perfil.getBio());
         }
+        if (txtDades != null) {
+            txtDades.setText(dades.toString());
+        }
+    }
 
-        txtDades.setText(dades.toString());
+    private void configuraXat(Usuari perfil) {
+        FirebaseUser usuariActual = auth.getCurrentUser();
+        if (botoObrirXat == null) return;
+        if (usuariActual == null || usuariActual.getUid().equals(perfil.getUid())) {
+            botoObrirXat.setVisibility(View.GONE);
+            return;
+        }
+        botoObrirXat.setVisibility(View.VISIBLE);
+        botoObrirXat.setOnClickListener(v ->
+                Toast.makeText(this, R.string.missatge_primer_reserva, Toast.LENGTH_SHORT).show());
     }
 
     private String valorPerMostrar(String valor) {

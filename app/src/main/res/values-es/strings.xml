@@ -236,4 +236,18 @@
     <string name="boto_eliminar_viatge">Eliminar viaje</string>
     <string name="confirma_eliminar_viatge">¿Seguro que quieres eliminar este viaje? Todas las reservas asociadas quedarán canceladas.</string>
     <string name="missatge_viatge_eliminat">Viaje eliminado correctamente</string>
+
+    <string name="nav_buscar">Buscar</string>
+    <string name="nav_notificacions">Notificaciones</string>
+    <string name="nav_missatges">Mensajes</string>
+
+    <string name="notificacions_titol">Notificaciones</string>
+    <string name="notificacions_buit">No tienes ninguna notificacion</string>
+    <string name="notificacions_marcar_totes">Marcar todas</string>
+
+    <string name="dialog_valorar_titol">Valora el viaje</string>
+    <string name="dialog_valorar_missatge">¿Como fue el viaje con %1$s?</string>
+    <string name="camp_comentari_hint">Comentario (opcional)</string>
+
+    <string name="notif_nou_missatge">Nuevo mensaje de %1$s</string>
 </resources>

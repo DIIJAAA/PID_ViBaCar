@@ -218,8 +218,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="18dp"
         android:clipToPadding="false"
-        android:paddingBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTitolLlistaConductor" />
@@ -237,5 +237,14 @@
         app:layout_constraintEnd_toEndOf="@id/llistaViatges"
         app:layout_constraintStart_toStartOf="@id/llistaViatges"
         app:layout_constraintTop_toTopOf="@id/llistaViatges" />
+
+    <include
+        android:id="@+id/bottomNav"
+        layout="@layout/bottom_nav"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

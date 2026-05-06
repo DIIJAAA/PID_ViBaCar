@@ -236,4 +236,18 @@
     <string name="boto_eliminar_viatge">Delete ride</string>
     <string name="confirma_eliminar_viatge">Are you sure you want to delete this ride? All associated bookings will be cancelled.</string>
     <string name="missatge_viatge_eliminat">Ride deleted successfully</string>
+
+    <string name="nav_buscar">Search</string>
+    <string name="nav_notificacions">Notifications</string>
+    <string name="nav_missatges">Messages</string>
+
+    <string name="notificacions_titol">Notifications</string>
+    <string name="notificacions_buit">You have no notifications</string>
+    <string name="notificacions_marcar_totes">Mark all</string>
+
+    <string name="dialog_valorar_titol">Rate the ride</string>
+    <string name="dialog_valorar_missatge">How was the ride with %1$s?</string>
+    <string name="camp_comentari_hint">Comment (optional)</string>
+
+    <string name="notif_nou_missatge">New message from %1$s</string>
 </resources>

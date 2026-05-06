@@ -236,4 +236,18 @@
     <string name="boto_eliminar_viatge">Eliminar trajecte</string>
     <string name="confirma_eliminar_viatge">Segur que vols eliminar aquest trajecte? Totes les reserves associades quedaran cancelades.</string>
     <string name="missatge_viatge_eliminat">Trajecte eliminat correctament</string>
+
+    <string name="nav_buscar">Buscar</string>
+    <string name="nav_notificacions">Notificacions</string>
+    <string name="nav_missatges">Missatges</string>
+
+    <string name="notificacions_titol">Notificacions</string>
+    <string name="notificacions_buit">No tens cap notificacio</string>
+    <string name="notificacions_marcar_totes">Marcar totes</string>
+
+    <string name="dialog_valorar_titol">Valora el viatge</string>
+    <string name="dialog_valorar_missatge">Com ha anat el viatge amb %1$s?</string>
+    <string name="camp_comentari_hint">Comentari (opcional)</string>
+
+    <string name="notif_nou_missatge">Nou missatge de %1$s</string>
 </resources>

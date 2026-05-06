@@ -70,6 +70,29 @@ public class PantallaConductorActivity extends AppCompatActivity {
         });
         findViewById(R.id.botoPerfil).setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
         findViewById(R.id.botoCrearViatge).setOnClickListener(v -> startActivity(new Intent(this, CrearViatgeActivity.class)));
+
+        configuraBotomNav();
+    }
+
+    private void configuraBotomNav() {
+        android.view.View navBuscar = findViewById(R.id.navBuscar);
+        android.view.View navNotificacions = findViewById(R.id.navNotificacions);
+        android.view.View navMissatges = findViewById(R.id.navMissatges);
+
+        if (navBuscar != null) {
+            navBuscar.setOnClickListener(v -> {
+                startActivity(new Intent(this, PantallaPassatgerActivity.class));
+                finish();
+            });
+        }
+        if (navNotificacions != null) {
+            navNotificacions.setOnClickListener(v ->
+                    startActivity(new Intent(this, NotificacionsActivity.class)));
+        }
+        if (navMissatges != null) {
+            navMissatges.setOnClickListener(v ->
+                    startActivity(new Intent(this, BustiaXatsActivity.class)));
+        }
     }
 
     @Override

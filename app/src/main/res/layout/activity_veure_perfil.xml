@@ -10,88 +10,230 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingHorizontal="20dp"
+        android:paddingTop="40dp"
+        android:paddingBottom="20dp">
 
-        <ImageButton
-            android:id="@+id/botoEnrere"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/fons_capsula"
-            android:contentDescription="@string/boto_enrere"
-            android:padding="10dp"
-            android:src="@android:drawable/ic_media_previous" />
-
+        <!-- Cabecera -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/botoEnrere"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="start"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/boto_enrere"
+                android:padding="8dp"
+                android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/color_text_fosc" />
+
+            <TextView
+                android:id="@+id/txtTitolPerfil"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:text="@string/text_usuari"
+                android:textColor="@color/color_text_principal"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Tarjeta Principal: Foto, Nombre y Rating -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:background="@drawable/fons_targeta"
             android:elevation="8dp"
             android:orientation="vertical"
             android:padding="20dp">
 
-            <LinearLayout
+            <FrameLayout
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:layout_gravity="center_horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/imatgePerfil"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone"
+                    app:shapeAppearanceOverlay="@style/FormaAvatarCercle" />
+
+                <TextView
+                    android:id="@+id/txtInicialAvatar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/fons_avatar"
+                    android:gravity="center"
+                    android:text="V"
+                    android:textColor="@color/color_text_clar"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/txtNom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:textColor="@color/color_text_principal"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <FrameLayout
-                    android:layout_width="72dp"
-                    android:layout_height="72dp">
-
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/imatgePerfil"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:visibility="gone"
-                        app:shapeAppearanceOverlay="@style/FormaAvatarCercle" />
-
-                    <TextView
-                        android:id="@+id/txtInicialAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/fons_avatar"
-                        android:gravity="center"
-                        android:text="C"
-                        android:textColor="@color/color_text_clar"
-                        android:textSize="28sp"
-                        android:textStyle="bold" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <RatingBar
+                    android:id="@+id/barraReputacio"
+                    style="?android:attr/ratingBarStyleSmall"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:progressTint="#FFD700"
+                    android:stepSize="0.1" />
 
-                    <TextView
-                        android:id="@+id/txtNom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/color_text_principal"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/txtValoracio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@color/color_text_secundari" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/txtValoracio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:textColor="@color/color_text_secundari"
+                    android:textSize="12sp" />
             </LinearLayout>
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/txtDades"
+        <!-- Selector de Secciones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <!-- Botón ACTIVO por defecto -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/botoSeccioSobreMi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/fons_boto_principal"
+                android:text="@string/perfil_sobre_mi"
+                android:textColor="@color/color_text_clar"
+                app:backgroundTint="@null" />
+
+            <Space
+                android:layout_width="10dp"
+                android:layout_height="1dp" />
+
+            <!-- Botó INACTIVO por defecto -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/botoSeccioComentaris"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Comentaris"
+                android:textColor="@color/color_text_principal"
+                app:strokeColor="@color/color_text_principal"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
+
+        <!-- Contenedor de Secciones -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <!-- Sección Biografía (Visible por defecto) -->
+            <LinearLayout
+                android:id="@+id/seccioSobreMi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:lineSpacingExtra="4dp"
-                android:textColor="@color/color_text_secundari" />
+                android:background="@drawable/fons_targeta"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:visibility="visible">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/perfil_sobre_mi"
+                    android:textColor="@color/color_text_principal"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/txtDades"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="@color/color_text_secundari"
+                    android:lineSpacingExtra="4dp" />
+            </LinearLayout>
+
+            <!-- Sección Comentarios (Oculta por defecto) -->
+            <LinearLayout
+                android:id="@+id/seccioComentaris"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fons_targeta"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Comentaris i valoracions"
+                    android:textColor="@color/color_text_principal"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/llistaComentaris"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:nestedScrollingEnabled="false" />
+
+                <TextView
+                    android:id="@+id/txtBuitComentaris"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="Encara no hi ha comentaris per aquest usuari"
+                    android:textColor="@color/color_text_secundari"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botoObrirXat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/fons_boto_principal"
+            android:text="@string/boto_obrir_xat"
+            android:textColor="@color/color_text_clar"
+            android:visibility="gone" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

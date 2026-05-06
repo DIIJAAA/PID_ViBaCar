@@ -19,7 +19,7 @@
             android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
             android:padding="10dp"
-            android:src="@android:drawable/ic_media_previous" />
+            android:src="@drawable/ic_enrere" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -126,50 +126,6 @@
                     android:textStyle="bold"
                     android:visibility="gone" />
             </FrameLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
-                android:text="@string/detall_perque_titol"
-                android:textColor="@color/color_text_principal"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/fons_xip"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="@string/qualitat_puntual"
-                    android:textColor="@color/color_text_principal" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/fons_xip"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="@string/qualitat_bon_ambient"
-                    android:textColor="@color/color_text_principal" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/fons_xip"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="8dp"
-                    android:text="@string/qualitat_fiable"
-                    android:textColor="@color/color_text_principal" />
-            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtObservacions"

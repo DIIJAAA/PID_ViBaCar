@@ -26,6 +26,9 @@
             android:name=".activitats.BustiaXatsActivity"
             android:exported="false" />
         <activity
+            android:name=".activitats.NotificacionsActivity"
+            android:exported="false" />
+        <activity
             android:name=".activitats.XatActivity"
             android:exported="false" />
         <activity

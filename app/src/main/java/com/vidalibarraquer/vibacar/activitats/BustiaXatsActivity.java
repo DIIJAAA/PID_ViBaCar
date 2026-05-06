@@ -54,6 +54,25 @@ public class BustiaXatsActivity extends AppCompatActivity {
         llistaXats.setAdapter(adaptadorXats);
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
+        configuraBotomNav();
+    }
+
+    private void configuraBotomNav() {
+        View navBuscar = findViewById(R.id.navBuscar);
+        View navNotificacions = findViewById(R.id.navNotificacions);
+
+        if (navBuscar != null) {
+            navBuscar.setOnClickListener(v -> {
+                startActivity(new Intent(this, PantallaPassatgerActivity.class));
+                finish();
+            });
+        }
+        if (navNotificacions != null) {
+            navNotificacions.setOnClickListener(v -> {
+                startActivity(new Intent(this, NotificacionsActivity.class));
+                finish();
+            });
+        }
     }
 
     @Override

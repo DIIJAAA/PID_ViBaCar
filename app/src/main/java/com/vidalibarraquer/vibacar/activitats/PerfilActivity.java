@@ -52,6 +52,7 @@ public class PerfilActivity extends AppCompatActivity {
     private MaterialButton botoVeureCotxe;
     private MaterialButton botoVeureInfo;
     private boolean mostraPassats;
+    private boolean dialogValoracioMostrat;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,6 +114,7 @@ public class PerfilActivity extends AppCompatActivity {
         });
         findViewById(R.id.botoPassats).setOnClickListener(v -> {
             mostraPassats = true;
+            dialogValoracioMostrat = false;
             actualitzaBotonsFiltre();
             carregaLlista();
         });
@@ -241,6 +243,19 @@ public class PerfilActivity extends AppCompatActivity {
                                 resultat.sort(Comparator.comparingLong(Reserva::getSortidaMillis));
                                 adaptadorReserves.actualitzaDades(resultat, mostraPassats);
                                 txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
+
+                                if (mostraPassats && !dialogValoracioMostrat) {
+                                    for (Reserva r : resultat) {
+                                        if (!r.getId().startsWith("viatge_")
+                                                && !r.isValorada()
+                                                && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(r.getEstat())
+                                                && usuari.getUid().equals(r.getPassatgerId())) {
+                                            dialogValoracioMostrat = true;
+                                            obreDialegPuntuacio(r);
+                                            break;
+                                        }
+                                    }
+                                }
                             });
                 });
     }
@@ -274,13 +289,17 @@ public class PerfilActivity extends AppCompatActivity {
 
         View vista = LayoutInflater.from(this).inflate(R.layout.dialog_puntuacio, null, false);
         RatingBar barraPuntuacio = vista.findViewById(R.id.barraPuntuacio);
+        com.google.android.material.textfield.TextInputEditText campComentari =
+                vista.findViewById(R.id.campComentari);
 
         new AlertDialog.Builder(this)
-                .setTitle(R.string.boto_puntuar)
+                .setTitle(R.string.dialog_valorar_titol)
                 .setView(vista)
-                .setPositiveButton(R.string.boto_puntuar, (dialog, which) ->
-                    desaPuntuacio(reserva, barraPuntuacio.getRating(), "")
-                )
+                .setPositiveButton(R.string.boto_puntuar, (dialog, which) -> {
+                    String comentari = campComentari != null && campComentari.getText() != null
+                            ? campComentari.getText().toString().trim() : "";
+                    desaPuntuacio(reserva, barraPuntuacio.getRating(), comentari);
+                })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();
     }
