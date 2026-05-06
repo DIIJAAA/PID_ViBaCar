@@ -35,6 +35,8 @@ public class VeurePerfilActivity extends AppCompatActivity {
     private ShapeableImageView imatgePerfil;
     private RatingBar barraReputacio;
     private MaterialButton botoObrirXat;
+
+    // Elements per a les seccions
     private View seccioSobreMi;
     private View seccioComentaris;
     private MaterialButton botoSeccioSobreMi;
@@ -55,6 +57,8 @@ public class VeurePerfilActivity extends AppCompatActivity {
         imatgePerfil = findViewById(R.id.imatgePerfil);
         barraReputacio = findViewById(R.id.barraReputacio);
         botoObrirXat = findViewById(R.id.botoObrirXat);
+
+        // Inicialització de seccions i botons
         seccioSobreMi = findViewById(R.id.seccioSobreMi);
         seccioComentaris = findViewById(R.id.seccioComentaris);
         botoSeccioSobreMi = findViewById(R.id.botoSeccioSobreMi);
@@ -62,12 +66,9 @@ public class VeurePerfilActivity extends AppCompatActivity {
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
 
-        if (botoSeccioSobreMi != null) {
-            botoSeccioSobreMi.setOnClickListener(v -> mostraSeccioSobreMi());
-        }
-        if (botoSeccioComentaris != null) {
-            botoSeccioComentaris.setOnClickListener(v -> mostraSeccioComentaris());
-        }
+        // Listeners per canviar de secció
+        botoSeccioSobreMi.setOnClickListener(v -> mostraSeccioSobreMi());
+        botoSeccioComentaris.setOnClickListener(v -> mostraSeccioComentaris());
 
         String uid = getIntent().getStringExtra(EXTRA_UID);
         if (TextUtils.isEmpty(uid)) {
@@ -78,41 +79,39 @@ public class VeurePerfilActivity extends AppCompatActivity {
     }
 
     private void mostraSeccioSobreMi() {
-        if (seccioSobreMi != null) seccioSobreMi.setVisibility(View.VISIBLE);
-        if (seccioComentaris != null) seccioComentaris.setVisibility(View.GONE);
+        seccioSobreMi.setVisibility(View.VISIBLE);
+        seccioComentaris.setVisibility(View.GONE);
 
-        if (botoSeccioSobreMi != null) {
-            botoSeccioSobreMi.setBackgroundResource(R.drawable.fons_boto_principal);
-            botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_clar));
-            botoSeccioSobreMi.setStrokeWidth(0);
-            botoSeccioSobreMi.setBackgroundTintList(null);
-        }
-        if (botoSeccioComentaris != null) {
-            botoSeccioComentaris.setBackgroundResource(0);
-            botoSeccioComentaris.setStrokeWidth(2);
-            botoSeccioComentaris.setStrokeColor(getColorStateList(R.color.color_text_principal));
-            botoSeccioComentaris.setTextColor(getColor(R.color.color_text_principal));
-            botoSeccioComentaris.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
-        }
+        // Botó Sobre Mi actiu
+        botoSeccioSobreMi.setBackgroundResource(R.drawable.fons_boto_principal);
+        botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_clar));
+        botoSeccioSobreMi.setStrokeWidth(0);
+        botoSeccioSobreMi.setBackgroundTintList(null);
+
+        // Botó Comentaris inactiu
+        botoSeccioComentaris.setBackgroundResource(0);
+        botoSeccioComentaris.setStrokeWidth(2);
+        botoSeccioComentaris.setStrokeColor(getColorStateList(R.color.color_text_principal));
+        botoSeccioComentaris.setTextColor(getColor(R.color.color_text_principal));
+        botoSeccioComentaris.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
     }
 
     private void mostraSeccioComentaris() {
-        if (seccioSobreMi != null) seccioSobreMi.setVisibility(View.GONE);
-        if (seccioComentaris != null) seccioComentaris.setVisibility(View.VISIBLE);
+        seccioSobreMi.setVisibility(View.GONE);
+        seccioComentaris.setVisibility(View.VISIBLE);
 
-        if (botoSeccioComentaris != null) {
-            botoSeccioComentaris.setBackgroundResource(R.drawable.fons_boto_principal);
-            botoSeccioComentaris.setTextColor(getColor(R.color.color_text_clar));
-            botoSeccioComentaris.setStrokeWidth(0);
-            botoSeccioComentaris.setBackgroundTintList(null);
-        }
-        if (botoSeccioSobreMi != null) {
-            botoSeccioSobreMi.setBackgroundResource(0);
-            botoSeccioSobreMi.setStrokeWidth(2);
-            botoSeccioSobreMi.setStrokeColor(getColorStateList(R.color.color_text_principal));
-            botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_principal));
-            botoSeccioSobreMi.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
-        }
+        // Botó Comentaris actiu
+        botoSeccioComentaris.setBackgroundResource(R.drawable.fons_boto_principal);
+        botoSeccioComentaris.setTextColor(getColor(R.color.color_text_clar));
+        botoSeccioComentaris.setStrokeWidth(0);
+        botoSeccioComentaris.setBackgroundTintList(null);
+
+        // Botó Sobre Mi inactiu
+        botoSeccioSobreMi.setBackgroundResource(0);
+        botoSeccioSobreMi.setStrokeWidth(2);
+        botoSeccioSobreMi.setStrokeColor(getColorStateList(R.color.color_text_principal));
+        botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_principal));
+        botoSeccioSobreMi.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
     }
 
     private void carregaPerfil(String uid) {
@@ -141,19 +140,16 @@ public class VeurePerfilActivity extends AppCompatActivity {
                     perfil.getValoracioMitjana(),
                     (int) perfil.getTotalValoracions()
             ));
-            if (barraReputacio != null) {
-                barraReputacio.setRating((float) perfil.getValoracioMitjana());
-            }
+            barraReputacio.setRating((float) perfil.getValoracioMitjana());
         } else {
             txtValoracio.setText(R.string.conductor_sense_valoracions);
-            if (barraReputacio != null) {
-                barraReputacio.setRating(0);
-            }
+            barraReputacio.setRating(0);
         }
 
         UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, perfil.getFotoUri(), nom);
 
         StringBuilder dades = new StringBuilder();
+
         if (!TextUtils.isEmpty(perfil.getZona())) {
             dades.append(getString(R.string.text_zona_sortida_format, perfil.getZona()));
         }
@@ -161,29 +157,24 @@ public class VeurePerfilActivity extends AppCompatActivity {
             if (dades.length() > 0) dades.append("\n");
             dades.append(getString(R.string.text_observacions_punt_trobada_format, perfil.getPuntTrobadaHabitual()));
         }
-        if (!TextUtils.isEmpty(perfil.getModelCotxe())) {
-            if (dades.length() > 0) dades.append("\n");
-            dades.append(getString(R.string.text_model_cotxe_format, perfil.getModelCotxe()));
-        }
         if (!TextUtils.isEmpty(perfil.getBio())) {
             if (dades.length() > 0) dades.append("\n\n");
             dades.append(perfil.getBio());
         }
-        if (txtDades != null) {
-            txtDades.setText(dades.toString());
-        }
+        txtDades.setText(dades.toString());
     }
 
     private void configuraXat(Usuari perfil) {
         FirebaseUser usuariActual = auth.getCurrentUser();
-        if (botoObrirXat == null) return;
         if (usuariActual == null || usuariActual.getUid().equals(perfil.getUid())) {
             botoObrirXat.setVisibility(View.GONE);
             return;
         }
+
         botoObrirXat.setVisibility(View.VISIBLE);
-        botoObrirXat.setOnClickListener(v ->
-                Toast.makeText(this, R.string.missatge_primer_reserva, Toast.LENGTH_SHORT).show());
+        botoObrirXat.setOnClickListener(v -> {
+             Toast.makeText(this, R.string.missatge_primer_reserva, Toast.LENGTH_SHORT).show();
+        });
     }
 
     private String valorPerMostrar(String valor) {

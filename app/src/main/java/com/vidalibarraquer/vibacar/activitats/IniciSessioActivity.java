@@ -1,17 +1,31 @@
 package com.vidalibarraquer.vibacar.activitats;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -26,11 +40,35 @@ import java.util.Map;
 
 public class IniciSessioActivity extends AppCompatActivity {
 
+    private static final String TAG = "IniciSessioActivity";
+    public static final String PROVIDER_PASSWORD = "password";
+
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private TextInputEditText campCorreu;
     private TextInputEditText campContrasenya;
     private TextView txtMissatge;
+    private GoogleSignInClient googleSignInClient;
+
+    private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                    try {
+                        GoogleSignInAccount account = task.getResult(ApiException.class);
+                        if (account != null) {
+                            vincularAmbFirebase(account.getIdToken());
+                        }
+                    } catch (ApiException e) {
+                        Log.e(TAG, "Google Sign-In failed", e);
+                        mostraError("Error Google: " + e.getStatusCode());
+                    }
+                } else {
+                    Log.w(TAG, "Google Sign-In result not OK: " + result.getResultCode());
+                }
+            }
+    );
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +81,13 @@ public class IniciSessioActivity extends AppCompatActivity {
         campContrasenya = findViewById(R.id.campContrasenya);
         txtMissatge = findViewById(R.id.txtMissatge);
 
+        // Configuració de Google Sign-In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         ((MaterialButton) findViewById(R.id.botoIniciarSessio)).setOnClickListener(v -> iniciaSessio());
         ((MaterialButton) findViewById(R.id.botoRecorda)).setOnClickListener(v -> {
@@ -51,6 +96,35 @@ public class IniciSessioActivity extends AppCompatActivity {
             startActivity(intent);
         });
         findViewById(R.id.txtVesCrearCompte).setOnClickListener(v -> startActivity(new Intent(this, CrearCompteActivity.class)));
+
+        // Botó de Google
+        findViewById(R.id.botoGoogle).setOnClickListener(v -> {
+            txtMissatge.setText(""); // Netegem errors previs
+            Intent signInIntent = googleSignInClient.getSignInIntent();
+            googleSignInLauncher.launch(signInIntent);
+        });
+    }
+
+    private void vincularAmbFirebase(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        auth.signInWithCredential(credential)
+                .addOnSuccessListener(authResult -> {
+                    FirebaseUser usuari = auth.getCurrentUser();
+                    if (usuari != null) {
+                        // Verifiquem si el correu de Google és del centre
+                        if (!UtilitatsFirebase.esCorreuCentre(usuari.getEmail())) {
+                            auth.signOut();
+                            googleSignInClient.signOut();
+                            mostraError(getString(R.string.error_domini_correu));
+                            return;
+                        }
+                        obreSeguentPantalla(usuari);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Firebase Auth with Google failed", e);
+                    mostraError(e.getMessage());
+                });
     }
 
     private void iniciaSessio() {
@@ -74,21 +148,33 @@ public class IniciSessioActivity extends AppCompatActivity {
                         mostraError(getString(R.string.error_no_usuari));
                         return;
                     }
+
                     usuari.reload().addOnSuccessListener(unused -> obreSeguentPantalla(usuari));
                 })
                 .addOnFailureListener(e -> mostraError(e.getLocalizedMessage() != null ? e.getLocalizedMessage() : getString(R.string.error_generica)));
     }
 
     private void obreSeguentPantalla(FirebaseUser usuari) {
-        if (!usuari.isEmailVerified()) {
+        // Comprovem si l'usuari s'ha registrat amb email/contrasenya i no ha verificat el correu
+        boolean esPasswordProvider = false;
+        for (UserInfo profile : usuari.getProviderData()) {
+            if (PROVIDER_PASSWORD.equals(profile.getProviderId())) {
+                esPasswordProvider = true;
+                break;
+            }
+        }
+
+        if (esPasswordProvider && !usuari.isEmailVerified()) {
             startActivity(new Intent(this, VerificaCorreuActivity.class));
             finish();
             return;
         }
 
-        DocumentReference refPerfil = db.collection(UtilitatsFirebase.COL_USUARIS).document(usuari.getUid());
+        DocumentReference refPerfil = db.collection(UtilitatsFirebase.COL_USUARIS)
+                .document(usuari.getUid());
 
-        refPerfil.get()
+        refPerfil
+                .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (!documentSnapshot.exists()) {
                         creaPerfilBase(refPerfil, usuari);
@@ -100,7 +186,6 @@ public class IniciSessioActivity extends AppCompatActivity {
                         obrePantalla(ConfiguraPerfilActivity.class);
                         return;
                     }
-
                     String rol = documentSnapshot.getString("rol");
                     Class<?> desti = UtilitatsFirebase.esRolConductor(rol)
                             ? PantallaConductorActivity.class
@@ -123,11 +208,11 @@ public class IniciSessioActivity extends AppCompatActivity {
         dades.put("modelCotxe", "");
         dades.put("placesHabituals", 0);
         dades.put("bio", "");
-        dades.put("fotoUri", "");
+        dades.put("fotoUri", usuari.getPhotoUrl() != null ? usuari.getPhotoUrl().toString() : "");
         dades.put("perfilCompletat", false);
         dades.put("valoracioMitjana", 0d);
         dades.put("totalValoracions", 0L);
-        dades.put("emailVerified", usuari.isEmailVerified());
+        dades.put("emailVerified", true);
         dades.put("idioma", GestorIdioma.obteIdiomaGuardat(this));
 
         refPerfil.set(dades, SetOptions.merge())

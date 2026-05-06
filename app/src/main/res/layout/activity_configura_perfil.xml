@@ -91,7 +91,7 @@
                     app:tint="@color/color_principal" />
             </FrameLayout>
 
-            <!-- Nombre -->
+            <!-- Nom -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
@@ -107,40 +107,7 @@
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Edad -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/etiqueta_data_naixement"
-                app:boxBackgroundColor="@color/color_text_clar">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/campDataNaixement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="false"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Sexo -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/etiqueta_sexe"
-                app:boxBackgroundColor="@color/color_text_clar">
-
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/campSexe"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-
+            <!-- Telèfon -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
@@ -156,39 +123,45 @@
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
+            <!-- Data de Naixement -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/etiqueta_rol"
-                android:textColor="@color/color_text_principal"
-                android:textStyle="bold" />
+                android:layout_marginTop="12dp"
+                android:hint="@string/etiqueta_data_naixement"
+                app:boxBackgroundColor="@color/color_text_clar">
 
-            <RadioGroup
-                android:id="@+id/grupRol"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical">
-
-                <RadioButton
-                    android:id="@+id/radioConductor"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/campDataNaixement"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/rol_conductor" />
+                    android:focusable="false"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <RadioButton
-                    android:id="@+id/radioPassatger"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/rol_passatger" />
-            </RadioGroup>
-
+            <!-- Sexe -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
+                android:hint="@string/etiqueta_sexe"
+                app:boxBackgroundColor="@color/color_text_clar">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/campSexe"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Zona Habitual -->
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:hint="@string/etiqueta_zona"
                 app:boxBackgroundColor="@color/color_text_clar">
 
@@ -199,6 +172,7 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Hora Habitual -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
@@ -214,6 +188,7 @@
                     android:inputType="none" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Punt de Trobada -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
@@ -226,9 +201,40 @@
                     android:id="@+id/campPuntTrobada"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textCapWords" />
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Rol -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/etiqueta_rol"
+                android:textColor="@color/color_text_principal"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/grupRol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radioPassatger"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/rol_passatger" />
+
+                <RadioButton
+                    android:id="@+id/radioConductor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/rol_conductor" />
+            </RadioGroup>
+
+            <!-- Dades Conductor -->
             <TextView
                 android:id="@+id/txtDadesConductor"
                 android:layout_width="match_parent"
@@ -250,7 +256,7 @@
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="12dp"
                     android:hint="@string/etiqueta_model_cotxe"
                     app:boxBackgroundColor="@color/color_text_clar">
 
@@ -258,7 +264,7 @@
                         android:id="@+id/campModelCotxe"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textCapWords" />
+                        android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -277,7 +283,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <!-- Bio -->
+            <!-- Biografia / Descripció -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
@@ -290,8 +296,9 @@
                     android:id="@+id/campBio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="top"
                     android:inputType="textMultiLine"
-                    android:maxLines="3"
+                    android:maxLines="5"
                     android:minLines="3" />
             </com.google.android.material.textfield.TextInputLayout>
 

@@ -250,4 +250,9 @@
     <string name="camp_comentari_hint">Comentari (opcional)</string>
 
     <string name="notif_nou_missatge">Nou missatge de %1$s</string>
+
+    <string name="text_o">o</string>
+    <string name="text_google">Google</string>
+    <string name="error_foto_buida">Has de triar una foto de perfil</string>
+    <string name="default_web_client_id">70040389779-0g8u3t1pve30p7t0shj3ov77musinnm3.apps.googleusercontent.com</string>
 </resources>

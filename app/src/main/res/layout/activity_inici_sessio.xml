@@ -9,15 +9,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingHorizontal="24dp"
-        android:paddingTop="100dp"
+        android:paddingTop="24dp"
         android:paddingBottom="24dp">
 
         <ImageButton
             android:id="@+id/botoEnrere"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:layout_gravity="start"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/boto_enrere"
             android:padding="8dp"
@@ -31,12 +33,14 @@
             android:background="@drawable/fons_targeta"
             android:backgroundTint="#E6FFFFFF"
             android:elevation="12dp"
+            android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="24dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:text="@string/inici_titol"
                 android:textColor="@color/color_text_principal"
                 android:textSize="28sp"
@@ -46,6 +50,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:gravity="center_horizontal"
                 android:text="@string/inici_subtitol"
                 android:textColor="@color/color_text_secundari"
                 android:textSize="16sp" />
@@ -55,6 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
+                android:gravity="center_horizontal"
                 android:textColor="@color/color_error" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -101,12 +107,82 @@
                 android:textStyle="bold"
                 app:backgroundTint="@null" />
 
+            <!-- Separador "O" -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/color_linia" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:text="o"
+                    android:textColor="@color/color_text_secundari" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/color_linia" />
+            </LinearLayout>
+
+            <!-- Botó Google Personalitzat -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/botoGoogle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardBackgroundColor="@color/color_text_clar"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/color_linia"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:contentDescription="Google"
+                        android:src="@drawable/ic_google" />
+
+                    <Space
+                        android:layout_width="12dp"
+                        android:layout_height="1dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Google"
+                        android:textColor="@color/color_text_principal"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoRecorda"
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
+                android:layout_marginTop="8dp"
                 android:text="@string/boto_he_oblidat" />
 
             <TextView
