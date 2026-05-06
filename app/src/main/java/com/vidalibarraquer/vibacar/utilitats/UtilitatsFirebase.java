@@ -44,6 +44,13 @@ public final class UtilitatsFirebase {
         return viatgeId + "_" + passatgerId;
     }
 
+    public static String creaIdXatUsuaris(String uidA, String uidB) {
+        if (uidA.compareTo(uidB) < 0) {
+            return "xat_" + uidA + "_" + uidB;
+        }
+        return "xat_" + uidB + "_" + uidA;
+    }
+
     public static boolean esRolConductor(String rol) {
         if (TextUtils.isEmpty(rol)) {
             return false;

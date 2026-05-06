@@ -3,9 +3,7 @@ package com.vidalibarraquer.vibacar.activitats;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -14,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,8 +38,6 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
     private TextView txtInicialAvatar;
     private ShapeableImageView imatgePerfil;
     private TextInputEditText campCerca;
-    private MaterialAutoCompleteTextView campFiltreZona;
-    private String zonaFiltre = "";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,7 +51,6 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
         imatgePerfil = findViewById(R.id.imatgePerfil);
         campCerca = findViewById(R.id.campCerca);
-        campFiltreZona = findViewById(R.id.campFiltreZona);
 
         RecyclerView llistaViatges = findViewById(R.id.llistaViatges);
         adaptadorViatges = new AdaptadorViatges(this, viatge -> {
@@ -74,21 +68,11 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
         findViewById(R.id.botoPerfil).setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
 
         configuraBotomNav();
-        configuraFiltreZones();
 
         campCerca.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filtraViatges();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { filtraViatges(); }
+            @Override public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -97,23 +81,6 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
         super.onResume();
         carregaUsuariCapcalera();
         carregaViatges();
-    }
-
-    private void configuraFiltreZones() {
-        String[] zonesOriginals = getResources().getStringArray(R.array.zones_trobada);
-        List<String> zones = new ArrayList<>();
-        zones.add(getString(R.string.zones_totes));
-        for (String zona : zonesOriginals) {
-            zones.add(zona);
-        }
-
-        campFiltreZona.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, zones));
-        campFiltreZona.setText(getString(R.string.zones_totes), false);
-        campFiltreZona.setOnItemClickListener((parent, view, position, id) -> {
-            String valor = zones.get(position);
-            zonaFiltre = getString(R.string.zones_totes).equalsIgnoreCase(valor) ? "" : valor;
-            filtraViatges();
-        });
     }
 
     private void carregaUsuariCapcalera() {
@@ -130,17 +97,8 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     Usuari perfil = documentSnapshot.toObject(Usuari.class);
                     String nom = perfil != null && perfil.getNom() != null ? perfil.getNom() : getString(R.string.nom_marca);
-                    UtilitatsAvatar.mostraAvatar(
-                            imatgePerfil,
-                            txtInicialAvatar,
-                            perfil != null ? perfil.getFotoUri() : null,
-                            nom
-                    );
-
-                    if (perfil != null && !TextUtils.isEmpty(perfil.getZona()) && TextUtils.isEmpty(zonaFiltre)) {
-                        zonaFiltre = perfil.getZona();
-                        campFiltreZona.setText(zonaFiltre, false);
-                    }
+                    UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar,
+                            perfil != null ? perfil.getFotoUri() : null, nom);
                 });
     }
 
@@ -155,18 +113,11 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Viatge viatge = document.toObject(Viatge.class);
                         viatge.setId(document.getId());
-                        if (uidActual.equals(viatge.getConductorId())) {
-                            continue;
-                        }
-                        if (!"disponible".equalsIgnoreCase(viatge.getEstat())) {
-                            continue;
-                        }
-                        if (viatge.getPlacesDisponibles() <= 0) {
-                            continue;
-                        }
+                        if (uidActual.equals(viatge.getConductorId())) continue;
+                        if (!"disponible".equalsIgnoreCase(viatge.getEstat())) continue;
+                        if (viatge.getPlacesDisponibles() <= 0) continue;
                         totsElsViatges.add(viatge);
                     }
-
                     totsElsViatges.sort(Comparator.comparingLong(Viatge::getSortidaMillis));
                     filtraViatges();
                 });
@@ -174,23 +125,18 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
 
     private void filtraViatges() {
         String text = campCerca.getText() == null ? "" : campCerca.getText().toString();
-        String filtreText = text.toLowerCase(Locale.ROOT).trim();
-        String filtreZona = zonaFiltre.toLowerCase(Locale.ROOT).trim();
+        String filtre = text.toLowerCase(Locale.ROOT).trim();
         List<Viatge> filtrats = new ArrayList<>();
 
         for (Viatge viatge : totsElsViatges) {
-            String resum = (
-                    valorPerBuit(viatge.getOrigen()) + " " +
+            if (filtre.isEmpty()) {
+                filtrats.add(viatge);
+                continue;
+            }
+            String resum = (valorPerBuit(viatge.getOrigen()) + " " +
                     valorPerBuit(viatge.getDesti()) + " " +
-                    valorPerBuit(viatge.getZonaSortida())
-            ).toLowerCase(Locale.ROOT);
-
-            boolean compleixText = filtreText.isEmpty() || resum.contains(filtreText);
-            boolean compleixZona = filtreZona.isEmpty()
-                    || valorPerBuit(viatge.getZonaSortida()).toLowerCase(Locale.ROOT).contains(filtreZona)
-                    || valorPerBuit(viatge.getDesti()).toLowerCase(Locale.ROOT).contains(filtreZona);
-
-            if (compleixText && compleixZona) {
+                    valorPerBuit(viatge.getZonaSortida())).toLowerCase(Locale.ROOT);
+            if (resum.contains(filtre)) {
                 filtrats.add(viatge);
             }
         }
@@ -200,20 +146,14 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
     }
 
     private void configuraBotomNav() {
-        android.view.View navBuscar = findViewById(R.id.navBuscar);
         android.view.View navNotificacions = findViewById(R.id.navNotificacions);
         android.view.View navMissatges = findViewById(R.id.navMissatges);
 
-        if (navBuscar != null) {
-            navBuscar.setAlpha(1f);
-        }
         if (navNotificacions != null) {
-            navNotificacions.setOnClickListener(v ->
-                    startActivity(new Intent(this, NotificacionsActivity.class)));
+            navNotificacions.setOnClickListener(v -> startActivity(new Intent(this, NotificacionsActivity.class)));
         }
         if (navMissatges != null) {
-            navMissatges.setOnClickListener(v ->
-                    startActivity(new Intent(this, BustiaXatsActivity.class)));
+            navMissatges.setOnClickListener(v -> startActivity(new Intent(this, BustiaXatsActivity.class)));
         }
     }
 

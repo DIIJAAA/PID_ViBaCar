@@ -92,7 +92,12 @@ public class PerfilActivity extends AppCompatActivity {
 
             @Override
             public void onObreXat(Reserva reserva) {
-                Toast.makeText(PerfilActivity.this, "Obrint xat amb el conductor...", Toast.LENGTH_SHORT).show();
+                String idXat = UtilitatsFirebase.creaIdXatUsuaris(reserva.getConductorId(), reserva.getPassatgerId());
+                String nomAltre = reserva.isSocConductor() ? reserva.getPassatgerNom() : reserva.getConductorNom();
+                Intent intent = new Intent(PerfilActivity.this, XatActivity.class);
+                intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
+                intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomAltre);
+                startActivity(intent);
             }
         });
         llistaReserves.setLayoutManager(new LinearLayoutManager(this));

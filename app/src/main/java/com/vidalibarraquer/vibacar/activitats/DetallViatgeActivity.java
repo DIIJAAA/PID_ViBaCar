@@ -184,6 +184,8 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         } else {
             botoReservar.setVisibility(View.VISIBLE);
             botoObrirXat.setVisibility(View.VISIBLE);
+            botoObrirXat.setEnabled(false);
+            botoObrirXat.setAlpha(0.4f);
             botoEliminarViatge.setVisibility(View.GONE);
             seccioConductor.setOnClickListener(v -> {
                 if (viatgeActual == null) return;
@@ -191,6 +193,16 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                 intent.putExtra(VeurePerfilActivity.EXTRA_UID, viatgeActual.getConductorId());
                 startActivity(intent);
             });
+            if (usuari != null && viatgeActual != null) {
+                String idReserva = UtilitatsFirebase.creaIdReserva(viatgeActual.getId(), usuari.getUid());
+                db.collection(UtilitatsFirebase.COL_RESERVES).document(idReserva).get()
+                        .addOnSuccessListener(doc -> {
+                            if (doc.exists() && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(doc.getString("estat"))) {
+                                botoObrirXat.setEnabled(true);
+                                botoObrirXat.setAlpha(1f);
+                            }
+                        });
+            }
         }
     }
 
@@ -324,7 +336,7 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                         return;
                     }
 
-                    String idXat = UtilitatsFirebase.creaIdXat(viatgeActual.getId(), usuari.getUid());
+                    String idXat = UtilitatsFirebase.creaIdXatUsuaris(viatgeActual.getConductorId(), usuari.getUid());
                     creaXatIObre(idXat, viatgeActual.getConductorNom(), viatgeActual.getConductorId(), usuari.getUid());
                 });
     }
