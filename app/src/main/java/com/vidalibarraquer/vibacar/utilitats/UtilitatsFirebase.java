@@ -3,13 +3,18 @@ package com.vidalibarraquer.vibacar.utilitats;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
+
+import java.util.Collections;
 
 public final class UtilitatsFirebase {
 
@@ -38,6 +43,20 @@ public final class UtilitatsFirebase {
                                         @NonNull OnCompleteListener<Void> listener) {
         FirebaseAuth.getInstance().setLanguageCode(GestorIdioma.obteIdiomaGuardat(activity));
         usuari.sendEmailVerification().addOnCompleteListener(activity, listener);
+    }
+
+    public static void desaTokenMissatgeria(@NonNull String token) {
+        FirebaseUser usuari = FirebaseAuth.getInstance().getCurrentUser();
+        if (usuari == null) return;
+        FirebaseFirestore.getInstance()
+                .collection(COL_USUARIS)
+                .document(usuari.getUid())
+                .set(Collections.singletonMap("fcmToken", token), SetOptions.merge())
+                .addOnFailureListener(e -> Log.w("UtilitatsFirebase", "Error desant token FCM", e));
+    }
+
+    public static String creaIdReserva(String viatgeId, String passatgerId) {
+        return viatgeId + "_" + passatgerId;
     }
 
     public static String creaIdXat(String viatgeId, String passatgerId) {

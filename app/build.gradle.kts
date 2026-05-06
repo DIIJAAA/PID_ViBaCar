@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.auth)
     testImplementation(libs.junit)
