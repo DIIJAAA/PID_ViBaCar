@@ -1,7 +1,9 @@
 package com.vidalibarraquer.vibacar.activitats;
 
+import android.app.AlertDialog;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,10 +19,14 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Usuari;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class VeurePerfilActivity extends AppCompatActivity {
 
@@ -35,8 +41,14 @@ public class VeurePerfilActivity extends AppCompatActivity {
     private ShapeableImageView imatgePerfil;
     private RatingBar barraReputacio;
     private MaterialButton botoObrirXat;
+    private MaterialButton botoSeguir;
+    private MaterialButton botoVeureTrajectes;
+    private String uidPerfil;
+    private String nomPerfil;
+    private String xatConductorId;
+    private String xatPassatgerId;
+    private boolean seguint;
 
-    // Elements per a les seccions
     private View seccioSobreMi;
     private View seccioComentaris;
     private MaterialButton botoSeccioSobreMi;
@@ -57,8 +69,9 @@ public class VeurePerfilActivity extends AppCompatActivity {
         imatgePerfil = findViewById(R.id.imatgePerfil);
         barraReputacio = findViewById(R.id.barraReputacio);
         botoObrirXat = findViewById(R.id.botoObrirXat);
+        botoSeguir = findViewById(R.id.botoSeguir);
+        botoVeureTrajectes = findViewById(R.id.botoVeureTrajectes);
 
-        // Inicialització de seccions i botons
         seccioSobreMi = findViewById(R.id.seccioSobreMi);
         seccioComentaris = findViewById(R.id.seccioComentaris);
         botoSeccioSobreMi = findViewById(R.id.botoSeccioSobreMi);
@@ -66,29 +79,32 @@ public class VeurePerfilActivity extends AppCompatActivity {
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
 
-        // Listeners per canviar de secció
         botoSeccioSobreMi.setOnClickListener(v -> mostraSeccioSobreMi());
         botoSeccioComentaris.setOnClickListener(v -> mostraSeccioComentaris());
 
-        String uid = getIntent().getStringExtra(EXTRA_UID);
-        if (TextUtils.isEmpty(uid)) {
+        uidPerfil = getIntent().getStringExtra(EXTRA_UID);
+        if (TextUtils.isEmpty(uidPerfil)) {
             finish();
             return;
         }
-        carregaPerfil(uid);
+        carregaPerfil(uidPerfil);
+        configuraSeguiment();
+        botoVeureTrajectes.setOnClickListener(v -> {
+            Intent intent = new Intent(this, PantallaPassatgerActivity.class);
+            intent.putExtra(PantallaPassatgerActivity.EXTRA_CONDUCTOR_ID, uidPerfil);
+            startActivity(intent);
+        });
     }
 
     private void mostraSeccioSobreMi() {
         seccioSobreMi.setVisibility(View.VISIBLE);
         seccioComentaris.setVisibility(View.GONE);
 
-        // Botó Sobre Mi actiu
         botoSeccioSobreMi.setBackgroundResource(R.drawable.fons_boto_principal);
         botoSeccioSobreMi.setTextColor(getColor(R.color.color_text_clar));
         botoSeccioSobreMi.setStrokeWidth(0);
         botoSeccioSobreMi.setBackgroundTintList(null);
 
-        // Botó Comentaris inactiu
         botoSeccioComentaris.setBackgroundResource(0);
         botoSeccioComentaris.setStrokeWidth(2);
         botoSeccioComentaris.setStrokeColor(getColorStateList(R.color.color_text_principal));
@@ -100,13 +116,11 @@ public class VeurePerfilActivity extends AppCompatActivity {
         seccioSobreMi.setVisibility(View.GONE);
         seccioComentaris.setVisibility(View.VISIBLE);
 
-        // Botó Comentaris actiu
         botoSeccioComentaris.setBackgroundResource(R.drawable.fons_boto_principal);
         botoSeccioComentaris.setTextColor(getColor(R.color.color_text_clar));
         botoSeccioComentaris.setStrokeWidth(0);
         botoSeccioComentaris.setBackgroundTintList(null);
 
-        // Botó Sobre Mi inactiu
         botoSeccioSobreMi.setBackgroundResource(0);
         botoSeccioSobreMi.setStrokeWidth(2);
         botoSeccioSobreMi.setStrokeColor(getColorStateList(R.color.color_text_principal));
@@ -132,6 +146,7 @@ public class VeurePerfilActivity extends AppCompatActivity {
 
     private void mostraDades(Usuari perfil) {
         String nom = valorPerMostrar(perfil.getNom());
+        nomPerfil = nom;
         txtNom.setText(nom);
 
         if (perfil.getTotalValoracions() > 0) {
@@ -148,20 +163,9 @@ public class VeurePerfilActivity extends AppCompatActivity {
 
         UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, perfil.getFotoUri(), nom);
 
-        StringBuilder dades = new StringBuilder();
-
-        if (!TextUtils.isEmpty(perfil.getZona())) {
-            dades.append(getString(R.string.text_zona_sortida_format, perfil.getZona()));
-        }
-        if (!TextUtils.isEmpty(perfil.getPuntTrobadaHabitual())) {
-            if (dades.length() > 0) dades.append("\n");
-            dades.append(getString(R.string.text_observacions_punt_trobada_format, perfil.getPuntTrobadaHabitual()));
-        }
-        if (!TextUtils.isEmpty(perfil.getBio())) {
-            if (dades.length() > 0) dades.append("\n\n");
-            dades.append(perfil.getBio());
-        }
-        txtDades.setText(dades.toString());
+        txtDades.setText(TextUtils.isEmpty(perfil.getBio())
+                ? getString(R.string.perfil_bio_buida)
+                : perfil.getBio());
     }
 
     private void configuraXat(Usuari perfil) {
@@ -172,9 +176,141 @@ public class VeurePerfilActivity extends AppCompatActivity {
         }
 
         botoObrirXat.setVisibility(View.VISIBLE);
-        botoObrirXat.setOnClickListener(v -> {
-             Toast.makeText(this, R.string.missatge_primer_reserva, Toast.LENGTH_SHORT).show();
+        bloquejaXat();
+        comprovaXatDesbloquejat(usuariActual.getUid(), perfil.getUid());
+    }
+
+    private void comprovaXatDesbloquejat(String uidActual, String uidAltre) {
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("passatgerId", uidActual)
+                .whereEqualTo("conductorId", uidAltre)
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
+                .get()
+                .addOnSuccessListener(docs -> {
+                    if (!docs.isEmpty()) {
+                        com.google.firebase.firestore.DocumentSnapshot reserva = docs.getDocuments().get(0);
+                        desbloquejaXat(reserva.getString("conductorId"), reserva.getString("passatgerId"));
+                        return;
+                    }
+                    comprovaXatDesbloquejatInvers(uidActual, uidAltre);
+                })
+                .addOnFailureListener(e -> bloquejaXat());
+    }
+
+    private void comprovaXatDesbloquejatInvers(String uidActual, String uidAltre) {
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("passatgerId", uidAltre)
+                .whereEqualTo("conductorId", uidActual)
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
+                .get()
+                .addOnSuccessListener(docs -> {
+                    if (!docs.isEmpty()) {
+                        com.google.firebase.firestore.DocumentSnapshot reserva = docs.getDocuments().get(0);
+                        desbloquejaXat(reserva.getString("conductorId"), reserva.getString("passatgerId"));
+                    } else {
+                        bloquejaXat();
+                    }
+                })
+                .addOnFailureListener(e -> bloquejaXat());
+    }
+
+    private void bloquejaXat() {
+        botoObrirXat.setEnabled(false);
+        botoObrirXat.setText(R.string.boto_xat_bloquejat);
+        botoObrirXat.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.color_linia)));
+        botoObrirXat.setTextColor(getColor(R.color.color_text_secundari));
+        botoObrirXat.setOnClickListener(null);
+    }
+
+    private void desbloquejaXat(String conductorId, String passatgerId) {
+        xatConductorId = conductorId;
+        xatPassatgerId = passatgerId;
+        botoObrirXat.setEnabled(true);
+        botoObrirXat.setText(R.string.boto_obrir_xat);
+        botoObrirXat.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.color_principal)));
+        botoObrirXat.setTextColor(getColor(R.color.color_text_clar));
+        botoObrirXat.setOnClickListener(v -> obreXatDesbloquejat());
+    }
+
+    private void obreXatDesbloquejat() {
+        if (TextUtils.isEmpty(xatConductorId) || TextUtils.isEmpty(xatPassatgerId)) return;
+        String idXat = UtilitatsFirebase.creaIdXatUsuaris(xatConductorId, xatPassatgerId);
+        Map<String, Object> dades = new HashMap<>();
+        dades.put("conductorId", xatConductorId);
+        dades.put("passatgerId", xatPassatgerId);
+        dades.put("darreraActualitzacio", System.currentTimeMillis());
+        db.collection(UtilitatsFirebase.COL_XATS)
+                .document(idXat)
+                .set(dades, SetOptions.merge())
+                .addOnSuccessListener(unused -> {
+                    Intent intent = new Intent(this, XatActivity.class);
+                    intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
+                    intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomPerfil);
+                    intent.putExtra(XatActivity.EXTRA_UID_ALTRE, uidPerfil);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
+    }
+
+    private void configuraSeguiment() {
+        FirebaseUser actual = auth.getCurrentUser();
+        if (actual == null || actual.getUid().equals(uidPerfil)) {
+            botoSeguir.setVisibility(View.GONE);
+            return;
+        }
+        String id = actual.getUid() + "_" + uidPerfil;
+        db.collection(UtilitatsFirebase.COL_SEGUIMENTS)
+                .document(id)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    seguint = doc.exists();
+                    actualitzaBotoSeguir();
+                });
+        botoSeguir.setOnClickListener(v -> {
+            if (seguint) {
+                db.collection(UtilitatsFirebase.COL_SEGUIMENTS).document(id).delete()
+                        .addOnSuccessListener(unused -> {
+                            seguint = false;
+                            actualitzaBotoSeguir();
+                        });
+                return;
+            }
+            confirmaSeguiment(id, actual.getUid());
         });
+    }
+
+    private void confirmaSeguiment(String id, String uidActual) {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.confirmar_seguir_titol)
+                .setMessage(getString(R.string.confirmar_seguir_missatge, nomPerfil))
+                .setPositiveButton(R.string.boto_seguir_usuari, (dialog, which) -> {
+                    Map<String, Object> dades = new HashMap<>();
+                    dades.put("seguidorId", uidActual);
+                    dades.put("seguitId", uidPerfil);
+                    dades.put("creatMillis", System.currentTimeMillis());
+                    db.collection(UtilitatsFirebase.COL_SEGUIMENTS)
+                            .document(id)
+                            .set(dades, SetOptions.merge())
+                            .addOnSuccessListener(unused -> {
+                                seguint = true;
+                                actualitzaBotoSeguir();
+                            });
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void actualitzaBotoSeguir() {
+        botoSeguir.setText(seguint ? R.string.boto_seguidor_actiu : R.string.boto_seguir_usuari);
+        if (seguint) {
+            botoSeguir.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.color_principal)));
+            botoSeguir.setTextColor(getColor(R.color.color_text_clar));
+            botoSeguir.setStrokeColor(ColorStateList.valueOf(getColor(R.color.color_principal)));
+        } else {
+            botoSeguir.setBackgroundTintList(ColorStateList.valueOf(Color.TRANSPARENT));
+            botoSeguir.setTextColor(getColor(R.color.color_principal));
+            botoSeguir.setStrokeColor(ColorStateList.valueOf(getColor(R.color.color_principal)));
+        }
     }
 
     private String valorPerMostrar(String valor) {

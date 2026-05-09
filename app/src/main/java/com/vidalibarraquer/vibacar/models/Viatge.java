@@ -13,6 +13,10 @@ public class Viatge {
     private String origen;
     private String desti;
     private String zonaSortida;
+    private double origenLat;
+    private double origenLng;
+    private double destiLat;
+    private double destiLng;
     private long sortidaMillis;
     private long arribadaMillis;
     private int placesTotals;
@@ -110,6 +114,38 @@ public class Viatge {
 
     public void setZonaSortida(String zonaSortida) {
         this.zonaSortida = zonaSortida;
+    }
+
+    public double getOrigenLat() {
+        return origenLat;
+    }
+
+    public void setOrigenLat(double origenLat) {
+        this.origenLat = origenLat;
+    }
+
+    public double getOrigenLng() {
+        return origenLng;
+    }
+
+    public void setOrigenLng(double origenLng) {
+        this.origenLng = origenLng;
+    }
+
+    public double getDestiLat() {
+        return destiLat;
+    }
+
+    public void setDestiLat(double destiLat) {
+        this.destiLat = destiLat;
+    }
+
+    public double getDestiLng() {
+        return destiLng;
+    }
+
+    public void setDestiLng(double destiLng) {
+        this.destiLng = destiLng;
     }
 
     public long getSortidaMillis() {

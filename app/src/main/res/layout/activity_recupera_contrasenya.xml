@@ -20,10 +20,10 @@
             android:layout_height="48dp"
             android:layout_gravity="start"
             android:layout_marginStart="19dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_menu_revert"
+            android:padding="10dp"
+            android:src="@drawable/ic_enrere"
             app:tint="@color/color_text_fosc" />
 
         <LinearLayout
@@ -32,7 +32,7 @@
             android:layout_marginHorizontal="19dp"
             android:layout_marginTop="18dp"
             android:background="@drawable/fons_targeta"
-            android:elevation="8dp"
+            android:elevation="0dp"
             android:orientation="vertical"
             android:padding="24dp">
 
@@ -72,6 +72,20 @@
                     android:inputType="textEmailAddress" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/etiqueta_repeteix_correu">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/campCorreuConfirmacio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoEnviaRecuperacio"
                 android:layout_width="match_parent"
@@ -79,7 +93,9 @@
                 android:layout_marginTop="20dp"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/boto_envia_recuperacio"
-                android:textColor="@color/color_text_clar" />
+                android:textColor="@color/color_text_clar"
+                app:backgroundTint="@null"
+                app:cornerRadius="8dp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

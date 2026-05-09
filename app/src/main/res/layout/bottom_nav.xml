@@ -1,30 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="72dp"
     android:background="@color/color_targeta"
-    android:elevation="8dp"
-    android:orientation="horizontal">
+    android:elevation="10dp"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="8dp">
 
     <LinearLayout
         android:id="@+id/navBuscar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackground"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingVertical="10dp">
+        android:orientation="vertical">
 
         <ImageView
+            android:id="@+id/iconaBuscar"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_search"
-            android:contentDescription="@string/nav_buscar" />
+            android:contentDescription="@string/nav_buscar"
+            android:src="@drawable/ic_nav_buscar"
+            app:tint="@color/color_text_secundari" />
 
         <TextView
+            android:id="@+id/textNavBuscar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -36,14 +43,13 @@
     <LinearLayout
         android:id="@+id/navNotificacions"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackground"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingVertical="10dp">
+        android:orientation="vertical">
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -53,19 +59,21 @@
                 android:id="@+id/iconaNotificacions"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_dialog_email"
-                android:contentDescription="@string/nav_notificacions" />
+                android:contentDescription="@string/nav_notificacions"
+                android:src="@drawable/ic_nav_notificacions"
+                app:tint="@color/color_text_secundari" />
 
             <View
                 android:id="@+id/badgeNotificacions"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
                 android:layout_gravity="top|end"
-                android:background="@color/color_error"
+                android:background="@drawable/fons_badge"
                 android:visibility="gone" />
         </FrameLayout>
 
         <TextView
+            android:id="@+id/textNavNotificacions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -77,22 +85,24 @@
     <LinearLayout
         android:id="@+id/navMissatges"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_weight="1"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:background="?attr/selectableItemBackground"
         android:gravity="center"
-        android:orientation="vertical"
-        android:paddingVertical="10dp">
+        android:orientation="vertical">
 
         <ImageView
+            android:id="@+id/iconaMissatges"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@android:drawable/ic_dialog_info"
-            android:contentDescription="@string/nav_missatges" />
+            android:contentDescription="@string/nav_missatges"
+            android:src="@drawable/ic_nav_missatges"
+            app:tint="@color/color_text_secundari" />
 
         <TextView
+            android:id="@+id/textNavMissatges"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

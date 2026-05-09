@@ -3,12 +3,14 @@ package com.vidalibarraquer.vibacar.activitats;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -18,7 +20,9 @@ import com.vidalibarraquer.vibacar.adaptadors.AdaptadorViatges;
 import com.vidalibarraquer.vibacar.models.Usuari;
 import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsBottomNav;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsRecordatoris;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,10 +37,11 @@ public class PantallaConductorActivity extends AppCompatActivity {
     private TextView txtNomConductor;
     private TextView txtValoracioConductor;
     private TextView txtResumPublicats;
-    private TextView txtResumReservats;
     private TextView txtResumSollicituds;
     private TextView txtInicialAvatar;
+    private MaterialCardView cardSollicituds;
     private ShapeableImageView imatgePerfil;
+    private final List<String> viatgesAmbSollicituds = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,9 +55,9 @@ public class PantallaConductorActivity extends AppCompatActivity {
         txtNomConductor = findViewById(R.id.txtNomConductor);
         txtValoracioConductor = findViewById(R.id.txtValoracioConductor);
         txtResumPublicats = findViewById(R.id.txtResumPublicats);
-        txtResumReservats = findViewById(R.id.txtResumReservats);
         txtResumSollicituds = findViewById(R.id.txtResumSollicituds);
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
+        cardSollicituds = findViewById(R.id.cardSollicituds);
         imatgePerfil = findViewById(R.id.imatgePerfil);
 
         RecyclerView llistaViatges = findViewById(R.id.llistaViatges);
@@ -70,11 +75,14 @@ public class PantallaConductorActivity extends AppCompatActivity {
         });
         findViewById(R.id.botoPerfil).setOnClickListener(v -> startActivity(new Intent(this, PerfilActivity.class)));
         findViewById(R.id.botoCrearViatge).setOnClickListener(v -> startActivity(new Intent(this, CrearViatgeActivity.class)));
+        cardSollicituds.setOnClickListener(v -> obreSollicitudsPendents());
 
         configuraBotomNav();
     }
 
     private void configuraBotomNav() {
+        UtilitatsBottomNav.marcaSeleccionada(this, UtilitatsBottomNav.SECCIO_BUSCAR);
+
         android.view.View navBuscar = findViewById(R.id.navBuscar);
         android.view.View navNotificacions = findViewById(R.id.navNotificacions);
         android.view.View navMissatges = findViewById(R.id.navMissatges);
@@ -100,8 +108,8 @@ public class PantallaConductorActivity extends AppCompatActivity {
         super.onResume();
         carregaCapcalera();
         carregaViatgesPropis();
-        carregaReservatsComPassatger();
         carregaSollicitudsPendents();
+        UtilitatsRecordatoris.comprova(this, db, auth.getCurrentUser());
     }
 
     private void carregaCapcalera() {
@@ -152,47 +160,34 @@ public class PantallaConductorActivity extends AppCompatActivity {
                     List<Viatge> viatges = new ArrayList<>();
                     int publicats = 0;
 
+                    long ara = System.currentTimeMillis();
                     for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Viatge viatge = document.toObject(Viatge.class);
                         viatge.setId(document.getId());
+                        if (UtilitatsFirebase.ESTAT_VIATGE_CANCELAT.equalsIgnoreCase(viatge.getEstat())) {
+                            continue;
+                        }
+                        if (UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT.equalsIgnoreCase(viatge.getEstat())) {
+                            continue;
+                        }
+                        if (viatge.getSortidaMillis() < ara - 2L * 60L * 60L * 1000L) {
+                            continue;
+                        }
                         viatges.add(viatge);
-                        if ("disponible".equalsIgnoreCase(viatge.getEstat())) {
+                        if (UtilitatsFirebase.ESTAT_VIATGE_DISPONIBLE.equalsIgnoreCase(viatge.getEstat())) {
                             publicats++;
                         }
                     }
 
                     viatges.sort(Comparator.comparingLong(Viatge::getSortidaMillis));
                     adaptadorViatges.actualitzaDades(viatges);
-                    txtResumPublicats.setText(getString(R.string.conductor_resum_publicats_format, publicats));
+                    txtResumPublicats.setText(String.valueOf(publicats));
                     txtBuit.setVisibility(viatges.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
                 })
                 .addOnFailureListener(e -> {
-                    txtResumPublicats.setText(R.string.conductor_resum_publicats_buit);
+                    txtResumPublicats.setText("0");
                     txtBuit.setVisibility(android.view.View.VISIBLE);
                 });
-    }
-
-    private void carregaReservatsComPassatger() {
-        FirebaseUser usuari = auth.getCurrentUser();
-        if (usuari == null) {
-            return;
-        }
-
-        db.collection(UtilitatsFirebase.COL_RESERVES)
-                .whereEqualTo("passatgerId", usuari.getUid())
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    int reservats = 0;
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String estat = doc.getString("estat");
-                        if (UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(estat)
-                                || UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(estat)) {
-                            reservats++;
-                        }
-                    }
-                    txtResumReservats.setText(getString(R.string.conductor_resum_reservats_format, reservats));
-                })
-                .addOnFailureListener(e -> txtResumReservats.setText(R.string.conductor_resum_reservats_buit));
     }
 
     private void carregaSollicitudsPendents() {
@@ -206,13 +201,28 @@ public class PantallaConductorActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     int pendents = 0;
+                    viatgesAmbSollicituds.clear();
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         if (UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(doc.getString("estat"))) {
                             pendents++;
+                            String viatgeId = doc.getString("viatgeId");
+                            if (viatgeId != null && !viatgesAmbSollicituds.contains(viatgeId)) {
+                                viatgesAmbSollicituds.add(viatgeId);
+                            }
                         }
                     }
-                    txtResumSollicituds.setText(getString(R.string.conductor_resum_sollicituds_format, pendents));
+                    txtResumSollicituds.setText(String.valueOf(pendents));
                 })
-                .addOnFailureListener(e -> txtResumSollicituds.setText(R.string.conductor_resum_sollicituds_buit));
+                .addOnFailureListener(e -> txtResumSollicituds.setText("0"));
+    }
+
+    private void obreSollicitudsPendents() {
+        if (viatgesAmbSollicituds.isEmpty()) {
+            Toast.makeText(this, R.string.conductor_sense_sollicituds_pendents, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, DetallViatgeActivity.class);
+        intent.putExtra(DetallViatgeActivity.EXTRA_ID_VIATGE, viatgesAmbSollicituds.get(0));
+        startActivity(intent);
     }
 }

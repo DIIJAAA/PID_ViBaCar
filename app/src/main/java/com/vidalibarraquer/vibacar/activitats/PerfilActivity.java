@@ -1,10 +1,14 @@
 package com.vidalibarraquer.vibacar.activitats;
 
 import android.app.AlertDialog;
+import android.content.res.ColorStateList;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,8 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -48,9 +56,8 @@ public class PerfilActivity extends AppCompatActivity {
     private TextView txtBuit;
     private TextView txtTotalValoracions;
     private ShapeableImageView imatgePerfil;
+    private ImageView iconaVerificat;
     private RatingBar barraReputacio;
-    private MaterialButton botoVeureCotxe;
-    private MaterialButton botoVeureInfo;
     private boolean mostraPassats;
     private boolean dialogValoracioMostrat;
 
@@ -68,9 +75,8 @@ public class PerfilActivity extends AppCompatActivity {
         txtBuit = findViewById(R.id.txtBuit);
         txtTotalValoracions = findViewById(R.id.txtTotalValoracions);
         imatgePerfil = findViewById(R.id.imatgePerfil);
+        iconaVerificat = findViewById(R.id.iconaVerificat);
         barraReputacio = findViewById(R.id.barraReputacio);
-        botoVeureCotxe = findViewById(R.id.botoVeureCotxe);
-        botoVeureInfo = findViewById(R.id.botoVeureInfo);
 
         String uidActual = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
 
@@ -105,6 +111,7 @@ public class PerfilActivity extends AppCompatActivity {
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         findViewById(R.id.botoEditarPerfil).setOnClickListener(v -> startActivity(new Intent(this, ConfiguraPerfilActivity.class)));
+        findViewById(R.id.botoCanviarContrasenya).setOnClickListener(v -> enviaCanviContrasenya());
         findViewById(R.id.botoTancarSessio).setOnClickListener(v -> {
             auth.signOut();
             Intent intent = new Intent(this, PantallaBenvingudaActivity.class);
@@ -151,59 +158,96 @@ public class PerfilActivity extends AppCompatActivity {
                     barraReputacio.setRating((float) perfil.getValoracioMitjana());
                     txtTotalValoracions.setText(String.format(Locale.getDefault(), "(%d)", perfil.getTotalValoracions()));
 
-                    String dadesResum = String.format("%s • %s",
-                            perfil.getZona(),
-                            UtilitatsFirebase.etiquetaRol(this, perfil.getRol()));
-                    txtDades.setText(dadesResum);
-
-                    botoVeureInfo.setOnClickListener(v -> obreDialegInfo(perfil));
-
-                    if (UtilitatsFirebase.esRolConductor(perfil.getRol())) {
-                        botoVeureCotxe.setVisibility(View.VISIBLE);
-                        botoVeureCotxe.setOnClickListener(v -> obreDialegVehicle(perfil));
-                    } else {
-                        botoVeureCotxe.setVisibility(View.GONE);
-                    }
+                    String bio = perfil.getBio() == null || perfil.getBio().trim().isEmpty()
+                            ? getString(R.string.perfil_bio_buida)
+                            : perfil.getBio().trim();
+                    txtDades.setText(bio);
+                    iconaVerificat.setVisibility(usuari.isEmailVerified() ? View.VISIBLE : View.GONE);
 
                     UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, perfil.getFotoUri(), perfil.getNom());
                 });
     }
 
-    private void obreDialegInfo(Usuari perfil) {
-        View vista = LayoutInflater.from(this).inflate(R.layout.dialog_perfil_detall, null);
-        TextView txtNomDetall = vista.findViewById(R.id.txtNomDetall);
-        TextView txtDataNaixementDetall = vista.findViewById(R.id.txtDataNaixementDetall);
-        TextView txtSexeDetall = vista.findViewById(R.id.txtSexeDetall);
-        TextView txtBioDetall = vista.findViewById(R.id.txtBioDetall);
-        TextView txtCorreuDetall = vista.findViewById(R.id.txtCorreuDetall);
-        TextView txtTelDetall = vista.findViewById(R.id.txtTelDetall);
+    private void enviaCanviContrasenya() {
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null || usuari.getEmail() == null) return;
 
-        txtNomDetall.setText(perfil.getNom());
-        txtDataNaixementDetall.setText(perfil.getDataNaixement() != null && !perfil.getDataNaixement().isEmpty() ? perfil.getDataNaixement() : "-");
-        txtSexeDetall.setText(perfil.getSexe() != null && !perfil.getSexe().isEmpty() ? perfil.getSexe() : "-");
-        txtBioDetall.setText(perfil.getBio() != null && !perfil.getBio().isEmpty() ? perfil.getBio() : "Sense biografia.");
-        txtCorreuDetall.setText(perfil.getCorreu());
-        txtTelDetall.setText(perfil.getTelefon() != null && !perfil.getTelefon().isEmpty() ? perfil.getTelefon() : "-");
+        if (!teProviderPassword(usuari)) {
+            enviaEnllacReset(usuari);
+            return;
+        }
 
-        new AlertDialog.Builder(this)
-                .setView(vista)
-                .setPositiveButton("D'acord", null)
-                .show();
+        TextInputEditText campActual = creaCampContrasenya();
+        TextInputEditText campRepetida = creaCampContrasenya();
+        campRepetida.setHint(R.string.etiqueta_repeteix_contrasenya_actual);
+
+        LinearLayout contenidor = new LinearLayout(this);
+        contenidor.setOrientation(LinearLayout.VERTICAL);
+        int marge = (int) (20 * getResources().getDisplayMetrics().density);
+        contenidor.setPadding(marge, 8, marge, 0);
+        contenidor.addView(campActual);
+        contenidor.addView(campRepetida);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.canvi_contrasenya_titol)
+                .setMessage(R.string.canvi_contrasenya_missatge)
+                .setView(contenidor)
+                .setPositiveButton(R.string.boto_envia_recuperacio, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+        dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> validaIEnviaReset(usuari, campActual, campRepetida, dialog)));
+        dialog.show();
     }
 
-    private void obreDialegVehicle(Usuari perfil) {
-        View vista = LayoutInflater.from(this).inflate(R.layout.dialog_detall_vehicle, null);
-        TextView txtModel = vista.findViewById(R.id.txtModelCotxe);
-        TextView txtPlaces = vista.findViewById(R.id.txtPlacesCotxe);
+    private TextInputEditText creaCampContrasenya() {
+        TextInputEditText camp = new TextInputEditText(this);
+        camp.setHint(R.string.etiqueta_contrasenya_actual);
+        camp.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        camp.setSingleLine(true);
+        camp.setTextSize(13);
+        camp.setHintTextColor(getColor(R.color.color_text_secundari));
+        return camp;
+    }
 
-        txtModel.setText(perfil.getModelCotxe() != null ? perfil.getModelCotxe() : "-");
-        txtPlaces.setText(String.valueOf(perfil.getPlacesHabituals()));
+    private boolean teProviderPassword(FirebaseUser usuari) {
+        for (UserInfo info : usuari.getProviderData()) {
+            if (IniciSessioActivity.PROVIDER_PASSWORD.equals(info.getProviderId())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-        new AlertDialog.Builder(this)
-                .setTitle("El meu vehicle")
-                .setView(vista)
-                .setPositiveButton("D'acord", null)
-                .show();
+    private void validaIEnviaReset(FirebaseUser usuari, TextInputEditText campActual,
+                                   TextInputEditText campRepetida, AlertDialog dialog) {
+        String actual = obteText(campActual);
+        String repetida = obteText(campRepetida);
+        if (actual.length() < 6 || !actual.equals(repetida)) {
+            Toast.makeText(this, R.string.error_contrasenya_actual_diferent, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AuthCredential credential = EmailAuthProvider.getCredential(usuari.getEmail(), actual);
+        usuari.reauthenticate(credential)
+                .addOnSuccessListener(unused -> {
+                    dialog.dismiss();
+                    enviaEnllacReset(usuari);
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_contrasenya_actual, Toast.LENGTH_SHORT).show());
+    }
+
+    private void enviaEnllacReset(FirebaseUser usuari) {
+        auth.sendPasswordResetEmail(usuari.getEmail())
+                .addOnSuccessListener(unused -> Toast.makeText(this, R.string.missatge_recuperacio_contrasenya, Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
+    }
+
+    private String obteText(TextInputEditText camp) {
+        return camp.getText() == null ? "" : camp.getText().toString().trim();
+    }
+
+    private String valor(String text) {
+        return text == null || text.trim().isEmpty() ? getString(R.string.text_no_definit) : text.trim();
     }
 
     private void carregaLlista() {
@@ -219,6 +263,9 @@ public class PerfilActivity extends AppCompatActivity {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         Reserva reserva = doc.toObject(Reserva.class);
                         reserva.setId(doc.getId());
+                        if (!UtilitatsFirebase.esReservaActiva(reserva.getEstat())) {
+                            continue;
+                        }
                         if (filtreData(reserva.getSortidaMillis())) {
                             resultat.add(reserva);
                         }
@@ -230,6 +277,10 @@ public class PerfilActivity extends AppCompatActivity {
                             .addOnSuccessListener(viatgesDocs -> {
                                 for (com.google.firebase.firestore.QueryDocumentSnapshot doc : viatgesDocs) {
                                     Viatge viatge = doc.toObject(Viatge.class);
+                                    if (UtilitatsFirebase.ESTAT_VIATGE_CANCELAT.equalsIgnoreCase(viatge.getEstat())
+                                            || UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT.equalsIgnoreCase(viatge.getEstat())) {
+                                        continue;
+                                    }
                                     Reserva reservaPropia = new Reserva();
                                     reservaPropia.setId("viatge_" + doc.getId());
                                     reservaPropia.setViatgeId(doc.getId());
@@ -274,19 +325,19 @@ public class PerfilActivity extends AppCompatActivity {
         MaterialButton botoProxims = findViewById(R.id.botoProxims);
         MaterialButton botoPassats = findViewById(R.id.botoPassats);
 
-        if (mostraPassats) {
-            botoPassats.setBackgroundResource(R.drawable.fons_boto_principal);
-            botoPassats.setTextColor(getColor(R.color.color_text_clar));
-            botoProxims.setBackgroundResource(android.R.color.transparent);
-            botoProxims.setStrokeColorResource(R.color.color_principal);
-            botoProxims.setTextColor(getColor(R.color.color_principal));
-        } else {
-            botoProxims.setBackgroundResource(R.drawable.fons_boto_principal);
-            botoProxims.setTextColor(getColor(R.color.color_text_clar));
-            botoPassats.setBackgroundResource(android.R.color.transparent);
-            botoPassats.setStrokeColorResource(R.color.color_principal);
-            botoPassats.setTextColor(getColor(R.color.color_principal));
-        }
+        pintaBotoFiltre(botoProxims, !mostraPassats);
+        pintaBotoFiltre(botoPassats, mostraPassats);
+    }
+
+    private void pintaBotoFiltre(MaterialButton boto, boolean seleccionat) {
+        int colorFons = getColor(seleccionat ? R.color.color_principal : R.color.color_targeta);
+        int colorText = getColor(seleccionat ? R.color.color_text_clar : R.color.color_principal);
+        int colorVora = getColor(seleccionat ? R.color.color_principal : R.color.color_linia);
+
+        boto.setBackgroundTintList(ColorStateList.valueOf(colorFons));
+        boto.setTextColor(colorText);
+        boto.setStrokeColor(ColorStateList.valueOf(colorVora));
+        boto.setStrokeWidth(seleccionat ? 0 : (int) (getResources().getDisplayMetrics().density + 0.5f));
     }
 
     private void obreDialegPuntuacio(Reserva reserva) {
@@ -294,6 +345,7 @@ public class PerfilActivity extends AppCompatActivity {
 
         View vista = LayoutInflater.from(this).inflate(R.layout.dialog_puntuacio, null, false);
         RatingBar barraPuntuacio = vista.findViewById(R.id.barraPuntuacio);
+        barraPuntuacio.setRating(3.0f);
         com.google.android.material.textfield.TextInputEditText campComentari =
                 vista.findViewById(R.id.campComentari);
 
@@ -311,12 +363,17 @@ public class PerfilActivity extends AppCompatActivity {
 
     private void desaPuntuacio(Reserva reserva, float puntuacio, String comentari) {
         if (puntuacio <= 0f) {
+            Toast.makeText(this, R.string.error_valoracio_zero, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String conductorId = reserva.getConductorId();
+        if (android.text.TextUtils.isEmpty(conductorId)) {
             Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show();
             return;
         }
 
         DocumentReference reservaRef = db.collection(UtilitatsFirebase.COL_RESERVES).document(reserva.getId());
-        DocumentReference conductorRef = db.collection(UtilitatsFirebase.COL_USUARIS).document(reserva.getConductorId());
+        DocumentReference conductorRef = db.collection(UtilitatsFirebase.COL_USUARIS).document(conductorId);
 
         db.runTransaction(transaction -> {
             com.google.firebase.firestore.DocumentSnapshot conductorDoc = transaction.get(conductorRef);

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/fons_pantalla"
     android:paddingHorizontal="5dp"
-    android:paddingBottom="5dp"
-    android:background="@drawable/fons_pantalla">
+    android:paddingBottom="5dp">
 
     <LinearLayout
         android:id="@+id/capcalera"
@@ -23,10 +23,10 @@
             android:id="@+id/botoEnrere"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_menu_revert"
+            android:padding="12dp"
+            android:src="@drawable/ic_enrere"
             app:tint="@color/color_text_fosc" />
 
         <TextView

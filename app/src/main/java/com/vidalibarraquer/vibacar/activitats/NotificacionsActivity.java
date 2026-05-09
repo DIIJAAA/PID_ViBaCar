@@ -17,6 +17,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorNotificacions;
 import com.vidalibarraquer.vibacar.models.Notificacio;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsBottomNav;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
 
 import java.util.ArrayList;
@@ -52,6 +53,8 @@ public class NotificacionsActivity extends AppCompatActivity {
     }
 
     private void configuraBotomNav() {
+        UtilitatsBottomNav.marcaSeleccionada(this, UtilitatsBottomNav.SECCIO_NOTIFICACIONS);
+
         android.view.View navBuscar = findViewById(R.id.navBuscar);
         android.view.View navMissatges = findViewById(R.id.navMissatges);
 

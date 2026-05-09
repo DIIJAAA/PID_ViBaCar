@@ -1,7 +1,6 @@
 package com.vidalibarraquer.vibacar.utilitats;
 
 import android.app.Activity;
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -12,8 +11,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.vidalibarraquer.vibacar.R;
-
 import java.util.Collections;
 
 public final class UtilitatsFirebase {
@@ -23,12 +20,14 @@ public final class UtilitatsFirebase {
     public static final String COL_RESERVES = "reserves";
     public static final String COL_XATS = "xats";
     public static final String COL_MISSATGES = "missatges";
+    public static final String COL_SEGUIMENTS = "seguiments";
     public static final String ESTAT_RESERVA_PENDENT = "pendent";
     public static final String ESTAT_RESERVA_ACCEPTADA = "acceptada";
     public static final String ESTAT_RESERVA_REBUTJADA = "rebutjada";
     public static final String ESTAT_RESERVA_CANCELADA = "cancelada";
-    public static final String ROL_CONDUCTOR = "conductor";
-    public static final String ROL_PASSATGER = "passatger";
+    public static final String ESTAT_VIATGE_DISPONIBLE = "disponible";
+    public static final String ESTAT_VIATGE_COMPLETAT = "completat";
+    public static final String ESTAT_VIATGE_CANCELAT = "cancelat";
     public static final String DOMINI_CENTRE = "vidalibarraquer.net";
 
     private UtilitatsFirebase() {
@@ -59,10 +58,6 @@ public final class UtilitatsFirebase {
         return viatgeId + "_" + passatgerId;
     }
 
-    public static String creaIdXat(String viatgeId, String passatgerId) {
-        return viatgeId + "_" + passatgerId;
-    }
-
     public static String creaIdXatUsuaris(String uidA, String uidB) {
         if (uidA.compareTo(uidB) < 0) {
             return "xat_" + uidA + "_" + uidB;
@@ -70,32 +65,7 @@ public final class UtilitatsFirebase {
         return "xat_" + uidB + "_" + uidA;
     }
 
-    public static boolean esRolConductor(String rol) {
-        if (TextUtils.isEmpty(rol)) {
-            return false;
-        }
-        String valor = rol.trim().toLowerCase();
-        return ROL_CONDUCTOR.equals(valor) || valor.contains("conductor");
-    }
-
-    public static boolean esRolPassatger(String rol) {
-        if (TextUtils.isEmpty(rol)) {
-            return false;
-        }
-        String valor = rol.trim().toLowerCase();
-        return ROL_PASSATGER.equals(valor)
-                || valor.contains("passatg")
-                || valor.contains("pasaj")
-                || valor.contains("passenger");
-    }
-
-    public static String etiquetaRol(@NonNull Context context, String rol) {
-        if (esRolConductor(rol)) {
-            return context.getString(R.string.rol_conductor);
-        }
-        if (esRolPassatger(rol)) {
-            return context.getString(R.string.rol_passatger);
-        }
-        return context.getString(R.string.text_no_definit);
+    public static boolean esReservaActiva(String estat) {
+        return ESTAT_RESERVA_PENDENT.equals(estat) || ESTAT_RESERVA_ACCEPTADA.equals(estat);
     }
 }

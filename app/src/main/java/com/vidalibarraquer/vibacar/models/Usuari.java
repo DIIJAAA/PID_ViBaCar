@@ -8,15 +8,8 @@ public class Usuari {
     private String correu;
     private String telefon;
     private String rol;
-    private String zona;
-    private String horaSortidaHabitual;
-    private String puntTrobadaHabitual;
     private String fotoUri;
     private String bio;
-    private String modelCotxe;
-    private String dataNaixement;
-    private String sexe;
-    private int placesHabituals;
     private boolean perfilCompletat;
     private double valoracioMitjana;
     private long totalValoracions;
@@ -65,14 +58,6 @@ public class Usuari {
         this.rol = rol;
     }
 
-    public String getZona() {
-        return zona;
-    }
-
-    public void setZona(String zona) {
-        this.zona = zona;
-    }
-
     public String getFotoUri() {
         return fotoUri;
     }
@@ -81,60 +66,12 @@ public class Usuari {
         this.fotoUri = fotoUri;
     }
 
-    public String getHoraSortidaHabitual() {
-        return horaSortidaHabitual;
-    }
-
-    public void setHoraSortidaHabitual(String horaSortidaHabitual) {
-        this.horaSortidaHabitual = horaSortidaHabitual;
-    }
-
-    public String getPuntTrobadaHabitual() {
-        return puntTrobadaHabitual;
-    }
-
-    public void setPuntTrobadaHabitual(String puntTrobadaHabitual) {
-        this.puntTrobadaHabitual = puntTrobadaHabitual;
-    }
-
     public String getBio() {
         return bio;
     }
 
     public void setBio(String bio) {
         this.bio = bio;
-    }
-
-    public String getModelCotxe() {
-        return modelCotxe;
-    }
-
-    public void setModelCotxe(String modelCotxe) {
-        this.modelCotxe = modelCotxe;
-    }
-
-    public String getDataNaixement() {
-        return dataNaixement;
-    }
-
-    public void setDataNaixement(String dataNaixement) {
-        this.dataNaixement = dataNaixement;
-    }
-
-    public String getSexe() {
-        return sexe;
-    }
-
-    public void setSexe(String sexe) {
-        this.sexe = sexe;
-    }
-
-    public int getPlacesHabituals() {
-        return placesHabituals;
-    }
-
-    public void setPlacesHabituals(int placesHabituals) {
-        this.placesHabituals = placesHabituals;
     }
 
     public boolean isPerfilCompletat() {
@@ -169,24 +106,4 @@ public class Usuari {
         this.idioma = idioma;
     }
 
-    public int getEdat() {
-        if (dataNaixement == null || dataNaixement.isEmpty()) return 0;
-        try {
-            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
-            java.util.Date data = sdf.parse(dataNaixement);
-            if (data == null) return 0;
-            java.util.Calendar naixement = java.util.Calendar.getInstance();
-            naixement.setTime(data);
-            java.util.Calendar avui = java.util.Calendar.getInstance();
-            int edat = avui.get(java.util.Calendar.YEAR) - naixement.get(java.util.Calendar.YEAR);
-            if (avui.get(java.util.Calendar.MONTH) < naixement.get(java.util.Calendar.MONTH) ||
-                (avui.get(java.util.Calendar.MONTH) == naixement.get(java.util.Calendar.MONTH) &&
-                 avui.get(java.util.Calendar.DAY_OF_MONTH) < naixement.get(java.util.Calendar.DAY_OF_MONTH))) {
-                edat--;
-            }
-            return edat;
-        } catch (Exception e) {
-            return 0;
-        }
-    }
 }

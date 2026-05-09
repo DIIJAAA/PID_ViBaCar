@@ -3,63 +3,64 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/pantalla_benvinguda"
+    android:background="@drawable/fons_pantalla"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="24dp"
-        android:paddingBottom="24dp">
+        android:padding="20dp">
 
         <ImageButton
             android:id="@+id/botoEnrere"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
-            android:padding="8dp"
-            android:src="@android:drawable/ic_menu_revert"
-            app:tint="@color/color_text_clar" />
+            android:padding="10dp"
+            android:src="@drawable/ic_enrere"
+            app:tint="@color/color_text_principal" />
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/nom_marca"
+            android:src="@drawable/logo_color" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_horizontal"
+            android:text="@string/inici_titol"
+            android:textColor="@color/color_text_principal"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/inici_subtitol"
+            android:textColor="@color/color_text_secundari"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:background="@drawable/fons_targeta"
-            android:backgroundTint="#E6FFFFFF"
-            android:elevation="12dp"
-            android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/inici_titol"
-                android:textColor="@color/color_text_principal"
-                android:textSize="28sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center_horizontal"
-                android:text="@string/inici_subtitol"
-                android:textColor="@color/color_text_secundari"
-                android:textSize="16sp" />
+            android:padding="18dp">
 
             <TextView
                 android:id="@+id/txtMissatge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
                 android:gravity="center_horizontal"
                 android:textColor="@color/color_error" />
 
@@ -67,10 +68,14 @@
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="10dp"
                 android:hint="@string/etiqueta_correu"
-                app:boxBackgroundColor="@color/color_text_clar"
-                app:boxBackgroundMode="outline">
+                app:boxBackgroundColor="@color/color_targeta"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
+                app:startIconDrawable="@android:drawable/ic_dialog_email">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/campCorreu"
@@ -85,7 +90,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:hint="@string/etiqueta_contrasenya"
-                app:boxBackgroundColor="@color/color_text_clar"
+                app:boxBackgroundColor="@color/color_targeta"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -98,83 +107,26 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoIniciarSessio"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginTop="24dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/boto_iniciar_sessio"
                 android:textColor="@color/color_text_clar"
-                android:textSize="20sp"
                 android:textStyle="bold"
-                app:backgroundTint="@null" />
+                app:backgroundTint="@null"
+                app:cornerRadius="8dp" />
 
-            <!-- Separador "O" -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1"
-                    android:background="@color/color_linia" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="10dp"
-                    android:text="o"
-                    android:textColor="@color/color_text_secundari" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1"
-                    android:background="@color/color_linia" />
-            </LinearLayout>
-
-            <!-- Botó Google Personalitzat -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/botoGoogle"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardBackgroundColor="@color/color_text_clar"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/color_linia"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:contentDescription="Google"
-                        android:src="@drawable/ic_google" />
-
-                    <Space
-                        android:layout_width="12dp"
-                        android:layout_height="1dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Google"
-                        android:textColor="@color/color_text_principal"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/indicadorCarrega"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/color_principal"
+                app:indicatorSize="36dp"
+                app:trackThickness="4dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoRecorda"
@@ -182,18 +134,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="8dp"
-                android:text="@string/boto_he_oblidat" />
-
-            <TextView
-                android:id="@+id/txtVesCrearCompte"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center"
-                android:text="@string/no_tens_compte"
-                android:textColor="@color/color_principal_fosc"
-                android:textStyle="bold" />
+                android:layout_marginTop="6dp"
+                android:text="@string/boto_he_oblidat"
+                android:textColor="@color/color_principal" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtVesCrearCompte"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            android:gravity="center"
+            android:text="@string/no_tens_compte"
+            android:textColor="@color/color_principal"
+            android:textStyle="bold" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

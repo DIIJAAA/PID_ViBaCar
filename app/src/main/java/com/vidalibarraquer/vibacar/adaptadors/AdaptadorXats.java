@@ -24,15 +24,25 @@ public class AdaptadorXats extends RecyclerView.Adapter<AdaptadorXats.XatViewHol
         void onXatClick(Xat xat, String nomMostrat);
     }
 
+    public interface OnAvatarClickListener {
+        void onAvatarClick(String uid);
+    }
+
     private final Context context;
     private final String uidActual;
     private final OnXatClickListener listener;
+    private final OnAvatarClickListener avatarListener;
     private final List<Xat> xats = new ArrayList<>();
 
     public AdaptadorXats(Context context, String uidActual, OnXatClickListener listener) {
+        this(context, uidActual, listener, null);
+    }
+
+    public AdaptadorXats(Context context, String uidActual, OnXatClickListener listener, OnAvatarClickListener avatarListener) {
         this.context = context;
         this.uidActual = uidActual;
         this.listener = listener;
+        this.avatarListener = avatarListener;
     }
 
     public void actualitzaDades(List<Xat> dadesNoves) {
@@ -84,6 +94,11 @@ public class AdaptadorXats extends RecyclerView.Adapter<AdaptadorXats.XatViewHol
         } else {
             holder.txtHora.setVisibility(View.GONE);
         }
+
+        String altreUid = socConductor ? xat.getPassatgerId() : xat.getConductorId();
+        holder.txtInicial.setOnClickListener(v -> {
+            if (avatarListener != null && altreUid != null) avatarListener.onAvatarClick(altreUid);
+        });
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

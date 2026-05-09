@@ -114,11 +114,6 @@ public class VerificaCorreuActivity extends AppCompatActivity {
         dades.put("correu", usuari.getEmail() == null ? "" : usuari.getEmail());
         dades.put("telefon", "");
         dades.put("rol", "");
-        dades.put("zona", "");
-        dades.put("horaSortidaHabitual", "");
-        dades.put("puntTrobadaHabitual", "");
-        dades.put("modelCotxe", "");
-        dades.put("placesHabituals", 0);
         dades.put("bio", "");
         dades.put("fotoUri", "");
         dades.put("perfilCompletat", false);

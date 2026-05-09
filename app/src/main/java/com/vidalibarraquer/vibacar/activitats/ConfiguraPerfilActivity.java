@@ -1,23 +1,24 @@
 package com.vidalibarraquer.vibacar.activitats;
 
-import android.app.DatePickerDialog;
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -29,10 +30,7 @@ import com.vidalibarraquer.vibacar.utilitats.GestorIdioma;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class ConfiguraPerfilActivity extends AppCompatActivity {
@@ -43,24 +41,14 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private TextInputEditText campNom;
-    private TextInputEditText campTelefon;
-    private TextInputEditText campDataNaixement;
-    private MaterialAutoCompleteTextView campSexe;
-    private MaterialAutoCompleteTextView campZona;
-    private MaterialAutoCompleteTextView campHoraHabitual;
-    private TextInputEditText campPuntTrobada;
-    private TextInputEditText campModelCotxe;
-    private MaterialAutoCompleteTextView campPlacesHabituals;
     private TextInputEditText campBio;
-    private RadioGroup grupRol;
-    private LinearLayout layoutDadesConductor;
-    private TextView txtDadesConductor;
     private ShapeableImageView imatgePerfil;
     private TextView txtInicialAvatar;
     private TextView txtMissatge;
+    private LinearProgressIndicator indicadorCarrega;
     private boolean primerCop;
     private String fotoUri;
-    private Calendar calendariNaixement = Calendar.getInstance();
+    private Runnable accioDespresPermisNotificacions;
 
     private final ActivityResultLauncher<String> selectorFoto = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -68,6 +56,21 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
                 if (uri != null) {
                     fotoUri = uri.toString();
                     actualitzaAvatar();
+                }
+            }
+    );
+
+    private final ActivityResultLauncher<String[]> permisosImatge = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            result -> selectorFoto.launch("image/*")
+    );
+
+    private final ActivityResultLauncher<String> permisNotificacions = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            concedit -> {
+                if (accioDespresPermisNotificacions != null) {
+                    accioDespresPermisNotificacions.run();
+                    accioDespresPermisNotificacions = null;
                 }
             }
     );
@@ -82,73 +85,22 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         primerCop = getIntent().getBooleanExtra(EXTRA_PRIMER_COP, false);
 
         campNom = findViewById(R.id.campNom);
-        campTelefon = findViewById(R.id.campTelefon);
-        campDataNaixement = findViewById(R.id.campDataNaixement);
-        campSexe = findViewById(R.id.campSexe);
-        campZona = findViewById(R.id.campZona);
-        campHoraHabitual = findViewById(R.id.campHoraHabitual);
-        campPuntTrobada = findViewById(R.id.campPuntTrobada);
-        campModelCotxe = findViewById(R.id.campModelCotxe);
-        campPlacesHabituals = findViewById(R.id.campPlacesHabituals);
         campBio = findViewById(R.id.campBio);
-        grupRol = findViewById(R.id.grupRol);
-        layoutDadesConductor = findViewById(R.id.layoutDadesConductor);
-        txtDadesConductor = findViewById(R.id.txtDadesConductor);
         imatgePerfil = findViewById(R.id.imatgePerfil);
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
         txtMissatge = findViewById(R.id.txtMissatge);
+        indicadorCarrega = findViewById(R.id.indicadorCarrega);
 
-        configuraLlistes();
-        configuraSelectorData();
-        grupRol.setOnCheckedChangeListener((group, checkedId) -> actualitzaBlocConductor());
         carregaPerfilSiExisteix();
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         
         FloatingActionButton botoTriaFoto = findViewById(R.id.botoTriaFoto);
         if (botoTriaFoto != null) {
-            botoTriaFoto.setOnClickListener(v -> selectorFoto.launch("image/*"));
+            botoTriaFoto.setOnClickListener(v -> obreSelectorFotoAmbPermisos());
         }
 
         ((MaterialButton) findViewById(R.id.botoDesarPerfil)).setOnClickListener(v -> desaPerfil());
-    }
-
-    private void configuraLlistes() {
-        String[] zones = getResources().getStringArray(R.array.zones_trobada);
-        String[] hores = getResources().getStringArray(R.array.hores_habituals_sortida);
-        String[] places = getResources().getStringArray(R.array.places_habituals_conductor);
-        
-        if (campZona != null) campZona.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, zones));
-        if (campHoraHabitual != null) campHoraHabitual.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, hores));
-        if (campPlacesHabituals != null) campPlacesHabituals.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, places));
-
-        String[] sexes = {getString(R.string.sexe_home), getString(R.string.sexe_dona), getString(R.string.sexe_no_dir), getString(R.string.sexe_altre)};
-        if (campSexe != null) campSexe.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, sexes));
-    }
-
-    private void configuraSelectorData() {
-        DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
-            calendariNaixement.set(Calendar.YEAR, year);
-            calendariNaixement.set(Calendar.MONTH, month);
-            calendariNaixement.set(Calendar.DAY_OF_MONTH, day);
-            actualitzaEtiquetaData();
-        };
-
-        campDataNaixement.setOnClickListener(v -> {
-            DatePickerDialog dialog = new DatePickerDialog(ConfiguraPerfilActivity.this, date,
-                    calendariNaixement.get(Calendar.YEAR),
-                    calendariNaixement.get(Calendar.MONTH),
-                    calendariNaixement.get(Calendar.DAY_OF_MONTH));
-            // No permitir fechas futuras
-            dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-            dialog.show();
-        });
-    }
-
-    private void actualitzaEtiquetaData() {
-        String format = "dd/MM/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
-        campDataNaixement.setText(sdf.format(calendariNaixement.getTime()));
     }
 
     private void carregaPerfilSiExisteix() {
@@ -164,10 +116,12 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
             actualitzaAvatar();
         }
 
+        mostrarCarrega(true);
         db.collection(UtilitatsFirebase.COL_USUARIS)
                 .document(usuari.getUid())
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
+                    mostrarCarrega(false);
                     Usuari perfil = documentSnapshot.toObject(Usuari.class);
                     if (perfil == null) {
                         return;
@@ -176,32 +130,12 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
                     if (!TextUtils.isEmpty(perfil.getNom())) {
                         campNom.setText(perfil.getNom());
                     }
-                    campTelefon.setText(perfil.getTelefon());
-                    if (campZona != null) campZona.setText(perfil.getZona(), false);
-                    if (campHoraHabitual != null) campHoraHabitual.setText(perfil.getHoraSortidaHabitual(), false);
-                    if (campPuntTrobada != null) campPuntTrobada.setText(perfil.getPuntTrobadaHabitual());
-                    if (!TextUtils.isEmpty(perfil.getDataNaixement())) {
-                        campDataNaixement.setText(perfil.getDataNaixement());
-                    }
-                    if (campSexe != null && !TextUtils.isEmpty(perfil.getSexe())) {
-                        campSexe.setText(perfil.getSexe(), false);
-                    }
                     campBio.setText(perfil.getBio());
-                    if (campModelCotxe != null) campModelCotxe.setText(perfil.getModelCotxe());
-                    if (campPlacesHabituals != null && perfil.getPlacesHabituals() > 0) {
-                        campPlacesHabituals.setText(String.valueOf(perfil.getPlacesHabituals()), false);
-                    }
                     fotoUri = perfil.getFotoUri();
 
-                    if (UtilitatsFirebase.esRolConductor(perfil.getRol())) {
-                        grupRol.check(R.id.radioConductor);
-                    } else if (UtilitatsFirebase.esRolPassatger(perfil.getRol())) {
-                        grupRol.check(R.id.radioPassatger);
-                    }
-
-                    actualitzaBlocConductor();
                     actualitzaAvatar();
-                });
+                })
+                .addOnFailureListener(e -> mostrarCarrega(false));
     }
 
     private void desaPerfil() {
@@ -212,16 +146,7 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         }
 
         String nom = obteText(campNom);
-        String telefon = obteText(campTelefon);
-        String dataNaixement = obteText(campDataNaixement);
-        String sexe = campSexe == null || campSexe.getText() == null ? "" : campSexe.getText().toString().trim();
-        String zona = campZona == null || campZona.getText() == null ? "" : campZona.getText().toString().trim();
-        String horaHabitual = campHoraHabitual == null || campHoraHabitual.getText() == null ? "" : campHoraHabitual.getText().toString().trim();
-        String puntTrobada = obteText(campPuntTrobada);
-        String modelCotxe = obteText(campModelCotxe);
-        int placesHabituals = parseInt(campPlacesHabituals == null || campPlacesHabituals.getText() == null ? "" : campPlacesHabituals.getText().toString().trim());
         String bio = obteText(campBio);
-        String rol = obteRolSeleccionat();
 
         if (TextUtils.isEmpty(fotoUri)) {
             txtMissatge.setText(R.string.error_foto_buida);
@@ -231,118 +156,91 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
             txtMissatge.setText(R.string.error_nom_buit);
             return;
         }
-        if (TextUtils.isEmpty(dataNaixement)) {
-            txtMissatge.setText(R.string.error_data_naixement_buida);
-            return;
-        }
-        if (TextUtils.isEmpty(sexe)) {
-            txtMissatge.setText(R.string.error_sexe_buit);
-            return;
-        }
-        if (TextUtils.isEmpty(zona)) {
-            txtMissatge.setText(R.string.error_zona_buida);
-            return;
-        }
-        if (TextUtils.isEmpty(horaHabitual)) {
-            txtMissatge.setText(R.string.error_hora_habitual_buida);
-            return;
-        }
-        if (TextUtils.isEmpty(puntTrobada)) {
-            txtMissatge.setText(R.string.error_punt_trobada_buit);
-            return;
-        }
-        if (TextUtils.isEmpty(rol)) {
-            txtMissatge.setText(R.string.error_rol_buit);
-            return;
-        }
-        if (UtilitatsFirebase.esRolConductor(rol) && TextUtils.isEmpty(modelCotxe)) {
-            txtMissatge.setText(R.string.error_model_cotxe_buit);
-            return;
-        }
-        if (UtilitatsFirebase.esRolConductor(rol) && placesHabituals <= 0) {
-            txtMissatge.setText(R.string.error_places_habituals_buides);
-            return;
-        }
 
         Map<String, Object> dades = new HashMap<>();
         dades.put("uid", usuari.getUid());
         dades.put("nom", nom);
         dades.put("correu", usuari.getEmail());
-        dades.put("telefon", telefon);
-        dades.put("dataNaixement", dataNaixement);
-        dades.put("sexe", sexe);
-        dades.put("rol", rol);
-        dades.put("zona", zona);
-        dades.put("horaSortidaHabitual", horaHabitual);
-        dades.put("puntTrobadaHabitual", puntTrobada);
+        dades.put("telefon", "");
+        dades.put("rol", "usuari");
         dades.put("bio", bio);
         dades.put("fotoUri", fotoUri);
         dades.put("idioma", GestorIdioma.obteIdiomaGuardat(this));
         dades.put("perfilCompletat", true);
         dades.put("emailVerified", usuari.isEmailVerified());
-        if (UtilitatsFirebase.esRolConductor(rol)) {
-            dades.put("modelCotxe", modelCotxe);
-            dades.put("placesHabituals", placesHabituals);
-        } else {
-            dades.put("modelCotxe", "");
-            dades.put("placesHabituals", 0);
-        }
 
+        mostrarCarrega(true);
         db.collection(UtilitatsFirebase.COL_USUARIS)
                 .document(usuari.getUid())
                 .set(dades, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
-                    if (primerCop) {
-                        UtilitatsFirebase.enviaVerificacio(this, usuari, task -> {
-                            startActivity(new Intent(this, VerificaCorreuActivity.class));
-                            finish();
-                        });
-                    } else if (usuari.isEmailVerified()) {
-                        Class<?> desti = UtilitatsFirebase.esRolConductor(rol)
-                                ? PantallaConductorActivity.class
-                                : PantallaPassatgerActivity.class;
-                        startActivity(new Intent(this, desti));
-                        finish();
-                    } else {
-                        startActivity(new Intent(this, VerificaCorreuActivity.class));
-                        finish();
-                    }
+                    mostrarCarrega(false);
+                    demanaPermisNotificacionsSiCal(() -> navegaDespresDeGuardar(usuari));
                 })
-                .addOnFailureListener(e -> txtMissatge.setText(R.string.error_generica));
-    }
-
-    private String obteRolSeleccionat() {
-        int id = grupRol.getCheckedRadioButtonId();
-        if (id == R.id.radioConductor) {
-            return UtilitatsFirebase.ROL_CONDUCTOR;
-        }
-        if (id == R.id.radioPassatger) {
-            return UtilitatsFirebase.ROL_PASSATGER;
-        }
-        return "";
+                .addOnFailureListener(e -> {
+                    mostrarCarrega(false);
+                    txtMissatge.setText(R.string.error_generica);
+                });
     }
 
     private void actualitzaAvatar() {
         UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, fotoUri, obteText(campNom));
     }
 
-    private void actualitzaBlocConductor() {
-        boolean esConductor = grupRol.getCheckedRadioButtonId() == R.id.radioConductor;
-        int visibilitat = esConductor ? android.view.View.VISIBLE : android.view.View.GONE;
-        if (layoutDadesConductor != null) layoutDadesConductor.setVisibility(visibilitat);
-        if (txtDadesConductor != null) txtDadesConductor.setVisibility(visibilitat);
+    private void obreSelectorFotoAmbPermisos() {
+        String[] permisos = Build.VERSION.SDK_INT >= 33
+                ? new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_MEDIA_IMAGES}
+                : new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        boolean calDemanar = false;
+        for (String permis : permisos) {
+            if (ContextCompat.checkSelfPermission(this, permis) != PackageManager.PERMISSION_GRANTED) {
+                calDemanar = true;
+                break;
+            }
+        }
+        if (calDemanar) {
+            permisosImatge.launch(permisos);
+        } else {
+            selectorFoto.launch("image/*");
+        }
     }
 
-    private int parseInt(String text) {
-        try {
-            return Integer.parseInt(text);
-        } catch (Exception ignored) {
-            return 0;
+    private void demanaPermisNotificacionsSiCal(Runnable continuacio) {
+        if (primerCop && Build.VERSION.SDK_INT >= 33
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            accioDespresPermisNotificacions = continuacio;
+            permisNotificacions.launch(Manifest.permission.POST_NOTIFICATIONS);
+            return;
+        }
+        continuacio.run();
+    }
+
+    private void navegaDespresDeGuardar(FirebaseUser usuari) {
+        if (primerCop) {
+            UtilitatsFirebase.enviaVerificacio(this, usuari, task -> {
+                startActivity(new Intent(this, VerificaCorreuActivity.class));
+                finish();
+            });
+        } else if (usuari.isEmailVerified()) {
+            startActivity(new Intent(this, PantallaPassatgerActivity.class));
+            finish();
+        } else {
+            startActivity(new Intent(this, VerificaCorreuActivity.class));
+            finish();
         }
     }
 
     private String obteText(TextInputEditText camp) {
         if (camp == null) return "";
         return camp.getText() == null ? "" : camp.getText().toString().trim();
+    }
+
+    private void mostrarCarrega(boolean actiu) {
+        if (indicadorCarrega != null) {
+            indicadorCarrega.setVisibility(actiu ? View.VISIBLE : View.GONE);
+        }
+        if (actiu) txtMissatge.setText("");
     }
 }

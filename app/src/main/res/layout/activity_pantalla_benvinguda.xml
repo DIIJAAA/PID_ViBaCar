@@ -3,107 +3,167 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/fons_pantalla">
+    android:background="@color/color_conductor_fons"
+    android:padding="22dp">
+
+    <TextView
+        android:id="@+id/selectorIdioma"
+        android:layout_width="74dp"
+        android:layout_height="36dp"
+        android:background="@drawable/fons_selector_idioma"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:textColor="@color/color_text_clar"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
-        android:id="@+id/contenidorPrincipal"
+        android:id="@+id/menuIdiomes"
+        android:layout_width="92dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/fons_selector_idioma"
+        android:elevation="12dp"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/selectorIdioma"
+        app:layout_constraintTop_toBottomOf="@id/selectorIdioma">
+
+        <TextView
+            android:id="@+id/opcioIdiomaCat"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:gravity="center"
+            android:text="CAT"
+            android:textColor="@color/color_text_clar"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/opcioIdiomaCast"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:gravity="center"
+            android:text="CAST"
+            android:textColor="@color/color_text_clar"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/opcioIdiomaEng"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:gravity="center"
+            android:text="ENG"
+            android:textColor="@color/color_text_clar"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/blocMarca"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="24dp"
-        android:background="@drawable/fons_targeta"
-        android:elevation="8dp"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/blocAccions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/selectorIdioma">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutIdioma"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:hint="@string/selecciona_idioma">
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/campIdioma"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
+        <ImageView
             android:id="@+id/txtLogo"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/fons_avatar"
-            android:gravity="center"
-            android:text="V"
-            android:textColor="@color/color_text_clar"
-            android:textSize="32sp"
-            android:textStyle="bold" />
+            android:layout_width="164dp"
+            android:layout_height="164dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/nom_marca"
+            android:src="@drawable/logo" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="22dp"
             android:gravity="center"
-            android:text="@string/nom_marca"
-            android:textColor="@color/color_text_principal"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:gravity="center"
-            android:text="@string/benvinguda_titol"
-            android:textColor="@color/color_text_principal"
-            android:textSize="26sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
+            android:lineSpacingExtra="3dp"
             android:text="@string/benvinguda_subtitol"
-            android:textColor="@color/color_text_secundari"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="180dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/fons_mapa"
-            android:gravity="center"
-            android:text="@string/benvinguda_ilustracio"
-            android:textColor="@color/color_text_principal"
+            android:textColor="#E5F0F1"
             android:textSize="18sp"
             android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/blocAccions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/botoGoogle"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            app:cardBackgroundColor="@color/color_targeta"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:contentDescription="@string/text_google"
+                    android:src="@drawable/ic_google" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/boto_continuar_google"
+                    android:textColor="@color/color_text_principal"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botoCrearCompte"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/fons_boto_principal"
+            android:layout_height="56dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/fons_boto_secundari"
             android:text="@string/boto_crear_compte_gratis"
-            android:textColor="@color/color_text_clar" />
+            android:textColor="@color/color_text_clar"
+            android:textStyle="bold"
+            app:backgroundTint="@null"
+            app:cornerRadius="8dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botoIniciarSessio"
+            style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/fons_boto_secundari"
+            android:layout_height="56dp"
+            android:layout_marginTop="10dp"
             android:text="@string/boto_iniciar_sessio"
-            android:textColor="@color/color_text_clar" />
+            android:textColor="@color/color_text_clar"
+            android:textStyle="bold"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/color_text_clar" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

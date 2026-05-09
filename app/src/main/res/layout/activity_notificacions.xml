@@ -20,7 +20,7 @@
             android:id="@+id/botoEnrere"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
             android:padding="8dp"
             android:src="@drawable/ic_enrere"

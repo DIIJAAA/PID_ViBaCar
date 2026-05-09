@@ -6,6 +6,9 @@ public class Notificacio {
     public static final String TIPUS_RESERVA_ACCEPTADA = "reserva_acceptada";
     public static final String TIPUS_RESERVA_REBUTJADA = "reserva_rebutjada";
     public static final String TIPUS_NOU_MISSATGE = "nou_missatge";
+    public static final String TIPUS_VIATGE_CANCELLAT = "viatge_cancellat";
+    public static final String TIPUS_VIATGE_COMPLETAT = "viatge_completat";
+    public static final String TIPUS_RECORDATORI_VIATGE = "recordatori_viatge";
 
     private String id;
     private String tipus;

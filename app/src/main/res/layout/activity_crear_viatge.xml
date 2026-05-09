@@ -12,6 +12,13 @@
         android:orientation="vertical"
         android:padding="20dp">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/indicadorCarrega"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -45,7 +52,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:background="@drawable/fons_targeta"
-            android:elevation="8dp"
+            android:elevation="0dp"
             android:orientation="vertical"
             android:padding="18dp">
 
@@ -61,55 +68,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="@string/crear_viatge_pas_sentit"
-                android:textColor="@color/color_text_secundari"
-                android:textStyle="bold" />
-
-            <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/grupSentit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                app:selectionRequired="true"
-                app:singleSelection="true">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/botoSentitInstitut"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sentit_cap_institut" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/botoSentitCasa"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/sentit_tornada_casa" />
-            </com.google.android.material.button.MaterialButtonToggleGroup>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="@string/crear_viatge_pas_zona"
+                android:text="@string/crear_viatge_pas_ruta"
                 android:textColor="@color/color_text_secundari"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:hint="@string/etiqueta_zona">
+                android:hint="@string/etiqueta_origen">
 
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                    android:id="@+id/campZona"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/campOrigen"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none" />
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:hint="@string/etiqueta_desti">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/campDesti"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -160,6 +149,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="@string/crear_viatge_pas_quan"
+
                 android:textColor="@color/color_text_secundari"
                 android:textStyle="bold" />
 
@@ -191,19 +181,14 @@
                     android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <TextView
+                android:id="@+id/txtArribadaEstimada"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:hint="@string/etiqueta_hora_arribada">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/campHoraArribada"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:focusable="false" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="6dp"
+                android:text="@string/crear_viatge_arribada_estimacio_pendent"
+                android:textColor="@color/color_text_secundari"
+                android:textSize="12sp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -304,7 +289,9 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/boto_publicar_viatge"
-                android:textColor="@color/color_text_clar" />
+                android:textColor="@color/color_text_clar"
+                app:backgroundTint="@null"
+                app:cornerRadius="8dp" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

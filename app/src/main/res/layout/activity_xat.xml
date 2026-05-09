@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="24dp"
     android:paddingHorizontal="24dp"
+    android:paddingTop="24dp"
     android:paddingBottom="5dp"
     android:background="@drawable/fons_pantalla">
 
@@ -26,17 +26,31 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/boto_enrere"
             android:padding="8dp"
-            android:src="@android:drawable/ic_menu_revert"
+            android:src="@drawable/ic_enrere"
             app:tint="@color/color_text_fosc" />
+
+        <TextView
+            android:id="@+id/txtAvatarXat"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/fons_avatar"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:text="?"
+            android:textColor="@color/color_text_clar"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/txtNomXat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="10dp"
             android:layout_weight="1"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
             android:textColor="@color/color_text_principal"
-            android:textSize="22sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -57,7 +71,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/fons_targeta"
-        android:elevation="8dp"
+        android:elevation="0dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="10dp"
@@ -81,7 +95,8 @@
             android:background="@drawable/fons_avatar"
             android:contentDescription="@string/boto_enviar"
             android:padding="12dp"
-            android:src="@android:drawable/ic_menu_send" />
+            android:src="@android:drawable/ic_menu_send"
+            app:tint="@color/color_text_clar" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

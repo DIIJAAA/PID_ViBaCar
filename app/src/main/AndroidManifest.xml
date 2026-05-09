@@ -3,6 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:name=".ViBaCarApp"
@@ -53,13 +59,7 @@
             android:name=".activitats.CrearViatgeActivity"
             android:exported="false" />
         <activity
-            android:name=".activitats.PantallaPrincipalActivity"
-            android:exported="false" />
-        <activity
             android:name=".activitats.VerificaCorreuActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activitats.EditaPerfilActivity"
             android:exported="false" />
         <activity
             android:name=".activitats.ConfiguraPerfilActivity"

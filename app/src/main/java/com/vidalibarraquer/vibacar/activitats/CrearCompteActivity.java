@@ -90,11 +90,6 @@ public class CrearCompteActivity extends AppCompatActivity {
         dadesUsuari.put("correu", correu);
         dadesUsuari.put("telefon", "");
         dadesUsuari.put("rol", "");
-        dadesUsuari.put("zona", "");
-        dadesUsuari.put("horaSortidaHabitual", "");
-        dadesUsuari.put("puntTrobadaHabitual", "");
-        dadesUsuari.put("modelCotxe", "");
-        dadesUsuari.put("placesHabituals", 0);
         dadesUsuari.put("bio", "");
         dadesUsuari.put("fotoUri", "");
         dadesUsuari.put("idioma", GestorIdioma.obteIdiomaGuardat(this));

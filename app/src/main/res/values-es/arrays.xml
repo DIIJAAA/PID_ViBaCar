@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string-array name="idiomes_llista">
-        <item>Catala</item>
-        <item>Castellano</item>
-        <item>English</item>
-    </string-array>
-</resources>

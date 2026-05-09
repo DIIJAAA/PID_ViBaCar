@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,8 +20,8 @@
 
             <ImageButton
                 android:id="@+id/botoEnrere"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/fons_capsula"
                 android:contentDescription="@string/boto_enrere"
                 android:padding="10dp"
@@ -31,43 +31,48 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="14dp"
                 android:layout_weight="1"
                 android:text="@string/perfil_titol"
                 android:textColor="@color/color_text_principal"
-                android:textSize="24sp"
+                android:textSize="23sp"
                 android:textStyle="bold" />
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoEditarPerfil"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/fons_capsula"
-                android:contentDescription="@string/boto_editar_perfil"
-                android:padding="10dp"
-                android:src="@android:drawable/ic_menu_edit"
-                app:tint="@color/color_principal" />
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:text="@string/boto_editar_perfil"
+                android:textColor="@color/color_principal"
+                android:textSize="13sp"
+                app:cornerRadius="19dp"
+                app:icon="@android:drawable/ic_menu_edit"
+                app:iconTint="@color/color_principal"
+                app:strokeColor="@color/color_principal"
+                app:strokeWidth="1dp" />
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="18dp"
             app:cardBackgroundColor="@color/color_targeta"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="4dp"
-            app:strokeWidth="0dp">
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/color_linia"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="22dp">
 
                 <FrameLayout
-                    android:layout_width="100dp"
-                    android:layout_height="100dp">
+                    android:layout_width="106dp"
+                    android:layout_height="106dp">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/imatgePerfil"
@@ -87,13 +92,23 @@
                         android:textColor="@color/color_text_clar"
                         android:textSize="36sp"
                         android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/iconaVerificat"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="bottom|end"
+                        android:background="@drawable/fons_badge"
+                        android:padding="2dp"
+                        android:src="@drawable/ic_verified"
+                        android:visibility="gone" />
                 </FrameLayout>
 
                 <TextView
                     android:id="@+id/txtNom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="14dp"
                     android:textColor="@color/color_text_principal"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -112,7 +127,7 @@
                         android:layout_height="wrap_content"
                         android:isIndicator="true"
                         android:numStars="5"
-                        android:progressTint="#FFD700"
+                        android:progressTint="#D49319"
                         android:stepSize="0.1" />
 
                     <TextView
@@ -130,80 +145,43 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:gravity="center"
+                    android:lineSpacingExtra="3dp"
                     android:textColor="@color/color_text_secundari"
-                    android:textSize="14sp" />
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/botoVeureInfo"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sobre mi"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        app:cornerRadius="12dp"
-                        app:icon="@android:drawable/ic_menu_info_details"
-                        app:iconSize="16dp" />
-
-                    <Space
-                        android:layout_width="12dp"
-                        android:layout_height="1dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/botoVeureCotxe"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="El meu vehicle"
-                        android:textAllCaps="false"
-                        android:textSize="12sp"
-                        android:visibility="gone"
-                        app:cornerRadius="12dp"
-                        app:icon="@android:drawable/ic_menu_directions"
-                        app:iconSize="16dp" />
-
-                </LinearLayout>
-
+                    android:textSize="13sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="18dp"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoProxims"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/perfil_proxims"
                 android:textAllCaps="false"
                 android:textColor="@color/color_text_clar"
-                app:cornerRadius="12dp" />
+                app:backgroundTint="@null"
+                app:cornerRadius="8dp" />
 
             <Space
-                android:layout_width="12dp"
+                android:layout_width="10dp"
                 android:layout_height="1dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoPassats"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
                 android:text="@string/perfil_passats"
                 android:textAllCaps="false"
-                app:cornerRadius="12dp"
+                app:cornerRadius="8dp"
                 app:strokeColor="@color/color_principal" />
         </LinearLayout>
 
@@ -211,7 +189,7 @@
             android:id="@+id/llistaReserves"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="14dp"
             android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
@@ -219,11 +197,22 @@
             android:id="@+id/txtBuit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="28dp"
             android:gravity="center"
             android:text="@string/perfil_cap_element"
             android:textColor="@color/color_text_secundari"
             android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botoCanviarContrasenya"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/boto_he_oblidat"
+            android:textColor="@color/color_principal"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/color_principal" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botoTancarSessio"
@@ -231,9 +220,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="10dp"
             android:text="@string/boto_tancar_sessio"
-            android:textColor="@android:color/holo_red_light" />
-
+            android:textColor="@color/color_error" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

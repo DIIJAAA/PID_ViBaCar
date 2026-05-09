@@ -14,7 +14,6 @@
         android:paddingTop="40dp"
         android:paddingBottom="20dp">
 
-        <!-- Cabecera -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,10 +25,10 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="start"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:background="@drawable/fons_capsula"
                 android:contentDescription="@string/boto_enrere"
-                android:padding="8dp"
-                android:src="@android:drawable/ic_menu_revert"
+                android:padding="10dp"
+                android:src="@drawable/ic_enrere"
                 app:tint="@color/color_text_fosc" />
 
             <TextView
@@ -44,13 +43,12 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Tarjeta Principal: Foto, Nombre y Rating -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@drawable/fons_targeta"
-            android:elevation="8dp"
+            android:elevation="0dp"
             android:orientation="vertical"
             android:padding="20dp">
 
@@ -117,7 +115,28 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Selector de Secciones -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botoSeguir"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="14dp"
+            android:text="@string/boto_seguir_usuari"
+            android:textColor="@color/color_principal"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/color_principal" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/botoVeureTrajectes"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/fons_boto_principal"
+            android:text="@string/boto_veure_trajectes_usuari"
+            android:textColor="@color/color_text_clar"
+            app:backgroundTint="@null"
+            app:cornerRadius="8dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,7 +144,6 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <!-- Botón ACTIVO por defecto -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoSeccioSobreMi"
                 android:layout_width="0dp"
@@ -140,7 +158,6 @@
                 android:layout_width="10dp"
                 android:layout_height="1dp" />
 
-            <!-- Botó INACTIVO por defecto -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoSeccioComentaris"
                 style="@style/Widget.Material3.Button.OutlinedButton"
@@ -153,19 +170,17 @@
                 app:strokeWidth="2dp" />
         </LinearLayout>
 
-        <!-- Contenedor de Secciones -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp">
 
-            <!-- Sección Biografía (Visible por defecto) -->
             <LinearLayout
                 android:id="@+id/seccioSobreMi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/fons_targeta"
-                android:elevation="8dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="20dp"
                 android:visibility="visible">
@@ -187,13 +202,12 @@
                     android:lineSpacingExtra="4dp" />
             </LinearLayout>
 
-            <!-- Sección Comentarios (Oculta por defecto) -->
             <LinearLayout
                 android:id="@+id/seccioComentaris"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/fons_targeta"
-                android:elevation="8dp"
+                android:elevation="0dp"
                 android:orientation="vertical"
                 android:padding="20dp"
                 android:visibility="gone">
@@ -233,7 +247,9 @@
             android:background="@drawable/fons_boto_principal"
             android:text="@string/boto_obrir_xat"
             android:textColor="@color/color_text_clar"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:backgroundTint="@null"
+            app:cornerRadius="8dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

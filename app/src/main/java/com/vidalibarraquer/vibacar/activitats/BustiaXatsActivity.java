@@ -17,6 +17,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorXats;
 import com.vidalibarraquer.vibacar.models.Xat;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsBottomNav;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 
 import java.util.ArrayList;
@@ -49,7 +50,12 @@ public class BustiaXatsActivity extends AppCompatActivity {
         txtBuit = findViewById(R.id.txtBuit);
 
         RecyclerView llistaXats = findViewById(R.id.llistaXats);
-        adaptadorXats = new AdaptadorXats(this, usuari.getUid(), this::obreXat);
+        String uidActual = usuari.getUid();
+        adaptadorXats = new AdaptadorXats(this, uidActual, this::obreXat, uid -> {
+            Intent intent = new Intent(this, VeurePerfilActivity.class);
+            intent.putExtra(VeurePerfilActivity.EXTRA_UID, uid);
+            startActivity(intent);
+        });
         llistaXats.setLayoutManager(new LinearLayoutManager(this));
         llistaXats.setAdapter(adaptadorXats);
 
@@ -58,6 +64,8 @@ public class BustiaXatsActivity extends AppCompatActivity {
     }
 
     private void configuraBotomNav() {
+        UtilitatsBottomNav.marcaSeleccionada(this, UtilitatsBottomNav.SECCIO_MISSATGES);
+
         View navBuscar = findViewById(R.id.navBuscar);
         View navNotificacions = findViewById(R.id.navNotificacions);
 
@@ -96,7 +104,7 @@ public class BustiaXatsActivity extends AppCompatActivity {
                     for (QueryDocumentSnapshot doc : conductorDocs) {
                         Xat xat = doc.toObject(Xat.class);
                         xat.setId(doc.getId());
-                        indexXats.put(xat.getId(), xat);
+                        afegeixXatDeduplicat(indexXats, xat);
                     }
 
                     db.collection(UtilitatsFirebase.COL_XATS)
@@ -106,7 +114,7 @@ public class BustiaXatsActivity extends AppCompatActivity {
                                 for (QueryDocumentSnapshot doc : passatgerDocs) {
                                     Xat xat = doc.toObject(Xat.class);
                                     xat.setId(doc.getId());
-                                    indexXats.put(xat.getId(), xat);
+                                    afegeixXatDeduplicat(indexXats, xat);
                                 }
 
                                 List<Xat> resultat = new ArrayList<>(indexXats.values());
@@ -126,10 +134,35 @@ public class BustiaXatsActivity extends AppCompatActivity {
         txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
+    private void afegeixXatDeduplicat(Map<String, Xat> indexXats, Xat xat) {
+        if (xat.getConductorId() == null || xat.getPassatgerId() == null) return;
+        String clau = UtilitatsFirebase.creaIdXatUsuaris(xat.getConductorId(), xat.getPassatgerId());
+        Xat existent = indexXats.get(clau);
+        if (existent == null) {
+            indexXats.put(clau, xat);
+            return;
+        }
+
+        Xat conserva = existent.getDarreraActualitzacio() >= xat.getDarreraActualitzacio() ? existent : xat;
+        Xat duplicat = conserva == existent ? xat : existent;
+        indexXats.put(clau, conserva);
+        eliminaXatDuplicatSiCal(duplicat, clau);
+    }
+
+    private void eliminaXatDuplicatSiCal(Xat duplicat, String idCanonical) {
+        if (duplicat == null || duplicat.getId() == null || duplicat.getId().equals(idCanonical)) return;
+        db.collection(UtilitatsFirebase.COL_XATS).document(duplicat.getId()).delete();
+    }
+
+
     private void obreXat(Xat xat, String nomMostrat) {
+        String uid = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : "";
+        boolean socConductor = uid.equals(xat.getConductorId());
+        String altreUid = socConductor ? xat.getPassatgerId() : xat.getConductorId();
         Intent intent = new Intent(this, XatActivity.class);
         intent.putExtra(XatActivity.EXTRA_ID_XAT, xat.getId());
         intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomMostrat);
+        intent.putExtra(XatActivity.EXTRA_UID_ALTRE, altreUid);
         startActivity(intent);
     }
 }

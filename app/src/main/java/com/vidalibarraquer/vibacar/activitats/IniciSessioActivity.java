@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -46,6 +47,7 @@ public class IniciSessioActivity extends AppCompatActivity {
     private TextInputEditText campCorreu;
     private TextInputEditText campContrasenya;
     private TextView txtMissatge;
+    private View indicadorCarrega;
     private GoogleSignInClient googleSignInClient;
 
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
@@ -78,8 +80,8 @@ public class IniciSessioActivity extends AppCompatActivity {
         campCorreu = findViewById(R.id.campCorreu);
         campContrasenya = findViewById(R.id.campContrasenya);
         txtMissatge = findViewById(R.id.txtMissatge);
+        indicadorCarrega = findViewById(R.id.indicadorCarrega);
 
-        // Configuració de Google Sign-In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -95,31 +97,36 @@ public class IniciSessioActivity extends AppCompatActivity {
         });
         findViewById(R.id.txtVesCrearCompte).setOnClickListener(v -> startActivity(new Intent(this, CrearCompteActivity.class)));
 
-        // Botó de Google
-        findViewById(R.id.botoGoogle).setOnClickListener(v -> {
-            txtMissatge.setText(""); // Netegem errors previs
-            Intent signInIntent = googleSignInClient.getSignInIntent();
-            googleSignInLauncher.launch(signInIntent);
-        });
+        View botoGoogle = findViewById(R.id.botoGoogle);
+        if (botoGoogle != null) {
+            botoGoogle.setOnClickListener(v -> {
+                txtMissatge.setText("");
+                Intent signInIntent = googleSignInClient.getSignInIntent();
+                googleSignInLauncher.launch(signInIntent);
+            });
+        }
     }
 
     private void vincularAmbFirebase(String idToken) {
+        mostrarCarrega(true);
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
                 .addOnSuccessListener(authResult -> {
                     FirebaseUser usuari = auth.getCurrentUser();
                     if (usuari != null) {
-                        // Verifiquem si el correu de Google és del centre
                         if (!UtilitatsFirebase.esCorreuCentre(usuari.getEmail())) {
                             auth.signOut();
                             googleSignInClient.signOut();
+                            mostrarCarrega(false);
                             mostraError(getString(R.string.error_domini_correu));
                             return;
                         }
+                        mostrarCarrega(false);
                         obreSeguentPantalla(usuari);
                     }
                 })
                 .addOnFailureListener(e -> {
+                    mostrarCarrega(false);
                     Log.e(TAG, "Firebase Auth with Google failed", e);
                     mostraError(e.getMessage());
                 });
@@ -139,21 +146,33 @@ public class IniciSessioActivity extends AppCompatActivity {
             return;
         }
 
+        mostrarCarrega(true);
         auth.signInWithEmailAndPassword(correu, contrasenya)
                 .addOnSuccessListener(authResult -> {
                     FirebaseUser usuari = auth.getCurrentUser();
                     if (usuari == null) {
+                        mostrarCarrega(false);
                         mostraError(getString(R.string.error_no_usuari));
                         return;
                     }
 
-                    usuari.reload().addOnSuccessListener(unused -> obreSeguentPantalla(usuari));
+                    usuari.reload()
+                            .addOnSuccessListener(unused -> {
+                                mostrarCarrega(false);
+                                obreSeguentPantalla(usuari);
+                            })
+                            .addOnFailureListener(e -> {
+                                mostrarCarrega(false);
+                                mostraError(getString(R.string.error_generica));
+                            });
                 })
-                .addOnFailureListener(e -> mostraError(e.getLocalizedMessage() != null ? e.getLocalizedMessage() : getString(R.string.error_generica)));
+                .addOnFailureListener(e -> {
+                    mostrarCarrega(false);
+                    mostraError(e.getLocalizedMessage() != null ? e.getLocalizedMessage() : getString(R.string.error_generica));
+                });
     }
 
     private void obreSeguentPantalla(FirebaseUser usuari) {
-        // Comprovem si l'usuari s'ha registrat amb email/contrasenya i no ha verificat el correu
         boolean esPasswordProvider = false;
         for (UserInfo profile : usuari.getProviderData()) {
             if (PROVIDER_PASSWORD.equals(profile.getProviderId())) {
@@ -181,14 +200,10 @@ public class IniciSessioActivity extends AppCompatActivity {
 
                     Boolean perfilCompletat = documentSnapshot.getBoolean("perfilCompletat");
                     if (!Boolean.TRUE.equals(perfilCompletat)) {
-                        obrePantalla(ConfiguraPerfilActivity.class);
+                        obreConfiguraPrimerCop(false);
                         return;
                     }
-                    String rol = documentSnapshot.getString("rol");
-                    Class<?> desti = UtilitatsFirebase.esRolConductor(rol)
-                            ? PantallaConductorActivity.class
-                            : PantallaPassatgerActivity.class;
-                    obrePantalla(desti);
+                    obrePantalla(PantallaPassatgerActivity.class);
                 })
                 .addOnFailureListener(e -> mostraError(missatgeErrorFirestore(e)));
     }
@@ -198,13 +213,6 @@ public class IniciSessioActivity extends AppCompatActivity {
         dades.put("uid", usuari.getUid());
         dades.put("nom", usuari.getDisplayName() == null ? "" : usuari.getDisplayName());
         dades.put("correu", usuari.getEmail() == null ? "" : usuari.getEmail());
-        dades.put("telefon", "");
-        dades.put("rol", "");
-        dades.put("zona", "");
-        dades.put("horaSortidaHabitual", "");
-        dades.put("puntTrobadaHabitual", "");
-        dades.put("modelCotxe", "");
-        dades.put("placesHabituals", 0);
         dades.put("bio", "");
         dades.put("fotoUri", usuari.getPhotoUrl() != null ? usuari.getPhotoUrl().toString() : "");
         dades.put("perfilCompletat", false);
@@ -214,8 +222,15 @@ public class IniciSessioActivity extends AppCompatActivity {
         dades.put("idioma", GestorIdioma.obteIdiomaGuardat(this));
 
         refPerfil.set(dades, SetOptions.merge())
-                .addOnSuccessListener(unused -> obrePantalla(ConfiguraPerfilActivity.class))
+                .addOnSuccessListener(unused -> obreConfiguraPrimerCop(true))
                 .addOnFailureListener(e -> mostraError(missatgeErrorFirestore(e)));
+    }
+
+    private void obreConfiguraPrimerCop(boolean primerCop) {
+        Intent intent = new Intent(this, ConfiguraPerfilActivity.class);
+        intent.putExtra(ConfiguraPerfilActivity.EXTRA_PRIMER_COP, primerCop);
+        startActivity(intent);
+        finish();
     }
 
     private void obrePantalla(Class<?> desti) {
@@ -238,6 +253,13 @@ public class IniciSessioActivity extends AppCompatActivity {
 
     private void mostraError(String missatge) {
         txtMissatge.setText(missatge);
+    }
+
+    private void mostrarCarrega(boolean actiu) {
+        if (indicadorCarrega != null) {
+            indicadorCarrega.setVisibility(actiu ? View.VISIBLE : View.GONE);
+        }
+        if (actiu) txtMissatge.setText("");
     }
 
     private String obteText(TextInputEditText camp) {

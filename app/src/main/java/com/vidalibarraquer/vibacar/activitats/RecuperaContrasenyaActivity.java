@@ -23,6 +23,7 @@ public class RecuperaContrasenyaActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private TextInputEditText campCorreu;
+    private TextInputEditText campCorreuConfirmacio;
     private TextView txtMissatge;
 
     @Override
@@ -32,6 +33,7 @@ public class RecuperaContrasenyaActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         campCorreu = findViewById(R.id.campCorreu);
+        campCorreuConfirmacio = findViewById(R.id.campCorreuConfirmacio);
         txtMissatge = findViewById(R.id.txtMissatge);
 
         String correuInicial = getIntent().getStringExtra(EXTRA_CORREU_INICIAL);
@@ -45,8 +47,13 @@ public class RecuperaContrasenyaActivity extends AppCompatActivity {
 
     private void enviaRecuperacio() {
         String correu = obteText(campCorreu).toLowerCase(Locale.ROOT);
+        String correuConfirmacio = obteText(campCorreuConfirmacio).toLowerCase(Locale.ROOT);
         if (!UtilitatsFirebase.esCorreuCentre(correu)) {
             txtMissatge.setText(R.string.error_domini_correu);
+            return;
+        }
+        if (!correu.equals(correuConfirmacio)) {
+            txtMissatge.setText(R.string.error_correus_diferents);
             return;
         }
 

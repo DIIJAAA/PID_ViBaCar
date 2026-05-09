@@ -24,13 +24,23 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
         void onViatgeClick(Viatge viatge);
     }
 
+    public interface AlFerClickConductor {
+        void onConductorClick(Viatge viatge);
+    }
+
     private final Context context;
     private final AlFerClickViatge listener;
+    private final AlFerClickConductor conductorListener;
     private final List<Viatge> viatges = new ArrayList<>();
 
     public AdaptadorViatges(Context context, AlFerClickViatge listener) {
+        this(context, listener, null);
+    }
+
+    public AdaptadorViatges(Context context, AlFerClickViatge listener, AlFerClickConductor conductorListener) {
         this.context = context;
         this.listener = listener;
+        this.conductorListener = conductorListener;
     }
 
     public void actualitzaDades(List<Viatge> dadesNoves) {
@@ -56,10 +66,11 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
                 viatge.getConductorValoracio(),
                 (int) viatge.getConductorValoracions()
         ));
-        holder.txtRuta.setText(context.getString(R.string.text_ruta_format, viatge.getOrigen(), viatge.getDesti()));
+        holder.txtOrigen.setText(viatge.getOrigen());
+        holder.txtDesti.setText(viatge.getDesti());
+        holder.txtData.setText(UtilitatsData.formatData(viatge.getSortidaMillis()));
         holder.txtHoraris.setText(context.getString(
-                R.string.text_horari_viatge_format,
-                UtilitatsData.formatData(viatge.getSortidaMillis()),
+                R.string.text_hora_range_format,
                 UtilitatsData.formatHora(viatge.getSortidaMillis()),
                 UtilitatsData.formatHora(viatge.getArribadaMillis())
         ));
@@ -74,6 +85,12 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
         );
 
         holder.itemView.setOnClickListener(v -> listener.onViatgeClick(viatge));
+        View.OnClickListener obrePerfil = v -> {
+            if (conductorListener != null) conductorListener.onConductorClick(viatge);
+        };
+        holder.imatgeConductor.setOnClickListener(obrePerfil);
+        holder.txtInicialConductor.setOnClickListener(obrePerfil);
+        holder.txtNomConductor.setOnClickListener(obrePerfil);
     }
 
     @Override
@@ -88,7 +105,9 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
         final TextView txtNomConductor;
         final TextView txtValoracio;
         final TextView txtPreu;
-        final TextView txtRuta;
+        final TextView txtOrigen;
+        final TextView txtDesti;
+        final TextView txtData;
         final TextView txtHoraris;
         final TextView txtPlaces;
 
@@ -99,7 +118,9 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
             txtNomConductor = itemView.findViewById(R.id.txtNomConductor);
             txtValoracio = itemView.findViewById(R.id.txtValoracio);
             txtPreu = itemView.findViewById(R.id.txtPreu);
-            txtRuta = itemView.findViewById(R.id.txtRuta);
+            txtOrigen = itemView.findViewById(R.id.txtOrigen);
+            txtDesti = itemView.findViewById(R.id.txtDesti);
+            txtData = itemView.findViewById(R.id.txtData);
             txtHoraris = itemView.findViewById(R.id.txtHoraris);
             txtPlaces = itemView.findViewById(R.id.txtPlaces);
         }

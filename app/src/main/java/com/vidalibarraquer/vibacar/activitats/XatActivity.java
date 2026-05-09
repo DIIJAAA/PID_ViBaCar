@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorMissatges;
@@ -22,7 +25,9 @@ import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +35,8 @@ public class XatActivity extends AppCompatActivity {
 
     public static final String EXTRA_ID_XAT = "id_xat";
     public static final String EXTRA_NOM_XAT = "nom_xat";
+    public static final String EXTRA_UID_ALTRE = "uid_altre";
+    private static final int MIDA_PAGINA = 30;
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -40,6 +47,13 @@ public class XatActivity extends AppCompatActivity {
     private String conductorIdXat;
     private String passatgerIdXat;
     private String nomUsuariActual;
+    private final Map<String, Missatge> missatgesPerId = new LinkedHashMap<>();
+    private DocumentSnapshot documentMesAntic;
+    private ListenerRegistration registreMissatges;
+    private boolean carregantAnteriors;
+    private boolean hiHaMesAnteriors = true;
+    private boolean primeraCarrega = true;
+    private LinearLayoutManager gestorMissatges;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,15 +69,42 @@ public class XatActivity extends AppCompatActivity {
             return;
         }
 
-        ((TextView) findViewById(R.id.txtNomXat)).setText(getIntent().getStringExtra(EXTRA_NOM_XAT));
+        String nomXat = getIntent().getStringExtra(EXTRA_NOM_XAT);
+        String uidAltre = getIntent().getStringExtra(EXTRA_UID_ALTRE);
+
+        TextView txtNomXat = findViewById(R.id.txtNomXat);
+        TextView txtAvatarXat = findViewById(R.id.txtAvatarXat);
+        txtNomXat.setText(nomXat);
+        if (nomXat != null && !nomXat.isEmpty()) {
+            txtAvatarXat.setText(nomXat.substring(0, 1).toUpperCase(java.util.Locale.ROOT));
+        }
+        android.view.View.OnClickListener obrePerfil = v -> {
+            if (!TextUtils.isEmpty(uidAltre)) {
+                android.content.Intent intent = new android.content.Intent(this, VeurePerfilActivity.class);
+                intent.putExtra(VeurePerfilActivity.EXTRA_UID, uidAltre);
+                startActivity(intent);
+            }
+        };
+        txtNomXat.setOnClickListener(obrePerfil);
+        txtAvatarXat.setOnClickListener(obrePerfil);
+
         llistaMissatges = findViewById(R.id.llistaMissatges);
         campMissatge = findViewById(R.id.campMissatge);
 
         adaptadorMissatges = new AdaptadorMissatges(auth.getCurrentUser().getUid());
-        LinearLayoutManager gestor = new LinearLayoutManager(this);
-        gestor.setStackFromEnd(true);
-        llistaMissatges.setLayoutManager(gestor);
+        gestorMissatges = new LinearLayoutManager(this);
+        gestorMissatges.setStackFromEnd(true);
+        llistaMissatges.setLayoutManager(gestorMissatges);
         llistaMissatges.setAdapter(adaptadorMissatges);
+        llistaMissatges.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@androidx.annotation.NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (gestorMissatges.findFirstVisibleItemPosition() <= 2) {
+                    carregaMissatgesAnteriors();
+                }
+            }
+        });
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         findViewById(R.id.botoEnviar).setOnClickListener(v -> enviaMissatge());
@@ -99,27 +140,94 @@ public class XatActivity extends AppCompatActivity {
         escoltaMissatges();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (registreMissatges != null) {
+            registreMissatges.remove();
+            registreMissatges = null;
+        }
+    }
+
     private void escoltaMissatges() {
-        db.collection(UtilitatsFirebase.COL_XATS)
+        if (registreMissatges != null) {
+            registreMissatges.remove();
+        }
+        registreMissatges = db.collection(UtilitatsFirebase.COL_XATS)
                 .document(idXat)
                 .collection(UtilitatsFirebase.COL_MISSATGES)
                 .orderBy("dataMillis")
+                .limitToLast(MIDA_PAGINA)
                 .addSnapshotListener(this, (value, error) -> {
                     if (error != null || value == null) {
                         return;
                     }
 
-                    List<Missatge> missatges = new ArrayList<>();
+                    if (!value.getDocuments().isEmpty()
+                            && (documentMesAntic == null || missatgesPerId.isEmpty())) {
+                        documentMesAntic = value.getDocuments().get(0);
+                    }
+
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : value) {
                         Missatge missatge = doc.toObject(Missatge.class);
                         missatge.setId(doc.getId());
-                        missatges.add(missatge);
+                        missatgesPerId.put(doc.getId(), missatge);
                     }
+                    List<Missatge> missatges = ordenaMissatges();
                     adaptadorMissatges.actualitzaDades(missatges);
-                    if (!missatges.isEmpty()) {
+                    if (!missatges.isEmpty() && primeraCarrega) {
+                        primeraCarrega = false;
                         llistaMissatges.scrollToPosition(missatges.size() - 1);
                     }
                 });
+    }
+
+    private void carregaMissatgesAnteriors() {
+        if (carregantAnteriors || !hiHaMesAnteriors || documentMesAntic == null) {
+            return;
+        }
+
+        carregantAnteriors = true;
+        int midaAnterior = missatgesPerId.size();
+
+        db.collection(UtilitatsFirebase.COL_XATS)
+                .document(idXat)
+                .collection(UtilitatsFirebase.COL_MISSATGES)
+                .orderBy("dataMillis", Query.Direction.ASCENDING)
+                .endBefore(documentMesAntic)
+                .limitToLast(MIDA_PAGINA)
+                .get()
+                .addOnSuccessListener(value -> {
+                    List<DocumentSnapshot> docs = value.getDocuments();
+                    if (docs.isEmpty()) {
+                        hiHaMesAnteriors = false;
+                        return;
+                    }
+
+                    documentMesAntic = docs.get(0);
+                    for (DocumentSnapshot doc : docs) {
+                        Missatge missatge = doc.toObject(Missatge.class);
+                        if (missatge == null) {
+                            continue;
+                        }
+                        missatge.setId(doc.getId());
+                        missatgesPerId.put(doc.getId(), missatge);
+                    }
+
+                    List<Missatge> missatges = ordenaMissatges();
+                    adaptadorMissatges.actualitzaDades(missatges);
+                    int afegits = missatgesPerId.size() - midaAnterior;
+                    if (afegits > 0) {
+                        gestorMissatges.scrollToPositionWithOffset(afegits, 0);
+                    }
+                })
+                .addOnCompleteListener(task -> carregantAnteriors = false);
+    }
+
+    private List<Missatge> ordenaMissatges() {
+        List<Missatge> missatges = new ArrayList<>(missatgesPerId.values());
+        missatges.sort(Comparator.comparingLong(Missatge::getDataMillis));
+        return missatges;
     }
 
     private void notificaAltreParticipant(String uidEmissor, String text) {

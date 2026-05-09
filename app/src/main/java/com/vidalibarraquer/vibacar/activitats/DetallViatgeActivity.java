@@ -23,7 +23,9 @@ import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.PuntsMapaViBaCar;
@@ -31,8 +33,12 @@ import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsMapa;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
+import com.vidalibarraquer.vibacar.models.Notificacio;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class DetallViatgeActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -56,6 +62,9 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
     private MaterialButton botoObrirXat;
     private MaterialButton botoEliminarViatge;
     private LinearLayout seccioConductor;
+    private LinearLayout blocEstatReserva;
+    private TextView txtEstatReservaTitol;
+    private TextView txtEstatReservaDescripcio;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -78,6 +87,9 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         botoObrirXat = findViewById(R.id.botoObrirXat);
         botoEliminarViatge = findViewById(R.id.botoEliminarViatge);
         seccioConductor = findViewById(R.id.seccioConductor);
+        blocEstatReserva = findViewById(R.id.blocEstatReserva);
+        txtEstatReservaTitol = findViewById(R.id.txtEstatReservaTitol);
+        txtEstatReservaDescripcio = findViewById(R.id.txtEstatReservaDescripcio);
 
         SupportMapFragment fragmentMapa = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragmentMapa);
@@ -146,8 +158,6 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                 UtilitatsData.formatHora(viatgeActual.getArribadaMillis()),
                 String.valueOf(viatgeActual.getPlacesDisponibles())
         ));
-        txtInfoGeneral.append("\n");
-        txtInfoGeneral.append(getString(R.string.text_zona_sortida_format, valorPerMostrar(viatgeActual.getZonaSortida())));
         if (!TextUtils.isEmpty(viatgeActual.getModelCotxeConductor())) {
             txtInfoGeneral.append("\n");
             String cotxe = viatgeActual.getModelCotxeConductor();
@@ -172,6 +182,13 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
 
     private void actualitzaAccions() {
         FirebaseUser usuari = auth.getCurrentUser();
+        blocEstatReserva.setVisibility(View.GONE);
+        botoReservar.setEnabled(true);
+        botoReservar.setAlpha(1f);
+        botoReservar.setText(R.string.boto_reservar_placa);
+        botoObrirXat.setEnabled(false);
+        botoObrirXat.setAlpha(0.4f);
+
         boolean esConductorDelViatge = usuari != null
                 && viatgeActual != null
                 && usuari.getUid().equals(viatgeActual.getConductorId());
@@ -184,8 +201,6 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         } else {
             botoReservar.setVisibility(View.VISIBLE);
             botoObrirXat.setVisibility(View.VISIBLE);
-            botoObrirXat.setEnabled(false);
-            botoObrirXat.setAlpha(0.4f);
             botoEliminarViatge.setVisibility(View.GONE);
             seccioConductor.setOnClickListener(v -> {
                 if (viatgeActual == null) return;
@@ -197,13 +212,55 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                 String idReserva = UtilitatsFirebase.creaIdReserva(viatgeActual.getId(), usuari.getUid());
                 db.collection(UtilitatsFirebase.COL_RESERVES).document(idReserva).get()
                         .addOnSuccessListener(doc -> {
-                            if (doc.exists() && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(doc.getString("estat"))) {
-                                botoObrirXat.setEnabled(true);
-                                botoObrirXat.setAlpha(1f);
+                            if (!doc.exists()) {
+                                return;
                             }
+                            mostraEstatReserva(doc.getString("estat"));
                         });
             }
         }
+    }
+
+    private void mostraEstatReserva(String estat) {
+        if (TextUtils.isEmpty(estat)) {
+            blocEstatReserva.setVisibility(View.GONE);
+            return;
+        }
+
+        blocEstatReserva.setVisibility(View.VISIBLE);
+        botoReservar.setEnabled(false);
+        botoReservar.setAlpha(0.5f);
+
+        if (UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(estat)) {
+            txtEstatReservaTitol.setText(R.string.reserva_estat_titol_acceptada);
+            txtEstatReservaDescripcio.setText(R.string.reserva_estat_descripcio_acceptada);
+            botoReservar.setText(R.string.estat_acceptada);
+            botoReservar.setVisibility(View.GONE);
+            botoObrirXat.setEnabled(true);
+            botoObrirXat.setAlpha(1f);
+            return;
+        }
+
+        if (UtilitatsFirebase.ESTAT_RESERVA_REBUTJADA.equals(estat)) {
+            txtEstatReservaTitol.setText(R.string.reserva_estat_titol_rebutjada);
+            txtEstatReservaDescripcio.setText(R.string.reserva_estat_descripcio_rebutjada);
+            botoReservar.setText(R.string.estat_rebutjada);
+            botoReservar.setVisibility(View.GONE);
+            return;
+        }
+
+        if (UtilitatsFirebase.ESTAT_RESERVA_CANCELADA.equals(estat)) {
+            txtEstatReservaTitol.setText(R.string.reserva_estat_titol_cancelada);
+            txtEstatReservaDescripcio.setText(R.string.reserva_estat_descripcio_cancelada);
+            botoReservar.setText(R.string.estat_cancelada);
+            botoReservar.setVisibility(View.GONE);
+            return;
+        }
+
+        txtEstatReservaTitol.setText(R.string.reserva_estat_titol_pendent);
+        txtEstatReservaDescripcio.setText(R.string.reserva_estat_descripcio_pendent);
+        botoReservar.setText(R.string.estat_pendent);
+        botoReservar.setVisibility(View.VISIBLE);
     }
 
     private void mostraMapaSiCal() {
@@ -284,6 +341,7 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         refReserva.set(reserva)
                 .addOnSuccessListener(unused -> {
                     botoReservar.setEnabled(true);
+                    mostraEstatReserva(UtilitatsFirebase.ESTAT_RESERVA_PENDENT);
                     Toast.makeText(this, R.string.missatge_solicitud_enviada, Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
@@ -353,9 +411,63 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         if (viatgeActual == null) return;
         botoEliminarViatge.setEnabled(false);
 
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("viatgeId", viatgeActual.getId())
+                .get()
+                .addOnSuccessListener(reserves -> {
+                    WriteBatch batch = db.batch();
+                    List<String> passatgersPerNotificar = new ArrayList<>();
+
+                    Map<String, Object> dadesViatge = new HashMap<>();
+                    dadesViatge.put("estat", UtilitatsFirebase.ESTAT_VIATGE_CANCELAT);
+                    dadesViatge.put("placesDisponibles", 0);
+                    dadesViatge.put("cancelatMillis", System.currentTimeMillis());
+                    batch.set(
+                            db.collection(UtilitatsFirebase.COL_VIATGES).document(viatgeActual.getId()),
+                            dadesViatge,
+                            SetOptions.merge()
+                    );
+
+                    for (QueryDocumentSnapshot reservaDoc : reserves) {
+                        String estat = reservaDoc.getString("estat");
+                        if (!UtilitatsFirebase.esReservaActiva(estat)) {
+                            continue;
+                        }
+                        String passatgerId = reservaDoc.getString("passatgerId");
+                        if (!TextUtils.isEmpty(passatgerId) && !passatgersPerNotificar.contains(passatgerId)) {
+                            passatgersPerNotificar.add(passatgerId);
+                        }
+
+                        Map<String, Object> dadesReserva = new HashMap<>();
+                        dadesReserva.put("estat", UtilitatsFirebase.ESTAT_RESERVA_CANCELADA);
+                        dadesReserva.put("canceladaMillis", System.currentTimeMillis());
+                        batch.set(reservaDoc.getReference(), dadesReserva, SetOptions.merge());
+                    }
+
+                    batch.commit()
+                            .addOnSuccessListener(unused -> {
+                                notificaCancelacioAlsPassatgers(passatgersPerNotificar);
+                                Toast.makeText(this, R.string.missatge_viatge_eliminat, Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                eliminaViatgeSenseReserves();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    eliminaViatgeSenseReserves();
+                });
+    }
+
+    private void eliminaViatgeSenseReserves() {
+        Map<String, Object> dadesViatge = new HashMap<>();
+        dadesViatge.put("estat", UtilitatsFirebase.ESTAT_VIATGE_CANCELAT);
+        dadesViatge.put("placesDisponibles", 0);
+        dadesViatge.put("cancelatMillis", System.currentTimeMillis());
+
         db.collection(UtilitatsFirebase.COL_VIATGES)
                 .document(viatgeActual.getId())
-                .delete()
+                .set(dadesViatge, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, R.string.missatge_viatge_eliminat, Toast.LENGTH_SHORT).show();
                     finish();
@@ -364,6 +476,25 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                     botoEliminarViatge.setEnabled(true);
                     Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void notificaCancelacioAlsPassatgers(List<String> passatgers) {
+        String text = getString(
+                R.string.notif_viatge_cancellat_cos,
+                valorPerMostrar(viatgeActual.getOrigen()),
+                valorPerMostrar(viatgeActual.getDesti()),
+                UtilitatsData.formatData(viatgeActual.getSortidaMillis())
+        );
+
+        for (String passatgerId : passatgers) {
+            UtilitatsNotificacions.publica(
+                    db,
+                    passatgerId,
+                    Notificacio.TIPUS_VIATGE_CANCELLAT,
+                    text,
+                    viatgeActual.getId()
+            );
+        }
     }
 
     private String valorPerMostrar(String valor) {
