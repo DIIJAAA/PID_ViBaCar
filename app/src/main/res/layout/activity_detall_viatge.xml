@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="@dimen/card_padding">
 
         <ImageButton
             android:id="@+id/botoEnrere"
@@ -28,7 +28,7 @@
             android:background="@drawable/fons_targeta"
             android:elevation="0dp"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="@dimen/card_padding">
 
             <LinearLayout
                 android:id="@+id/seccioConductor"
@@ -119,7 +119,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:padding="20dp"
+                    android:padding="@dimen/card_padding"
                     android:text="@string/text_mapa_resum"
                     android:textColor="@color/color_text_principal"
                     android:textSize="18sp"

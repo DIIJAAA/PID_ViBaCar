@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="page_padding">18dp</dimen>
+    <dimen name="page_padding_vertical">18dp</dimen>
+    <dimen name="card_padding">18dp</dimen>
+    <dimen name="content_max_width">560dp</dimen>
+    <dimen name="content_max_width_wide">720dp</dimen>
+    <dimen name="button_height">52dp</dimen>
+    <dimen name="touch_target">44dp</dimen>
+    <dimen name="logo_welcome_size">154dp</dimen>
+    <dimen name="logo_auth_size">92dp</dimen>
+    <dimen name="avatar_header_size">44dp</dimen>
+    <dimen name="avatar_profile_size">104dp</dimen>
+    <dimen name="section_gap">14dp</dimen>
+</resources>

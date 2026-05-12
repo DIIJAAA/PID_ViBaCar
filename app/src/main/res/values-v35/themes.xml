@@ -7,6 +7,7 @@
         <item name="android:navigationBarColor">@color/color_targeta</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
         <item name="android:windowBackground">@color/color_fons</item>
     </style>
 

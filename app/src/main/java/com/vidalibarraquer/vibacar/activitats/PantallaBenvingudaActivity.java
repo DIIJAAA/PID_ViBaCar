@@ -1,7 +1,10 @@
 package com.vidalibarraquer.vibacar.activitats;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -32,12 +36,16 @@ import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.utilitats.GestorIdioma;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PantallaBenvingudaActivity extends AppCompatActivity {
 
     private static final String TAG = "PantallaBenvinguda";
+    private static final String PREFS_PERMISOS = "permisos_inicials";
+    private static final String CLAU_PERMISOS_DEMANATS = "demanats";
 
     private FirebaseAuth auth;
     private FirebaseFirestore db;
@@ -47,6 +55,14 @@ public class PantallaBenvingudaActivity extends AppCompatActivity {
     private TextView opcioIdiomaCast;
     private TextView opcioIdiomaEng;
     private View menuIdiomes;
+
+    private final ActivityResultLauncher<String[]> permisosInicialsLauncher = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(),
+            result -> getSharedPreferences(PREFS_PERMISOS, MODE_PRIVATE)
+                    .edit()
+                    .putBoolean(CLAU_PERMISOS_DEMANATS, true)
+                    .apply()
+    );
 
     private final ActivityResultLauncher<Intent> googleSignInLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -89,10 +105,41 @@ public class PantallaBenvingudaActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         configuraSelectorIdiomes();
+        demanaPermisosInicialsSiCal();
 
         findViewById(R.id.botoGoogle).setOnClickListener(v -> iniciaSessioGoogle());
         botoCrearCompte.setOnClickListener(v -> startActivity(new Intent(this, CrearCompteActivity.class)));
         botoIniciarSessio.setOnClickListener(v -> startActivity(new Intent(this, IniciSessioActivity.class)));
+    }
+
+    private void demanaPermisosInicialsSiCal() {
+        boolean jaDemanats = getSharedPreferences(PREFS_PERMISOS, MODE_PRIVATE)
+                .getBoolean(CLAU_PERMISOS_DEMANATS, false);
+        if (jaDemanats) {
+            return;
+        }
+
+        List<String> permisos = new ArrayList<>();
+        afegeixPermisSiCal(permisos, Manifest.permission.CAMERA);
+        afegeixPermisSiCal(permisos, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            afegeixPermisSiCal(permisos, Manifest.permission.POST_NOTIFICATIONS);
+        }
+
+        if (permisos.isEmpty()) {
+            getSharedPreferences(PREFS_PERMISOS, MODE_PRIVATE)
+                    .edit()
+                    .putBoolean(CLAU_PERMISOS_DEMANATS, true)
+                    .apply();
+            return;
+        }
+        permisosInicialsLauncher.launch(permisos.toArray(new String[0]));
+    }
+
+    private void afegeixPermisSiCal(List<String> permisos, String permis) {
+        if (ContextCompat.checkSelfPermission(this, permis) != PackageManager.PERMISSION_GRANTED) {
+            permisos.add(permis);
+        }
     }
 
     private void iniciaSessioGoogle() {
@@ -203,12 +250,15 @@ public class PantallaBenvingudaActivity extends AppCompatActivity {
     }
 
     private void canviaIdioma(String codi) {
+        menuIdiomes.setVisibility(View.GONE);
         if (codi.equals(GestorIdioma.obteIdiomaGuardat(this))) {
-            menuIdiomes.setVisibility(View.GONE);
             return;
         }
+        opcioIdiomaCat.setEnabled(false);
+        opcioIdiomaCast.setEnabled(false);
+        opcioIdiomaEng.setEnabled(false);
         GestorIdioma.guardaIAplica(this, codi);
-        recreate();
+        pintaIdiomaActiu();
     }
 
     private void pintaIdiomaActiu() {

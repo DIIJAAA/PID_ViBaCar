@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function nomesCampsValoracioUsuari() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly(['valoracioMitjana', 'totalValoracions']);
+    }
+
+    function reservaValoracioValida(uidValorat) {
+      let reserva = get(/databases/$(database)/documents/reserves/$(request.resource.data.reservaId));
+      return reserva.data.estat == 'acceptada'
+        && request.resource.data.valoratId == uidValorat
+        && request.resource.data.autorId == request.auth.uid
+        && (
+          (reserva.data.passatgerId == request.auth.uid && reserva.data.conductorId == uidValorat)
+          || (reserva.data.conductorId == request.auth.uid && reserva.data.passatgerId == uidValorat)
+        );
+    }
+
+    // Usuaris: cada usuari edita el seu perfil; les valoracions actualitzen l'agregat public.
+    match /usuaris/{uid} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null
+        && (request.auth.uid == uid || nomesCampsValoracioUsuari());
+
+      match /valoracions/{valoracioId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null
+          && reservaValoracioValida(uid);
+        allow update, delete: if false;
+      }
+    }
+
+    // Viatges: qualsevol usuari autenticat pot llegir; el conductor crea i elimina el seu viatge.
+    match /viatges/{viatgeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.conductorId == request.auth.uid;
+      allow update: if request.auth != null
+        && (resource.data.conductorId == request.auth.uid || request.auth != null);
+      allow delete: if request.auth != null && resource.data.conductorId == request.auth.uid;
+    }
+
+    // Reserves: passatger i conductor hi poden accedir.
+    match /reserves/{reservaId} {
+      allow read: if request.auth != null
+        && (resource.data.passatgerId == request.auth.uid
+            || resource.data.conductorId == request.auth.uid);
+      allow create: if request.auth != null
+        && request.resource.data.passatgerId == request.auth.uid;
+      allow update: if request.auth != null
+        && (resource.data.passatgerId == request.auth.uid
+            || resource.data.conductorId == request.auth.uid);
+    }
+
+    // Xats: conductor i passatger hi poden accedir i crear/actualitzar.
+    match /xats/{xatId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && (request.resource.data.conductorId == request.auth.uid
+            || request.resource.data.passatgerId == request.auth.uid);
+      allow update: if request.auth != null;
+
+      match /missatges/{missatgeId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null
+          && request.resource.data.emissorId == request.auth.uid;
+      }
+    }
+
+    // Notificacions: cada usuari llegeix les seves; altres usuaris poden crear avisos.
+    match /notificacions/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      match /items/{itemId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+
+    // Seguiments: qualsevol usuari autenticat pot gestionar seguiments propis.
+    match /seguiments/{seguimentId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.seguidorId == request.auth.uid;
+      allow delete: if request.auth != null
+        && resource.data.seguidorId == request.auth.uid;
+      allow update: if request.auth != null
+        && resource.data.seguidorId == request.auth.uid;
+    }
+  }
+}

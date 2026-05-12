@@ -13,19 +13,30 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
+import com.vidalibarraquer.vibacar.adaptadors.AdaptadorValoracions;
+import com.vidalibarraquer.vibacar.models.Notificacio;
 import com.vidalibarraquer.vibacar.models.Usuari;
+import com.vidalibarraquer.vibacar.models.Valoracio;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsXats;
 
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 public class VeurePerfilActivity extends AppCompatActivity {
@@ -45,14 +56,18 @@ public class VeurePerfilActivity extends AppCompatActivity {
     private MaterialButton botoVeureTrajectes;
     private String uidPerfil;
     private String nomPerfil;
+    private String nomUsuariActual;
     private String xatConductorId;
     private String xatPassatgerId;
+    private String xatIdLlegat;
     private boolean seguint;
 
     private View seccioSobreMi;
     private View seccioComentaris;
     private MaterialButton botoSeccioSobreMi;
     private MaterialButton botoSeccioComentaris;
+    private AdaptadorValoracions adaptadorValoracions;
+    private TextView txtBuitComentaris;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +91,12 @@ public class VeurePerfilActivity extends AppCompatActivity {
         seccioComentaris = findViewById(R.id.seccioComentaris);
         botoSeccioSobreMi = findViewById(R.id.botoSeccioSobreMi);
         botoSeccioComentaris = findViewById(R.id.botoSeccioComentaris);
+        txtBuitComentaris = findViewById(R.id.txtBuitComentaris);
+
+        RecyclerView llistaComentaris = findViewById(R.id.llistaComentaris);
+        adaptadorValoracions = new AdaptadorValoracions();
+        llistaComentaris.setLayoutManager(new LinearLayoutManager(this));
+        llistaComentaris.setAdapter(adaptadorValoracions);
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
 
@@ -87,7 +108,9 @@ public class VeurePerfilActivity extends AppCompatActivity {
             finish();
             return;
         }
+        carregaNomUsuariActual();
         carregaPerfil(uidPerfil);
+        carregaValoracions(uidPerfil);
         configuraSeguiment();
         botoVeureTrajectes.setOnClickListener(v -> {
             Intent intent = new Intent(this, PantallaPassatgerActivity.class);
@@ -144,6 +167,36 @@ public class VeurePerfilActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> finish());
     }
 
+    private void carregaValoracions(String uid) {
+        db.collection(UtilitatsFirebase.COL_USUARIS)
+                .document(uid)
+                .collection("valoracions")
+                .get()
+                .addOnSuccessListener(docs -> {
+                    List<Valoracio> valoracions = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : docs) {
+                        Valoracio valoracio = doc.toObject(Valoracio.class);
+                        valoracio.setId(doc.getId());
+                        valoracions.add(valoracio);
+                    }
+                    valoracions.sort(Comparator.comparingLong(Valoracio::getDataMillis).reversed());
+                    adaptadorValoracions.actualitzaDades(valoracions);
+                    txtBuitComentaris.setVisibility(valoracions.isEmpty() ? View.VISIBLE : View.GONE);
+                });
+    }
+
+    private void carregaNomUsuariActual() {
+        FirebaseUser actual = auth.getCurrentUser();
+        if (actual == null) return;
+        db.collection(UtilitatsFirebase.COL_USUARIS)
+                .document(actual.getUid())
+                .get()
+                .addOnSuccessListener(doc -> {
+                    String nom = doc.getString("nom");
+                    nomUsuariActual = TextUtils.isEmpty(nom) ? actual.getDisplayName() : nom;
+                });
+    }
+
     private void mostraDades(Usuari perfil) {
         String nom = valorPerMostrar(perfil.getNom());
         nomPerfil = nom;
@@ -189,7 +242,11 @@ public class VeurePerfilActivity extends AppCompatActivity {
                 .addOnSuccessListener(docs -> {
                     if (!docs.isEmpty()) {
                         com.google.firebase.firestore.DocumentSnapshot reserva = docs.getDocuments().get(0);
-                        desbloquejaXat(reserva.getString("conductorId"), reserva.getString("passatgerId"));
+                        desbloquejaXat(
+                                reserva.getString("conductorId"),
+                                reserva.getString("passatgerId"),
+                                reserva.getString("viatgeId")
+                        );
                         return;
                     }
                     comprovaXatDesbloquejatInvers(uidActual, uidAltre);
@@ -206,7 +263,11 @@ public class VeurePerfilActivity extends AppCompatActivity {
                 .addOnSuccessListener(docs -> {
                     if (!docs.isEmpty()) {
                         com.google.firebase.firestore.DocumentSnapshot reserva = docs.getDocuments().get(0);
-                        desbloquejaXat(reserva.getString("conductorId"), reserva.getString("passatgerId"));
+                        desbloquejaXat(
+                                reserva.getString("conductorId"),
+                                reserva.getString("passatgerId"),
+                                reserva.getString("viatgeId")
+                        );
                     } else {
                         bloquejaXat();
                     }
@@ -222,9 +283,12 @@ public class VeurePerfilActivity extends AppCompatActivity {
         botoObrirXat.setOnClickListener(null);
     }
 
-    private void desbloquejaXat(String conductorId, String passatgerId) {
+    private void desbloquejaXat(String conductorId, String passatgerId, String viatgeId) {
         xatConductorId = conductorId;
         xatPassatgerId = passatgerId;
+        xatIdLlegat = TextUtils.isEmpty(viatgeId) || TextUtils.isEmpty(passatgerId)
+                ? null
+                : viatgeId + "_" + passatgerId;
         botoObrirXat.setEnabled(true);
         botoObrirXat.setText(R.string.boto_obrir_xat);
         botoObrirXat.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.color_principal)));
@@ -234,22 +298,42 @@ public class VeurePerfilActivity extends AppCompatActivity {
 
     private void obreXatDesbloquejat() {
         if (TextUtils.isEmpty(xatConductorId) || TextUtils.isEmpty(xatPassatgerId)) return;
-        String idXat = UtilitatsFirebase.creaIdXatUsuaris(xatConductorId, xatPassatgerId);
         Map<String, Object> dades = new HashMap<>();
         dades.put("conductorId", xatConductorId);
         dades.put("passatgerId", xatPassatgerId);
-        dades.put("darreraActualitzacio", System.currentTimeMillis());
-        db.collection(UtilitatsFirebase.COL_XATS)
-                .document(idXat)
-                .set(dades, SetOptions.merge())
-                .addOnSuccessListener(unused -> {
-                    Intent intent = new Intent(this, XatActivity.class);
-                    intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
-                    intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomPerfil);
-                    intent.putExtra(XatActivity.EXTRA_UID_ALTRE, uidPerfil);
-                    startActivity(intent);
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
+        dades.put("nomConductor", nomPerRol(xatConductorId));
+        dades.put("nomPassatger", nomPerRol(xatPassatgerId));
+        UtilitatsXats.preparaXatEntreUsuaris(
+                db,
+                xatConductorId,
+                xatPassatgerId,
+                xatIdLlegat,
+                dades,
+                new UtilitatsXats.Callback() {
+                    @Override
+                    public void onPreparat(String idPreparat) {
+                        Intent intent = new Intent(VeurePerfilActivity.this, XatActivity.class);
+                        intent.putExtra(XatActivity.EXTRA_ID_XAT, idPreparat);
+                        intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomPerfil);
+                        intent.putExtra(XatActivity.EXTRA_UID_ALTRE, uidPerfil);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(VeurePerfilActivity.this, R.string.error_generica, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private String nomPerRol(String uid) {
+        FirebaseUser actual = auth.getCurrentUser();
+        if (actual != null && actual.getUid().equals(uid)) {
+            if (!TextUtils.isEmpty(nomUsuariActual)) return nomUsuariActual;
+            if (!TextUtils.isEmpty(actual.getDisplayName())) return actual.getDisplayName();
+        }
+        if (uidPerfil != null && uidPerfil.equals(uid)) return nomPerfil;
+        return getString(R.string.text_usuari);
     }
 
     private void configuraSeguiment() {
@@ -268,11 +352,12 @@ public class VeurePerfilActivity extends AppCompatActivity {
                 });
         botoSeguir.setOnClickListener(v -> {
             if (seguint) {
-                db.collection(UtilitatsFirebase.COL_SEGUIMENTS).document(id).delete()
+                    db.collection(UtilitatsFirebase.COL_SEGUIMENTS).document(id).delete()
                         .addOnSuccessListener(unused -> {
                             seguint = false;
                             actualitzaBotoSeguir();
-                        });
+                        })
+                        .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
                 return;
             }
             confirmaSeguiment(id, actual.getUid());
@@ -287,6 +372,7 @@ public class VeurePerfilActivity extends AppCompatActivity {
                     Map<String, Object> dades = new HashMap<>();
                     dades.put("seguidorId", uidActual);
                     dades.put("seguitId", uidPerfil);
+                    dades.put("seguitNom", nomPerfil);
                     dades.put("creatMillis", System.currentTimeMillis());
                     db.collection(UtilitatsFirebase.COL_SEGUIMENTS)
                             .document(id)
@@ -294,7 +380,17 @@ public class VeurePerfilActivity extends AppCompatActivity {
                             .addOnSuccessListener(unused -> {
                                 seguint = true;
                                 actualitzaBotoSeguir();
-                            });
+                                Toast.makeText(this, R.string.missatge_usuari_seguit, Toast.LENGTH_SHORT).show();
+                                String nomSeguidor = nomUsuariActual != null ? nomUsuariActual : getString(R.string.text_usuari);
+                                UtilitatsNotificacions.publica(
+                                        db,
+                                        uidPerfil,
+                                        Notificacio.TIPUS_NOU_SEGUIDOR,
+                                        getString(R.string.notif_nou_seguidor, nomSeguidor),
+                                        uidActual
+                                );
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .show();

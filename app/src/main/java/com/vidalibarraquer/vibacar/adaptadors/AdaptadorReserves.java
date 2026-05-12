@@ -11,8 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Reserva;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 
@@ -31,6 +33,8 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
         void onCancela(Reserva reserva);
 
         void onObreXat(Reserva reserva);
+
+        void onVeurePerfil(Reserva reserva);
     }
 
     private final Context context;
@@ -65,17 +69,25 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
         boolean socConductor = uidActual != null && uidActual.equals(reserva.getConductorId());
         reserva.setSocConductor(socConductor);
 
-        holder.txtTitol.setText(context.getString(R.string.text_ruta_format, reserva.getOrigen(), reserva.getDesti()));
-        String nomContrapart = socConductor ? valorDefecte(reserva.getPassatgerNom()) : valorDefecte(reserva.getConductorNom());
-        holder.txtSubtitol.setText(context.getString(
-                R.string.text_reserva_subtitol_format,
-                UtilitatsData.formatData(reserva.getSortidaMillis()),
-                nomContrapart
-        ));
+        String nomAltre = socConductor
+                ? valorDefecte(reserva.getPassatgerNom())
+                : valorDefecte(reserva.getConductorNom());
+        String rolAltre = socConductor
+                ? context.getString(R.string.etiqueta_rol_passatger)
+                : context.getString(R.string.etiqueta_rol_conductor);
 
+        UtilitatsAvatar.mostraAvatar(holder.imatgeAltre, holder.txtInicialAltre, null, nomAltre);
+        holder.txtNomAltre.setText(nomAltre);
+        holder.txtRol.setText(rolAltre);
         holder.txtEstat.setText(textEstat(reserva.getEstat()));
-        holder.barraValoracio.setRating(reserva.getPuntuacio());
-        holder.barraValoracio.setVisibility(mostraPassats && reserva.getPuntuacio() > 0f ? View.VISIBLE : View.GONE);
+        holder.txtOrigen.setText(valorDefecte(reserva.getOrigen()));
+        holder.txtDesti.setText(valorDefecte(reserva.getDesti()));
+        holder.txtData.setText(UtilitatsData.formatData(reserva.getSortidaMillis()));
+        holder.txtHorari.setText(UtilitatsData.formatHora(reserva.getSortidaMillis()));
+
+        float puntuacioVisible = socConductor ? reserva.getConductorPuntuacio() : reserva.getPuntuacio();
+        holder.barraValoracio.setRating(puntuacioVisible);
+        holder.barraValoracio.setVisibility(mostraPassats && puntuacioVisible > 0f ? View.VISIBLE : View.GONE);
 
         amagaBotons(holder);
 
@@ -87,9 +99,15 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
             holder.botoPuntuar.setOnClickListener(v -> listener.onPuntua(reserva));
         }
 
+        if (mostraPassats && socConductor && esAcceptada && !reserva.isConductorValorada()) {
+            holder.botoPuntuar.setVisibility(View.VISIBLE);
+            holder.botoPuntuar.setOnClickListener(v -> listener.onPuntua(reserva));
+        }
+
         if (!mostraPassats && socConductor && esPendent) {
             mostraBoto(holder.botoPrincipal, R.string.boto_acceptar_reserva, v -> listener.onAccepta(reserva));
             mostraBoto(holder.botoSecundari, R.string.boto_rebutjar_reserva, v -> listener.onRebutja(reserva));
+            mostraBoto(holder.botoPuntuar, R.string.boto_veure_perfil, v -> listener.onVeurePerfil(reserva));
             return;
         }
 
@@ -147,9 +165,15 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
     }
 
     static class ReservaViewHolder extends RecyclerView.ViewHolder {
-        final TextView txtTitol;
-        final TextView txtSubtitol;
+        final ShapeableImageView imatgeAltre;
+        final TextView txtInicialAltre;
+        final TextView txtNomAltre;
+        final TextView txtRol;
         final TextView txtEstat;
+        final TextView txtOrigen;
+        final TextView txtDesti;
+        final TextView txtData;
+        final TextView txtHorari;
         final RatingBar barraValoracio;
         final MaterialButton botoPrincipal;
         final MaterialButton botoSecundari;
@@ -157,9 +181,15 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
 
         ReservaViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtTitol = itemView.findViewById(R.id.txtTitol);
-            txtSubtitol = itemView.findViewById(R.id.txtSubtitol);
+            imatgeAltre = itemView.findViewById(R.id.imatgeAltre);
+            txtInicialAltre = itemView.findViewById(R.id.txtInicialAltre);
+            txtNomAltre = itemView.findViewById(R.id.txtNomAltre);
+            txtRol = itemView.findViewById(R.id.txtRol);
             txtEstat = itemView.findViewById(R.id.txtEstat);
+            txtOrigen = itemView.findViewById(R.id.txtOrigen);
+            txtDesti = itemView.findViewById(R.id.txtDesti);
+            txtData = itemView.findViewById(R.id.txtData);
+            txtHorari = itemView.findViewById(R.id.txtHorari);
             barraValoracio = itemView.findViewById(R.id.barraValoracio);
             botoPrincipal = itemView.findViewById(R.id.botoPrincipal);
             botoSecundari = itemView.findViewById(R.id.botoSecundari);

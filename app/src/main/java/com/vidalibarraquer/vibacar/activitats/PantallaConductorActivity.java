@@ -17,11 +17,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorViatges;
+import com.vidalibarraquer.vibacar.models.Notificacio;
 import com.vidalibarraquer.vibacar.models.Usuari;
 import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsBottomNav;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsRecordatoris;
 
 import java.util.ArrayList;
@@ -41,7 +43,6 @@ public class PantallaConductorActivity extends AppCompatActivity {
     private TextView txtInicialAvatar;
     private MaterialCardView cardSollicituds;
     private ShapeableImageView imatgePerfil;
-    private final List<String> viatgesAmbSollicituds = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -109,6 +110,7 @@ public class PantallaConductorActivity extends AppCompatActivity {
         carregaCapcalera();
         carregaViatgesPropis();
         carregaSollicitudsPendents();
+        UtilitatsBottomNav.actualitzaBadgeNotificacions(this);
         UtilitatsRecordatoris.comprova(this, db, auth.getCurrentUser());
     }
 
@@ -159,8 +161,8 @@ public class PantallaConductorActivity extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Viatge> viatges = new ArrayList<>();
                     int publicats = 0;
-
                     long ara = System.currentTimeMillis();
+
                     for (com.google.firebase.firestore.QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Viatge viatge = document.toObject(Viatge.class);
                         viatge.setId(document.getId());
@@ -171,6 +173,7 @@ public class PantallaConductorActivity extends AppCompatActivity {
                             continue;
                         }
                         if (viatge.getSortidaMillis() < ara - 2L * 60L * 60L * 1000L) {
+                            marcaCompletat(viatge);
                             continue;
                         }
                         viatges.add(viatge);
@@ -190,6 +193,43 @@ public class PantallaConductorActivity extends AppCompatActivity {
                 });
     }
 
+    private void marcaCompletat(Viatge viatge) {
+        if (viatge == null || android.text.TextUtils.isEmpty(viatge.getId())) return;
+
+        db.collection(UtilitatsFirebase.COL_VIATGES)
+                .document(viatge.getId())
+                .update(
+                        "estat", UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT,
+                        "completatMillis", System.currentTimeMillis()
+                );
+
+        String origen = viatge.getOrigen() != null ? viatge.getOrigen() : "";
+        String desti = viatge.getDesti() != null ? viatge.getDesti() : "";
+        String text = getString(R.string.notif_viatge_completat, origen, desti);
+        String prefix = "fi_" + viatge.getId();
+
+        UtilitatsNotificacions.publicaAmbId(db, viatge.getConductorId(),
+                prefix + "_cond",
+                Notificacio.TIPUS_VIATGE_COMPLETAT,
+                text,
+                viatge.getId());
+
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("viatgeId", viatge.getId())
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
+                .get()
+                .addOnSuccessListener(reserves -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot reserva : reserves) {
+                        String passatgerId = reserva.getString("passatgerId");
+                        UtilitatsNotificacions.publicaAmbId(db, passatgerId,
+                                prefix + "_" + passatgerId,
+                                Notificacio.TIPUS_VIATGE_COMPLETAT,
+                                text,
+                                viatge.getId());
+                    }
+                });
+    }
+
     private void carregaSollicitudsPendents() {
         FirebaseUser usuari = auth.getCurrentUser();
         if (usuari == null) {
@@ -198,31 +238,46 @@ public class PantallaConductorActivity extends AppCompatActivity {
 
         db.collection(UtilitatsFirebase.COL_RESERVES)
                 .whereEqualTo("conductorId", usuari.getUid())
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_PENDENT)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    int pendents = 0;
-                    viatgesAmbSollicituds.clear();
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        if (UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(doc.getString("estat"))) {
-                            pendents++;
-                            String viatgeId = doc.getString("viatgeId");
-                            if (viatgeId != null && !viatgesAmbSollicituds.contains(viatgeId)) {
-                                viatgesAmbSollicituds.add(viatgeId);
-                            }
-                        }
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        txtResumSollicituds.setText("0");
+                        return;
                     }
-                    txtResumSollicituds.setText(String.valueOf(pendents));
+                    final int[] pendents = {0};
+                    final int[] restants = {queryDocumentSnapshots.size()};
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String viatgeId = doc.getString("viatgeId");
+                        if (android.text.TextUtils.isEmpty(viatgeId)) {
+                            restants[0]--;
+                            if (restants[0] == 0) txtResumSollicituds.setText(String.valueOf(pendents[0]));
+                            continue;
+                        }
+                        db.collection(UtilitatsFirebase.COL_VIATGES).document(viatgeId).get()
+                                .addOnSuccessListener(viatgeDoc -> {
+                                    String estat = viatgeDoc.getString("estat");
+                                    if (viatgeDoc.exists()
+                                            && UtilitatsFirebase.ESTAT_VIATGE_DISPONIBLE.equals(estat)) {
+                                        pendents[0]++;
+                                    }
+                                    restants[0]--;
+                                    if (restants[0] == 0) txtResumSollicituds.setText(String.valueOf(pendents[0]));
+                                })
+                                .addOnFailureListener(e -> {
+                                    restants[0]--;
+                                    if (restants[0] == 0) txtResumSollicituds.setText(String.valueOf(pendents[0]));
+                                });
+                    }
                 })
                 .addOnFailureListener(e -> txtResumSollicituds.setText("0"));
     }
 
     private void obreSollicitudsPendents() {
-        if (viatgesAmbSollicituds.isEmpty()) {
+        if ("0".contentEquals(txtResumSollicituds.getText())) {
             Toast.makeText(this, R.string.conductor_sense_sollicituds_pendents, Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent intent = new Intent(this, DetallViatgeActivity.class);
-        intent.putExtra(DetallViatgeActivity.EXTRA_ID_VIATGE, viatgesAmbSollicituds.get(0));
-        startActivity(intent);
+        startActivity(new Intent(this, SollicitudsActivity.class));
     }
 }

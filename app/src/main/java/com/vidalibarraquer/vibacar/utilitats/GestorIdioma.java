@@ -17,17 +17,30 @@ public final class GestorIdioma {
 
     public static void aplicaIdiomaGuardat(Context context) {
         String codi = obteIdiomaGuardat(context);
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(codi));
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tagLocale(codi)));
     }
 
     public static void guardaIAplica(Context context, String codiIdioma) {
+        String codiNet = normalitza(codiIdioma);
         SharedPreferences prefs = context.getSharedPreferences(NOM_PREFS, Context.MODE_PRIVATE);
-        prefs.edit().putString(CLAU_IDIOMA, codiIdioma).apply();
-        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(codiIdioma));
+        prefs.edit().putString(CLAU_IDIOMA, codiNet).commit();
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tagLocale(codiNet)));
     }
 
     public static String obteIdiomaGuardat(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(NOM_PREFS, Context.MODE_PRIVATE);
-        return prefs.getString(CLAU_IDIOMA, IDIOMA_PER_DEFECTE);
+        return normalitza(prefs.getString(CLAU_IDIOMA, IDIOMA_PER_DEFECTE));
+    }
+
+    private static String normalitza(String codiIdioma) {
+        if ("es".equals(codiIdioma) || "es-ES".equals(codiIdioma)) return "es";
+        if ("en".equals(codiIdioma) || "en-US".equals(codiIdioma) || "en-GB".equals(codiIdioma)) return "en";
+        return "ca";
+    }
+
+    private static String tagLocale(String codiIdioma) {
+        if ("es".equals(codiIdioma)) return "es-ES";
+        if ("en".equals(codiIdioma)) return "en";
+        return "ca-ES";
     }
 }

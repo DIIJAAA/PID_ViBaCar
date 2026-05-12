@@ -47,6 +47,9 @@ public class XatActivity extends AppCompatActivity {
     private String conductorIdXat;
     private String passatgerIdXat;
     private String nomUsuariActual;
+    private String uidAltreIntent;
+    private TextView txtNomXat;
+    private TextView txtAvatarXat;
     private final Map<String, Missatge> missatgesPerId = new LinkedHashMap<>();
     private DocumentSnapshot documentMesAntic;
     private ListenerRegistration registreMissatges;
@@ -70,18 +73,15 @@ public class XatActivity extends AppCompatActivity {
         }
 
         String nomXat = getIntent().getStringExtra(EXTRA_NOM_XAT);
-        String uidAltre = getIntent().getStringExtra(EXTRA_UID_ALTRE);
+        uidAltreIntent = getIntent().getStringExtra(EXTRA_UID_ALTRE);
 
-        TextView txtNomXat = findViewById(R.id.txtNomXat);
-        TextView txtAvatarXat = findViewById(R.id.txtAvatarXat);
-        txtNomXat.setText(nomXat);
-        if (nomXat != null && !nomXat.isEmpty()) {
-            txtAvatarXat.setText(nomXat.substring(0, 1).toUpperCase(java.util.Locale.ROOT));
-        }
+        txtNomXat = findViewById(R.id.txtNomXat);
+        txtAvatarXat = findViewById(R.id.txtAvatarXat);
+        mostraCapcaleraXat(nomXat);
         android.view.View.OnClickListener obrePerfil = v -> {
-            if (!TextUtils.isEmpty(uidAltre)) {
+            if (!TextUtils.isEmpty(uidAltreIntent)) {
                 android.content.Intent intent = new android.content.Intent(this, VeurePerfilActivity.class);
-                intent.putExtra(VeurePerfilActivity.EXTRA_UID, uidAltre);
+                intent.putExtra(VeurePerfilActivity.EXTRA_UID, uidAltreIntent);
                 startActivity(intent);
             }
         };
@@ -120,6 +120,7 @@ public class XatActivity extends AppCompatActivity {
                     if (xatDoc.exists()) {
                         conductorIdXat = xatDoc.getString("conductorId");
                         passatgerIdXat = xatDoc.getString("passatgerId");
+                        completaCapcaleraAmbXat(xatDoc);
                     }
                 });
 
@@ -132,6 +133,36 @@ public class XatActivity extends AppCompatActivity {
                     String nom = usuariDoc.getString("nom");
                     nomUsuariActual = (nom != null && !nom.isEmpty()) ? nom : getString(R.string.text_usuari);
                 });
+    }
+
+    private void completaCapcaleraAmbXat(DocumentSnapshot xatDoc) {
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null) return;
+
+        boolean socConductor = usuari.getUid().equals(conductorIdXat);
+        uidAltreIntent = socConductor ? passatgerIdXat : conductorIdXat;
+        String nomAltre = socConductor ? xatDoc.getString("nomPassatger") : xatDoc.getString("nomConductor");
+        if (!TextUtils.isEmpty(nomAltre) && !getString(R.string.text_usuari).equals(nomAltre)) {
+            mostraCapcaleraXat(nomAltre);
+            return;
+        }
+
+        if (TextUtils.isEmpty(uidAltreIntent)) return;
+        db.collection(UtilitatsFirebase.COL_USUARIS)
+                .document(uidAltreIntent)
+                .get()
+                .addOnSuccessListener(usuariDoc -> {
+                    String nom = usuariDoc.getString("nom");
+                    if (!TextUtils.isEmpty(nom)) {
+                        mostraCapcaleraXat(nom);
+                    }
+                });
+    }
+
+    private void mostraCapcaleraXat(String nomXat) {
+        String nom = TextUtils.isEmpty(nomXat) ? getString(R.string.text_usuari) : nomXat;
+        txtNomXat.setText(nom);
+        txtAvatarXat.setText(nom.substring(0, 1).toUpperCase(java.util.Locale.ROOT));
     }
 
     @Override

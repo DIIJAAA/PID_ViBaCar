@@ -11,13 +11,13 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingHorizontal="24dp"
+        android:paddingHorizontal="@dimen/page_padding"
         android:paddingVertical="24dp">
 
         <ImageButton
             android:id="@+id/botoEnrere"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/touch_target"
+            android:layout_height="@dimen/touch_target"
             android:layout_gravity="start"
             android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
@@ -32,7 +32,7 @@
             android:background="@drawable/fons_targeta"
             android:elevation="0dp"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="@dimen/card_padding">
 
             <TextView
                 android:layout_width="match_parent"

@@ -27,16 +27,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorReserves;
+import com.vidalibarraquer.vibacar.adaptadors.AdaptadorValoracions;
 import com.vidalibarraquer.vibacar.models.Reserva;
 import com.vidalibarraquer.vibacar.models.Usuari;
+import com.vidalibarraquer.vibacar.models.Valoracio;
 import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsXats;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,10 +54,12 @@ public class PerfilActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private AdaptadorReserves adaptadorReserves;
+    private AdaptadorValoracions adaptadorValoracions;
     private TextView txtNom;
     private TextView txtDades;
     private TextView txtInicialAvatar;
     private TextView txtBuit;
+    private TextView txtBuitValoracionsRebudes;
     private TextView txtTotalValoracions;
     private ShapeableImageView imatgePerfil;
     private ImageView iconaVerificat;
@@ -73,6 +79,7 @@ public class PerfilActivity extends AppCompatActivity {
         txtDades = findViewById(R.id.txtDades);
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
         txtBuit = findViewById(R.id.txtBuit);
+        txtBuitValoracionsRebudes = findViewById(R.id.txtBuitValoracionsRebudes);
         txtTotalValoracions = findViewById(R.id.txtTotalValoracions);
         imatgePerfil = findViewById(R.id.imatgePerfil);
         iconaVerificat = findViewById(R.id.iconaVerificat);
@@ -98,16 +105,57 @@ public class PerfilActivity extends AppCompatActivity {
 
             @Override
             public void onObreXat(Reserva reserva) {
-                String idXat = UtilitatsFirebase.creaIdXatUsuaris(reserva.getConductorId(), reserva.getPassatgerId());
                 String nomAltre = reserva.isSocConductor() ? reserva.getPassatgerNom() : reserva.getConductorNom();
-                Intent intent = new Intent(PerfilActivity.this, XatActivity.class);
-                intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
-                intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomAltre);
+                String uidAltre = reserva.isSocConductor() ? reserva.getPassatgerId() : reserva.getConductorId();
+                Map<String, Object> dadesXat = new HashMap<>();
+                dadesXat.put("viatgeId", reserva.getViatgeId());
+                dadesXat.put("conductorId", reserva.getConductorId());
+                dadesXat.put("passatgerId", reserva.getPassatgerId());
+                dadesXat.put("nomConductor", reserva.getConductorNom());
+                dadesXat.put("nomPassatger", reserva.getPassatgerNom());
+                dadesXat.put("origen", reserva.getOrigen());
+                dadesXat.put("desti", reserva.getDesti());
+                dadesXat.put("sortidaMillis", reserva.getSortidaMillis());
+                String idLlegat = reserva.getViatgeId() + "_" + reserva.getPassatgerId();
+                UtilitatsXats.preparaXatEntreUsuaris(
+                        db,
+                        reserva.getConductorId(),
+                        reserva.getPassatgerId(),
+                        idLlegat,
+                        dadesXat,
+                        new UtilitatsXats.Callback() {
+                            @Override
+                            public void onPreparat(String idXat) {
+                                Intent intent = new Intent(PerfilActivity.this, XatActivity.class);
+                                intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
+                                intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomAltre);
+                                intent.putExtra(XatActivity.EXTRA_UID_ALTRE, uidAltre);
+                                startActivity(intent);
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                Toast.makeText(PerfilActivity.this, R.string.error_generica, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
+            @Override
+            public void onVeurePerfil(Reserva reserva) {
+                String uidAltre = reserva.isSocConductor() ? reserva.getPassatgerId() : reserva.getConductorId();
+                if (android.text.TextUtils.isEmpty(uidAltre)) return;
+                Intent intent = new Intent(PerfilActivity.this, VeurePerfilActivity.class);
+                intent.putExtra(VeurePerfilActivity.EXTRA_UID, uidAltre);
                 startActivity(intent);
             }
         });
         llistaReserves.setLayoutManager(new LinearLayoutManager(this));
         llistaReserves.setAdapter(adaptadorReserves);
+
+        RecyclerView llistaValoracionsRebudes = findViewById(R.id.llistaValoracionsRebudes);
+        adaptadorValoracions = new AdaptadorValoracions();
+        llistaValoracionsRebudes.setLayoutManager(new LinearLayoutManager(this));
+        llistaValoracionsRebudes.setAdapter(adaptadorValoracions);
 
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         findViewById(R.id.botoEditarPerfil).setOnClickListener(v -> startActivity(new Intent(this, ConfiguraPerfilActivity.class)));
@@ -137,6 +185,7 @@ public class PerfilActivity extends AppCompatActivity {
         super.onResume();
         actualitzaBotonsFiltre();
         carregaCapcalera();
+        carregaValoracionsRebudes();
         carregaLlista();
     }
 
@@ -271,49 +320,104 @@ public class PerfilActivity extends AppCompatActivity {
                         }
                     }
 
-                    db.collection(UtilitatsFirebase.COL_VIATGES)
-                            .whereEqualTo("conductorId", usuari.getUid())
-                            .get()
-                            .addOnSuccessListener(viatgesDocs -> {
-                                for (com.google.firebase.firestore.QueryDocumentSnapshot doc : viatgesDocs) {
-                                    Viatge viatge = doc.toObject(Viatge.class);
-                                    if (UtilitatsFirebase.ESTAT_VIATGE_CANCELAT.equalsIgnoreCase(viatge.getEstat())
-                                            || UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT.equalsIgnoreCase(viatge.getEstat())) {
-                                        continue;
-                                    }
-                                    Reserva reservaPropia = new Reserva();
-                                    reservaPropia.setId("viatge_" + doc.getId());
-                                    reservaPropia.setViatgeId(doc.getId());
-                                    reservaPropia.setConductorId(usuari.getUid());
-                                    reservaPropia.setConductorNom(getString(R.string.nom_marca));
-                                    reservaPropia.setOrigen(viatge.getOrigen());
-                                    reservaPropia.setDesti(viatge.getDesti());
-                                    reservaPropia.setSortidaMillis(viatge.getSortidaMillis());
-                                    reservaPropia.setValorada(true);
-                                    reservaPropia.setPuntuacio(0f);
-                                    if (filtreData(viatge.getSortidaMillis())) {
-                                        resultat.add(reservaPropia);
-                                    }
-                                }
-
-                                resultat.sort(Comparator.comparingLong(Reserva::getSortidaMillis));
-                                adaptadorReserves.actualitzaDades(resultat, mostraPassats);
-                                txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
-
-                                if (mostraPassats && !dialogValoracioMostrat) {
-                                    for (Reserva r : resultat) {
-                                        if (!r.getId().startsWith("viatge_")
-                                                && !r.isValorada()
-                                                && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(r.getEstat())
-                                                && usuari.getUid().equals(r.getPassatgerId())) {
-                                            dialogValoracioMostrat = true;
-                                            obreDialegPuntuacio(r);
-                                            break;
-                                        }
-                                    }
-                                }
-                            });
+                    carregaReservesComConductor(resultat, usuari);
                 });
+    }
+
+    private void carregaValoracionsRebudes() {
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null || adaptadorValoracions == null) return;
+
+        db.collection(UtilitatsFirebase.COL_USUARIS)
+                .document(usuari.getUid())
+                .collection("valoracions")
+                .get()
+                .addOnSuccessListener(docs -> {
+                    List<Valoracio> valoracions = new ArrayList<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
+                        Valoracio valoracio = doc.toObject(Valoracio.class);
+                        valoracio.setId(doc.getId());
+                        valoracions.add(valoracio);
+                    }
+                    valoracions.sort(Comparator.comparingLong(Valoracio::getDataMillis).reversed());
+                    adaptadorValoracions.actualitzaDades(valoracions);
+                    txtBuitValoracionsRebudes.setVisibility(valoracions.isEmpty() ? View.VISIBLE : View.GONE);
+                })
+                .addOnFailureListener(e -> txtBuitValoracionsRebudes.setVisibility(View.VISIBLE));
+    }
+
+    private void carregaReservesComConductor(List<Reserva> resultat, FirebaseUser usuari) {
+        if (!mostraPassats) {
+            carregaViatgesPropis(resultat, usuari);
+            return;
+        }
+
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("conductorId", usuari.getUid())
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
+                .get()
+                .addOnSuccessListener(reservesDocs -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : reservesDocs) {
+                        Reserva reserva = doc.toObject(Reserva.class);
+                        reserva.setId(doc.getId());
+                        if (filtreData(reserva.getSortidaMillis())) {
+                            resultat.add(reserva);
+                        }
+                    }
+                    carregaViatgesPropis(resultat, usuari);
+                })
+                .addOnFailureListener(e -> carregaViatgesPropis(resultat, usuari));
+    }
+
+    private void carregaViatgesPropis(List<Reserva> resultat, FirebaseUser usuari) {
+        db.collection(UtilitatsFirebase.COL_VIATGES)
+                .whereEqualTo("conductorId", usuari.getUid())
+                .get()
+                .addOnSuccessListener(viatgesDocs -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : viatgesDocs) {
+                        Viatge viatge = doc.toObject(Viatge.class);
+                        if (UtilitatsFirebase.ESTAT_VIATGE_CANCELAT.equalsIgnoreCase(viatge.getEstat())
+                                || UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT.equalsIgnoreCase(viatge.getEstat())) {
+                            continue;
+                        }
+                        Reserva reservaPropia = new Reserva();
+                        reservaPropia.setId("viatge_" + doc.getId());
+                        reservaPropia.setViatgeId(doc.getId());
+                        reservaPropia.setConductorId(usuari.getUid());
+                        reservaPropia.setConductorNom(getString(R.string.nom_marca));
+                        reservaPropia.setOrigen(viatge.getOrigen());
+                        reservaPropia.setDesti(viatge.getDesti());
+                        reservaPropia.setSortidaMillis(viatge.getSortidaMillis());
+                        reservaPropia.setValorada(true);
+                        reservaPropia.setConductorValorada(true);
+                        reservaPropia.setPuntuacio(0f);
+                        if (filtreData(viatge.getSortidaMillis())) {
+                            resultat.add(reservaPropia);
+                        }
+                    }
+                    mostraReserves(resultat, usuari);
+                })
+                .addOnFailureListener(e -> mostraReserves(resultat, usuari));
+    }
+
+    private void mostraReserves(List<Reserva> resultat, FirebaseUser usuari) {
+        resultat.sort(Comparator.comparingLong(Reserva::getSortidaMillis));
+        adaptadorReserves.actualitzaDades(resultat, mostraPassats);
+        txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
+
+        if (mostraPassats && !dialogValoracioMostrat) {
+            for (Reserva r : resultat) {
+                boolean potValorarConductor = usuari.getUid().equals(r.getConductorId()) && !r.isConductorValorada();
+                boolean potValorarPassatger = usuari.getUid().equals(r.getPassatgerId()) && !r.isValorada();
+                if (!r.getId().startsWith("viatge_")
+                        && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(r.getEstat())
+                        && (potValorarConductor || potValorarPassatger)) {
+                    dialogValoracioMostrat = true;
+                    obreDialegPuntuacio(r);
+                    break;
+                }
+            }
+        }
     }
 
     private boolean filtreData(long sortidaMillis) {
@@ -366,38 +470,98 @@ public class PerfilActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.error_valoracio_zero, Toast.LENGTH_SHORT).show();
             return;
         }
-        String conductorId = reserva.getConductorId();
-        if (android.text.TextUtils.isEmpty(conductorId)) {
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null) return;
+
+        boolean socConductor = usuari.getUid().equals(reserva.getConductorId());
+        String uidValorat = socConductor ? reserva.getPassatgerId() : reserva.getConductorId();
+        if (android.text.TextUtils.isEmpty(uidValorat)) {
             Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show();
             return;
         }
 
         DocumentReference reservaRef = db.collection(UtilitatsFirebase.COL_RESERVES).document(reserva.getId());
-        DocumentReference conductorRef = db.collection(UtilitatsFirebase.COL_USUARIS).document(conductorId);
+        DocumentReference usuariValoratRef = db.collection(UtilitatsFirebase.COL_USUARIS).document(uidValorat);
+        DocumentReference valoracioRef = usuariValoratRef
+                .collection("valoracions")
+                .document(reserva.getId() + "_" + usuari.getUid());
+        String nomValorador = txtNom.getText() == null || txtNom.getText().toString().trim().isEmpty()
+                ? getString(R.string.text_usuari)
+                : txtNom.getText().toString().trim();
 
         db.runTransaction(transaction -> {
-            com.google.firebase.firestore.DocumentSnapshot conductorDoc = transaction.get(conductorRef);
-            long totalValoracions = conductorDoc.contains("totalValoracions")
-                    ? (conductorDoc.getLong("totalValoracions") != null ? conductorDoc.getLong("totalValoracions") : 0L)
+            com.google.firebase.firestore.DocumentSnapshot reservaDoc = transaction.get(reservaRef);
+            com.google.firebase.firestore.DocumentSnapshot valoracioDoc = transaction.get(valoracioRef);
+            com.google.firebase.firestore.DocumentSnapshot usuariValoratDoc = transaction.get(usuariValoratRef);
+            if (!reservaDoc.exists()
+                    || !UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(reservaDoc.getString("estat"))) {
+                throw new IllegalStateException("La reserva no es pot valorar");
+            }
+            String campValorada = socConductor ? "conductorValorada" : "valorada";
+            Boolean jaValorada = reservaDoc.getBoolean(campValorada);
+            if (Boolean.TRUE.equals(jaValorada) || valoracioDoc.exists()) {
+                throw new IllegalStateException("Aquesta reserva ja esta valorada");
+            }
+
+            long totalValoracions = usuariValoratDoc.contains("totalValoracions")
+                    ? (usuariValoratDoc.getLong("totalValoracions") != null ? usuariValoratDoc.getLong("totalValoracions") : 0L)
                     : 0L;
-            double valoracioMitjana = conductorDoc.contains("valoracioMitjana")
-                    ? (conductorDoc.getDouble("valoracioMitjana") != null ? conductorDoc.getDouble("valoracioMitjana") : 0d)
+            double valoracioMitjana = usuariValoratDoc.contains("valoracioMitjana")
+                    ? (usuariValoratDoc.getDouble("valoracioMitjana") != null ? usuariValoratDoc.getDouble("valoracioMitjana") : 0d)
                     : 0d;
 
             long nouTotal = totalValoracions + 1;
             double novaMitjana = ((valoracioMitjana * totalValoracions) + puntuacio) / nouTotal;
 
-            transaction.update(reservaRef, "valorada", true, "puntuacio", puntuacio, "comentari", comentari);
+            if (socConductor) {
+                transaction.update(reservaRef,
+                        "conductorValorada", true,
+                        "conductorPuntuacio", puntuacio,
+                        "conductorComentari", comentari);
+            } else {
+                transaction.update(reservaRef,
+                        "valorada", true,
+                        "puntuacio", puntuacio,
+                        "comentari", comentari);
+            }
 
-            Map<String, Object> dadesConductor = new HashMap<>();
-            dadesConductor.put("totalValoracions", nouTotal);
-            dadesConductor.put("valoracioMitjana", novaMitjana);
-            transaction.set(conductorRef, dadesConductor, SetOptions.merge());
+            Map<String, Object> dadesUsuariValorat = new HashMap<>();
+            dadesUsuariValorat.put("totalValoracions", nouTotal);
+            dadesUsuariValorat.put("valoracioMitjana", novaMitjana);
+            transaction.set(usuariValoratRef, dadesUsuariValorat, SetOptions.merge());
+
+            Map<String, Object> dadesValoracio = new HashMap<>();
+            dadesValoracio.put("autorId", usuari.getUid());
+            dadesValoracio.put("autorNom", nomValorador);
+            dadesValoracio.put("valoratId", uidValorat);
+            dadesValoracio.put("reservaId", reserva.getId());
+            dadesValoracio.put("viatgeId", reserva.getViatgeId());
+            dadesValoracio.put("origen", reserva.getOrigen());
+            dadesValoracio.put("desti", reserva.getDesti());
+            dadesValoracio.put("puntuacio", puntuacio);
+            dadesValoracio.put("comentari", comentari);
+            dadesValoracio.put("dataMillis", System.currentTimeMillis());
+            transaction.set(valoracioRef, dadesValoracio, SetOptions.merge());
             return true;
         }).addOnSuccessListener(unused -> {
             Toast.makeText(this, R.string.missatge_puntuacio_guardada, Toast.LENGTH_SHORT).show();
             carregaCapcalera();
             carregaLlista();
-        }).addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e -> Toast.makeText(this, missatgeErrorValoracio(e), Toast.LENGTH_LONG).show());
+    }
+
+    private String missatgeErrorValoracio(Exception e) {
+        if (e instanceof FirebaseFirestoreException) {
+            FirebaseFirestoreException ex = (FirebaseFirestoreException) e;
+            if (ex.getCode() == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+                return getString(R.string.error_valoracio_permisos);
+            }
+        }
+        String missatge = e.getLocalizedMessage();
+        if (!android.text.TextUtils.isEmpty(missatge)
+                && missatge.toLowerCase(Locale.ROOT).contains("valorada")) {
+            return getString(R.string.error_valoracio_ja_feta);
+        }
+        return getString(R.string.error_generica);
     }
 }

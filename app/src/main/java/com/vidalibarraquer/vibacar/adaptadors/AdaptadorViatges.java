@@ -14,9 +14,12 @@ import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.ViatgeViewHolder> {
 
@@ -32,6 +35,7 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
     private final AlFerClickViatge listener;
     private final AlFerClickConductor conductorListener;
     private final List<Viatge> viatges = new ArrayList<>();
+    private Map<String, String> estatReserves = new HashMap<>();
 
     public AdaptadorViatges(Context context, AlFerClickViatge listener) {
         this(context, listener, null);
@@ -46,6 +50,11 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
     public void actualitzaDades(List<Viatge> dadesNoves) {
         viatges.clear();
         viatges.addAll(dadesNoves);
+        notifyDataSetChanged();
+    }
+
+    public void actualitzaEstatReserves(Map<String, String> mapa) {
+        estatReserves = mapa != null ? mapa : new HashMap<>();
         notifyDataSetChanged();
     }
 
@@ -84,6 +93,17 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
                 viatge.getConductorNom()
         );
 
+        String estatReserva = estatReserves.get(viatge.getId());
+        if (UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(estatReserva)) {
+            holder.txtEstatReserva.setText(context.getString(R.string.etiqueta_reserva_pendent));
+            holder.txtEstatReserva.setVisibility(View.VISIBLE);
+        } else if (UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(estatReserva)) {
+            holder.txtEstatReserva.setText(context.getString(R.string.etiqueta_reserva_acceptada));
+            holder.txtEstatReserva.setVisibility(View.VISIBLE);
+        } else {
+            holder.txtEstatReserva.setVisibility(View.GONE);
+        }
+
         holder.itemView.setOnClickListener(v -> listener.onViatgeClick(viatge));
         View.OnClickListener obrePerfil = v -> {
             if (conductorListener != null) conductorListener.onConductorClick(viatge);
@@ -110,6 +130,7 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
         final TextView txtData;
         final TextView txtHoraris;
         final TextView txtPlaces;
+        final TextView txtEstatReserva;
 
         ViatgeViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -123,6 +144,7 @@ public class AdaptadorViatges extends RecyclerView.Adapter<AdaptadorViatges.Viat
             txtData = itemView.findViewById(R.id.txtData);
             txtHoraris = itemView.findViewById(R.id.txtHoraris);
             txtPlaces = itemView.findViewById(R.id.txtPlaces);
+            txtEstatReserva = itemView.findViewById(R.id.txtEstatReserva);
         }
     }
 }

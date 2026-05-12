@@ -86,6 +86,7 @@ public class BustiaXatsActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        UtilitatsBottomNav.actualitzaBadgeNotificacions(this);
         carregaXats();
     }
 
@@ -119,8 +120,7 @@ public class BustiaXatsActivity extends AppCompatActivity {
 
                                 List<Xat> resultat = new ArrayList<>(indexXats.values());
                                 resultat.sort(Comparator.comparingLong(Xat::getDarreraActualitzacio).reversed());
-                                adaptadorXats.actualitzaDades(resultat);
-                                txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
+                                mostraResultat(resultat, uid);
                             })
                             .addOnFailureListener(e -> mostraLlista(indexXats));
                 })
@@ -130,8 +130,38 @@ public class BustiaXatsActivity extends AppCompatActivity {
     private void mostraLlista(Map<String, Xat> indexXats) {
         List<Xat> resultat = new ArrayList<>(indexXats.values());
         resultat.sort(Comparator.comparingLong(Xat::getDarreraActualitzacio).reversed());
+        FirebaseUser usuari = auth.getCurrentUser();
+        mostraResultat(resultat, usuari == null ? "" : usuari.getUid());
+    }
+
+    private void mostraResultat(List<Xat> resultat, String uidActual) {
         adaptadorXats.actualitzaDades(resultat);
         txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
+        completaNomsXats(resultat, uidActual);
+    }
+
+    private void completaNomsXats(List<Xat> xats, String uidActual) {
+        for (Xat xat : xats) {
+            boolean socConductor = uidActual.equals(xat.getConductorId());
+            String altreUid = socConductor ? xat.getPassatgerId() : xat.getConductorId();
+            String nomActual = socConductor ? xat.getNomPassatger() : xat.getNomConductor();
+            if (altreUid == null || nomActual != null && !nomActual.trim().isEmpty()) {
+                continue;
+            }
+            db.collection(UtilitatsFirebase.COL_USUARIS)
+                    .document(altreUid)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        String nom = doc.getString("nom");
+                        if (nom == null || nom.trim().isEmpty()) return;
+                        if (socConductor) {
+                            xat.setNomPassatger(nom);
+                        } else {
+                            xat.setNomConductor(nom);
+                        }
+                        adaptadorXats.notifyDataSetChanged();
+                    });
+        }
     }
 
     private void afegeixXatDeduplicat(Map<String, Xat> indexXats, Xat xat) {
@@ -144,14 +174,7 @@ public class BustiaXatsActivity extends AppCompatActivity {
         }
 
         Xat conserva = existent.getDarreraActualitzacio() >= xat.getDarreraActualitzacio() ? existent : xat;
-        Xat duplicat = conserva == existent ? xat : existent;
         indexXats.put(clau, conserva);
-        eliminaXatDuplicatSiCal(duplicat, clau);
-    }
-
-    private void eliminaXatDuplicatSiCal(Xat duplicat, String idCanonical) {
-        if (duplicat == null || duplicat.getId() == null || duplicat.getId().equals(idCanonical)) return;
-        db.collection(UtilitatsFirebase.COL_XATS).document(duplicat.getId()).delete();
     }
 
 

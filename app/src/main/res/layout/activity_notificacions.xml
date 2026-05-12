@@ -46,6 +46,82 @@
             android:textSize="13sp" />
     </LinearLayout>
 
+    <HorizontalScrollView
+        android:id="@+id/barraAccionsNotificacions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_targeta"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="10dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtSeleccioNotificacions"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="8dp"
+                android:textColor="@color/color_text_secundari"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/botoSeleccionarTotes"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:text="@string/notificacions_seleccionar_totes"
+                android:textColor="@color/color_principal"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/botoMarcarLlegides"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:text="@string/notificacions_marcar_llegides"
+                android:textColor="@color/color_principal"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/botoMarcarNoLlegides"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:text="@string/notificacions_marcar_no_llegides"
+                android:textColor="@color/color_principal"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/botoEliminarSeleccionades"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:text="@string/notificacions_eliminar"
+                android:textColor="@color/color_error"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/botoCancelarSeleccio"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:paddingHorizontal="10dp"
+                android:text="@string/notificacions_cancelar"
+                android:textColor="@color/color_text_secundari"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/llistaNotificacions"
         android:layout_width="match_parent"

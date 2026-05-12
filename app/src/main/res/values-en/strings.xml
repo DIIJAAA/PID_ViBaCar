@@ -31,8 +31,8 @@
     <string name="boto_iniciar_sessio">Sign in</string>
     <string name="boto_he_oblidat">I forgot my password</string>
     <string name="recupera_titol">Recover password</string>
-    <string name="recupera_subtitol">Type your school email and we will send the link to change your password.</string>
-    <string name="boto_envia_recuperacio">Send recovery email</string>
+    <string name="recupera_subtitol">Confirm your email and we will send a secure link to change your password.</string>
+    <string name="boto_envia_recuperacio">Send recovery link</string>
     <string name="no_tens_compte">You do not have an account yet</string>
 
     <string name="registre_titol">Create account</string>
@@ -79,6 +79,8 @@
     <string name="conductor_titol_publicats">Active rides</string>
     <string name="conductor_titol_sollicituds">Requests</string>
     <string name="conductor_sense_sollicituds_pendents">There are no pending requests</string>
+    <string name="sollicituds_titol">Pending requests</string>
+    <string name="sollicituds_subtitol">Review who is asking for a seat and accept or reject the booking.</string>
 
     <string name="text_mapa_resum">Route and meeting point</string>
     <string name="text_mapa_sense_dades">When you enter an origin and destination, the agreed route will appear here.</string>
@@ -88,6 +90,7 @@
     <string name="qualitat_fiable">Reliable</string>
     <string name="boto_reservar_placa">Book seat</string>
     <string name="boto_obrir_xat">Open chat</string>
+    <string name="boto_veure_perfil">View profile</string>
     <string name="mapa_inici">Departure point</string>
     <string name="mapa_desti">Arrival point</string>
 
@@ -120,6 +123,9 @@
     <string name="perfil_titol">My profile</string>
     <string name="boto_editar_perfil">Edit profile</string>
     <string name="perfil_sobre_mi">About me</string>
+    <string name="perfil_comentaris">Comments</string>
+    <string name="perfil_comentaris_titol">Comments and ratings</string>
+    <string name="perfil_comentaris_buit">There are no comments for this user yet</string>
     <string name="text_total_valoracions_format">(%1$d)</string>
     <string name="perfil_bio_format">Bio: %1$s</string>
     <string name="perfil_model_format">Model: %1$s</string>
@@ -139,8 +145,8 @@
     <string name="dialog_puntuacio_titol">Rate the ride</string>
     <string name="dialog_puntuacio_subtitol">Choose from 1 to 5 stars for the trip.</string>
 
-    <string name="text_valoracio_format">%1$.1f * (%2$d)</string>
-    <string name="text_ruta_format">%1$s -> %2$s</string>
+    <string name="text_valoracio_format">%1$.1f &#9733; (%2$d)</string>
+    <string name="text_ruta_format">%1$s &#8594; %2$s</string>
     <string name="text_horari_viatge_format">%1$s | %2$s - %3$s</string>
     <string name="text_reserva_subtitol_format">%1$s | with %2$s</string>
     <string name="text_usuari">User</string>
@@ -190,6 +196,8 @@
     <string name="missatge_reserva_rebutjada">Reservation rejected</string>
     <string name="missatge_reserva_cancelada">Reservation cancelled</string>
     <string name="missatge_puntuacio_guardada">Rating saved</string>
+    <string name="error_valoracio_permisos">The rating cannot be saved. Deploy the new Firestore rules and try again.</string>
+    <string name="error_valoracio_ja_feta">This ride has already been rated.</string>
     <string name="missatge_recuperacio_contrasenya">We sent the password recovery email</string>
     <string name="missatge_places_esgotades">This ride has no free seats left</string>
     <string name="missatge_no_et_pots_reservar">You cannot book your own ride</string>
@@ -210,12 +218,20 @@
     <string name="notificacions_titol">Notifications</string>
     <string name="notificacions_buit">You have no notifications</string>
     <string name="notificacions_marcar_totes">Mark all</string>
+    <string name="notificacions_seleccionades_format">%1$d selected</string>
+    <string name="notificacions_seleccionar_totes">Select all</string>
+    <string name="notificacions_marcar_llegides">Mark read</string>
+    <string name="notificacions_marcar_no_llegides">Mark unread</string>
+    <string name="notificacions_eliminar">Delete</string>
+    <string name="notificacions_cancelar">Cancel</string>
 
     <string name="dialog_valorar_titol">Rate the ride</string>
     <string name="dialog_valorar_missatge">How was the ride with %1$s?</string>
     <string name="camp_comentari_hint">Comment (optional)</string>
 
     <string name="notif_nou_missatge">New message from %1$s</string>
+    <string name="notif_reserva_acceptada">Your booking %1$s &#8594; %2$s has been accepted. You can now open the chat.</string>
+    <string name="notif_reserva_rebutjada">Your booking %1$s &#8594; %2$s has been rejected.</string>
     <string name="text_o">or</string>
     <string name="text_google">Google</string>
     <string name="boto_continuar_google">Continue with Google</string>
@@ -240,8 +256,8 @@
     <string name="reserva_estat_descripcio_rebutjada">This ride is not available for you. Find another one.</string>
     <string name="reserva_estat_descripcio_cancelada">The ride was cancelled by the driver.</string>
     <string name="notif_viatge_cancellat_titol">Ride cancelled</string>
-    <string name="notif_viatge_cancellat_cos">The driver cancelled the ride %1$s -> %2$s on %3$s.</string>
-    <string name="notif_recordatori_viatge">Reminder: you have the ride %1$s -> %2$s tomorrow!</string>
+    <string name="notif_viatge_cancellat_cos">The driver cancelled the ride %1$s &#8594; %2$s on %3$s.</string>
+    <string name="notif_recordatori_viatge">Reminder: you have the ride %1$s &#8594; %2$s tomorrow!</string>
     <string name="perfil_bio_buida">No bio yet.</string>
     <string name="etiqueta_repeteix_correu">Repeat email</string>
     <string name="error_correus_diferents">Emails do not match</string>
@@ -256,4 +272,21 @@
     <string name="canvi_contrasenya_missatge">Confirm your current password twice and we will send a secure link to your email.</string>
     <string name="confirmar_seguir_titol">Follow user?</string>
     <string name="confirmar_seguir_missatge">Do you want to follow %1$s and see their rides?</string>
+    <string name="missatge_usuari_seguit">You are now following this user</string>
+    <string name="filtre_dir_totes">Both</string>
+    <string name="filtre_dir_insti">To the institute</string>
+    <string name="filtre_dir_tornada">Back home</string>
+    <string name="text_hora_range_format">%1$s - %2$s</string>
+    <string name="notif_viatge_completat">The ride %1$s &#8594; %2$s has ended. You can rate the trip from your profile.</string>
+    <string name="error_valoracio_zero">Select at least one star to rate</string>
+    <string name="filtres_titol">Search filters</string>
+    <string name="filtres_mode_label">How do you want to search?</string>
+    <string name="filtres_dir_label">Ride direction</string>
+    <string name="boto_aplica_filtres">Apply filters</string>
+    <string name="notif_nou_seguidor">%1$s has started following you.</string>
+    <string name="etiqueta_rol_conductor">Driver</string>
+    <string name="etiqueta_rol_passatger">Passenger</string>
+    <string name="etiqueta_viatge_propi">Your ride</string>
+    <string name="etiqueta_reserva_pendent">Request pending approval</string>
+    <string name="etiqueta_reserva_acceptada">Ride booked &#10003;</string>
 </resources>

@@ -9,6 +9,7 @@ public class Notificacio {
     public static final String TIPUS_VIATGE_CANCELLAT = "viatge_cancellat";
     public static final String TIPUS_VIATGE_COMPLETAT = "viatge_completat";
     public static final String TIPUS_RECORDATORI_VIATGE = "recordatori_viatge";
+    public static final String TIPUS_NOU_SEGUIDOR = "nou_seguidor";
 
     private String id;
     private String tipus;

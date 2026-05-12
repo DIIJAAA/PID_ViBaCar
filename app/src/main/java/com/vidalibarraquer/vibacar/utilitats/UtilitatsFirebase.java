@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import java.util.Collections;
 
 public final class UtilitatsFirebase {
@@ -52,6 +53,15 @@ public final class UtilitatsFirebase {
                 .document(usuari.getUid())
                 .set(Collections.singletonMap("fcmToken", token), SetOptions.merge())
                 .addOnFailureListener(e -> Log.w("UtilitatsFirebase", "Error desant token FCM", e));
+    }
+
+    public static void actualitzaTokenMissatgeria() {
+        FirebaseUser usuari = FirebaseAuth.getInstance().getCurrentUser();
+        if (usuari == null) return;
+        FirebaseMessaging.getInstance()
+                .getToken()
+                .addOnSuccessListener(UtilitatsFirebase::desaTokenMissatgeria)
+                .addOnFailureListener(e -> Log.w("UtilitatsFirebase", "Error obtenint token FCM", e));
     }
 
     public static String creaIdReserva(String viatgeId, String passatgerId) {

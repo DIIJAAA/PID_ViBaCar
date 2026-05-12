@@ -188,6 +188,18 @@
                 android:layout_weight="1"
                 android:textColor="@color/color_text_secundari"
                 android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/txtEstatReserva"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fons_xip"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/color_principal_fosc"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 

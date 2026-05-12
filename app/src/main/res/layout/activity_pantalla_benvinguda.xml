@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_conductor_fons"
-    android:padding="22dp">
+    android:padding="@dimen/page_padding">
 
     <TextView
         android:id="@+id/selectorIdioma"
@@ -74,12 +74,13 @@
         app:layout_constraintBottom_toTopOf="@id/blocAccions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selectorIdioma">
+        app:layout_constraintTop_toBottomOf="@id/selectorIdioma"
+        app:layout_constraintWidth_max="@dimen/content_max_width">
 
         <ImageView
             android:id="@+id/txtLogo"
-            android:layout_width="164dp"
-            android:layout_height="164dp"
+            android:layout_width="@dimen/logo_welcome_size"
+            android:layout_height="@dimen/logo_welcome_size"
             android:adjustViewBounds="true"
             android:contentDescription="@string/nom_marca"
             android:src="@drawable/logo" />
@@ -104,12 +105,13 @@
         android:paddingBottom="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_max="@dimen/content_max_width">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/botoGoogle"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="@dimen/button_height"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
@@ -144,7 +146,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botoCrearCompte"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="12dp"
             android:background="@drawable/fons_boto_secundari"
             android:text="@string/boto_crear_compte_gratis"
@@ -157,7 +159,7 @@
             android:id="@+id/botoIniciarSessio"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="10dp"
             android:text="@string/boto_iniciar_sessio"
             android:textColor="@color/color_text_clar"

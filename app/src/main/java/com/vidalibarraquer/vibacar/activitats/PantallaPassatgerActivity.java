@@ -39,8 +39,10 @@ import com.vidalibarraquer.vibacar.utilitats.UtilitatsRecordatoris;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class PantallaPassatgerActivity extends AppCompatActivity {
@@ -118,6 +120,8 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
         carregaUsuariCapcalera();
         carregaSeguiments();
         carregaViatges();
+        carregaEstatReserves();
+        UtilitatsBottomNav.actualitzaBadgeNotificacions(this);
         if (!recordatorisComprovats) {
             recordatorisComprovats = true;
             UtilitatsRecordatoris.comprova(this, db, auth.getCurrentUser());
@@ -187,11 +191,46 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
                 });
     }
 
+    private void carregaEstatReserves() {
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null) return;
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("passatgerId", usuari.getUid())
+                .get()
+                .addOnSuccessListener(docs -> {
+                    Map<String, String> mapa = new HashMap<>();
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
+                        String viatgeId = doc.getString("viatgeId");
+                        String estat = doc.getString("estat");
+                        if (!TextUtils.isEmpty(viatgeId) && !TextUtils.isEmpty(estat)
+                                && (UtilitatsFirebase.ESTAT_RESERVA_PENDENT.equals(estat)
+                                || UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(estat))) {
+                            mapa.put(viatgeId, estat);
+                        }
+                    }
+                    adaptadorViatges.actualitzaEstatReserves(mapa);
+                });
+    }
+
     private void marcaCompletat(Viatge viatge) {
         if (viatge == null || TextUtils.isEmpty(viatge.getId())) return;
         db.collection(UtilitatsFirebase.COL_VIATGES)
                 .document(viatge.getId())
-                .update("estat", UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT);
+                .update(
+                        "estat", UtilitatsFirebase.ESTAT_VIATGE_COMPLETAT,
+                        "completatMillis", System.currentTimeMillis()
+                );
+        String origen = viatge.getOrigen() != null ? viatge.getOrigen() : "";
+        String desti = viatge.getDesti() != null ? viatge.getDesti() : "";
+        String text = getString(R.string.notif_viatge_completat, origen, desti);
+        String idNotificacio = "fi_" + viatge.getId();
+
+        UtilitatsNotificacions.publicaAmbId(db, viatge.getConductorId(),
+                idNotificacio + "_cond",
+                Notificacio.TIPUS_VIATGE_COMPLETAT,
+                text,
+                viatge.getId());
+
         db.collection(UtilitatsFirebase.COL_RESERVES)
                 .whereEqualTo("viatgeId", viatge.getId())
                 .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
@@ -199,11 +238,10 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
                 .addOnSuccessListener(docs -> {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
                         String passatgerId = doc.getString("passatgerId");
-                        String origen = viatge.getOrigen() != null ? viatge.getOrigen() : "";
-                        String desti = viatge.getDesti() != null ? viatge.getDesti() : "";
-                        UtilitatsNotificacions.publica(db, passatgerId,
+                        UtilitatsNotificacions.publicaAmbId(db, passatgerId,
+                                idNotificacio + "_" + passatgerId,
                                 Notificacio.TIPUS_VIATGE_COMPLETAT,
-                                getString(R.string.notif_viatge_completat, origen, desti),
+                                text,
                                 viatge.getId());
                     }
                 });

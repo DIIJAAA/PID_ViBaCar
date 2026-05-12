@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="20dp"
+        android:paddingHorizontal="@dimen/page_padding"
         android:paddingTop="40dp"
         android:paddingBottom="20dp">
 
@@ -22,8 +22,8 @@
 
             <ImageButton
                 android:id="@+id/botoEnrere"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/touch_target"
+                android:layout_height="@dimen/touch_target"
                 android:layout_gravity="start"
                 android:background="@drawable/fons_capsula"
                 android:contentDescription="@string/boto_enrere"
@@ -50,7 +50,7 @@
             android:background="@drawable/fons_targeta"
             android:elevation="0dp"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="@dimen/card_padding">
 
             <FrameLayout
                 android:layout_width="84dp"
@@ -119,7 +119,7 @@
             android:id="@+id/botoSeguir"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="14dp"
             android:text="@string/boto_seguir_usuari"
             android:textColor="@color/color_principal"
@@ -129,7 +129,7 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botoVeureTrajectes"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/button_height"
             android:layout_marginTop="8dp"
             android:background="@drawable/fons_boto_principal"
             android:text="@string/boto_veure_trajectes_usuari"
@@ -164,7 +164,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Comentaris"
+                android:text="@string/perfil_comentaris"
                 android:textColor="@color/color_text_principal"
                 app:strokeColor="@color/color_text_principal"
                 app:strokeWidth="2dp" />
@@ -182,7 +182,7 @@
                 android:background="@drawable/fons_targeta"
                 android:elevation="0dp"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="@dimen/card_padding"
                 android:visibility="visible">
 
                 <TextView
@@ -209,13 +209,13 @@
                 android:background="@drawable/fons_targeta"
                 android:elevation="0dp"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="@dimen/card_padding"
                 android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Comentaris i valoracions"
+                    android:text="@string/perfil_comentaris_titol"
                     android:textColor="@color/color_text_principal"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -233,7 +233,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:gravity="center"
-                    android:text="Encara no hi ha comentaris per aquest usuari"
+                    android:text="@string/perfil_comentaris_buit"
                     android:textColor="@color/color_text_secundari"
                     android:visibility="visible" />
             </LinearLayout>

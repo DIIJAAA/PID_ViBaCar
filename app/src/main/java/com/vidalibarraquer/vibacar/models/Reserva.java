@@ -14,6 +14,8 @@ public class Reserva {
     private String estat;
     private boolean valorada;
     private float puntuacio;
+    private boolean conductorValorada;
+    private float conductorPuntuacio;
     private transient boolean socConductor;
 
     public Reserva() {
@@ -113,6 +115,22 @@ public class Reserva {
 
     public void setPuntuacio(float puntuacio) {
         this.puntuacio = puntuacio;
+    }
+
+    public boolean isConductorValorada() {
+        return conductorValorada;
+    }
+
+    public void setConductorValorada(boolean conductorValorada) {
+        this.conductorValorada = conductorValorada;
+    }
+
+    public float getConductorPuntuacio() {
+        return conductorPuntuacio;
+    }
+
+    public void setConductorPuntuacio(float conductorPuntuacio) {
+        this.conductorPuntuacio = conductorPuntuacio;
     }
 
     public boolean isSocConductor() {

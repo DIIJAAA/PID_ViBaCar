@@ -9,67 +9,83 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:paddingTop="24dp"
-        android:paddingHorizontal="5dp"
-        android:paddingBottom="5dp">
+        android:paddingHorizontal="@dimen/page_padding"
+        android:paddingTop="@dimen/page_padding_vertical"
+        android:paddingBottom="28dp">
 
         <ImageButton
             android:id="@+id/botoEnrere"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/touch_target"
+            android:layout_height="@dimen/touch_target"
             android:layout_gravity="start"
-            android:layout_marginStart="19dp"
             android:background="@drawable/fons_capsula"
             android:contentDescription="@string/boto_enrere"
             android:padding="10dp"
             android:src="@drawable/ic_enrere"
             app:tint="@color/color_text_fosc" />
 
+        <ImageView
+            android:layout_width="118dp"
+            android:layout_height="118dp"
+            android:layout_marginTop="24dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/nom_marca"
+            android:src="@drawable/logo_color" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="@string/recupera_titol"
+            android:textColor="@color/color_text_principal"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp"
+            android:text="@string/recupera_subtitol"
+            android:textColor="@color/color_text_secundari"
+            android:textSize="14sp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="19dp"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="26dp"
             android:background="@drawable/fons_targeta"
-            android:elevation="0dp"
             android:orientation="vertical"
-            android:padding="24dp">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/recupera_titol"
-                android:textColor="@color/color_text_principal"
-                android:textSize="28sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/recupera_subtitol"
-                android:textColor="@color/color_text_secundari" />
+            android:padding="@dimen/card_padding">
 
             <TextView
                 android:id="@+id/txtMissatge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:textColor="@color/color_error" />
+                android:textColor="@color/color_error"
+                android:textSize="13sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:hint="@string/etiqueta_correu">
+                android:layout_marginTop="8dp"
+                android:hint="@string/etiqueta_correu"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/campCorreu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -77,25 +93,42 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="@string/etiqueta_repeteix_correu">
+                android:hint="@string/etiqueta_repeteix_correu"
+                app:boxCornerRadiusBottomEnd="8dp"
+                app:boxCornerRadiusBottomStart="8dp"
+                app:boxCornerRadiusTopEnd="8dp"
+                app:boxCornerRadiusTopStart="8dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/campCorreuConfirmacio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    android:inputType="textEmailAddress"
+                    android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoEnviaRecuperacio"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginTop="18dp"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/boto_envia_recuperacio"
                 android:textColor="@color/color_text_clar"
+                android:textStyle="bold"
                 app:backgroundTint="@null"
                 app:cornerRadius="8dp" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/indicadorCarrega"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/color_principal"
+                app:trackColor="@color/color_linia" />
         </LinearLayout>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

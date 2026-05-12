@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="@dimen/card_padding">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,8 +20,8 @@
 
             <ImageButton
                 android:id="@+id/botoEnrere"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
+                android:layout_width="@dimen/touch_target"
+                android:layout_height="@dimen/touch_target"
                 android:background="@drawable/fons_capsula"
                 android:contentDescription="@string/boto_enrere"
                 android:padding="10dp"
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:padding="22dp">
+                android:padding="@dimen/card_padding">
 
                 <FrameLayout
                     android:layout_width="106dp"
@@ -160,7 +160,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/botoProxims"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/touch_target"
                 android:layout_weight="1"
                 android:background="@drawable/fons_boto_principal"
                 android:text="@string/perfil_proxims"
@@ -177,7 +177,7 @@
                 android:id="@+id/botoPassats"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/touch_target"
                 android:layout_weight="1"
                 android:text="@string/perfil_passats"
                 android:textAllCaps="false"
@@ -203,11 +203,54 @@
             android:textColor="@color/color_text_secundari"
             android:visibility="gone" />
 
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="18dp"
+            app:cardBackgroundColor="@color/color_targeta"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeColor="@color/color_linia"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/card_padding">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/perfil_comentaris_titol"
+                    android:textColor="@color/color_text_principal"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/llistaValoracionsRebudes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <TextView
+                    android:id="@+id/txtBuitValoracionsRebudes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/perfil_comentaris_buit"
+                    android:textColor="@color/color_text_secundari" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/botoCanviarContrasenya"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/touch_target"
             android:layout_marginTop="14dp"
             android:text="@string/boto_he_oblidat"
             android:textColor="@color/color_principal"

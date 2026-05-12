@@ -34,6 +34,7 @@ import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsMapa;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsXats;
 import com.vidalibarraquer.vibacar.models.Notificacio;
 
 import java.util.HashMap;
@@ -361,19 +362,33 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         dadesXat.put("conductorId", conductorId);
         dadesXat.put("passatgerId", passatgerId);
         dadesXat.put("nomConductor", viatgeActual.getConductorNom());
+        dadesXat.put("nomPassatger", TextUtils.isEmpty(usuari.getDisplayName())
+                ? getString(R.string.text_usuari)
+                : usuari.getDisplayName());
         dadesXat.put("origen", viatgeActual.getOrigen());
         dadesXat.put("desti", viatgeActual.getDesti());
         dadesXat.put("sortidaMillis", viatgeActual.getSortidaMillis());
-        dadesXat.put("darreraActualitzacio", System.currentTimeMillis());
 
-        db.collection(UtilitatsFirebase.COL_XATS)
-                .document(idXat)
-                .set(dadesXat, SetOptions.merge())
-                .addOnSuccessListener(unused -> {
-                    Intent intent = new Intent(this, XatActivity.class);
-                    intent.putExtra(XatActivity.EXTRA_ID_XAT, idXat);
-                    intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomXat);
-                    startActivity(intent);
+        UtilitatsXats.preparaXatEntreUsuaris(
+                db,
+                conductorId,
+                passatgerId,
+                idXat,
+                dadesXat,
+                new UtilitatsXats.Callback() {
+                    @Override
+                    public void onPreparat(String idPreparat) {
+                        Intent intent = new Intent(DetallViatgeActivity.this, XatActivity.class);
+                        intent.putExtra(XatActivity.EXTRA_ID_XAT, idPreparat);
+                        intent.putExtra(XatActivity.EXTRA_NOM_XAT, nomXat);
+                        intent.putExtra(XatActivity.EXTRA_UID_ALTRE, conductorId);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        Toast.makeText(DetallViatgeActivity.this, R.string.error_generica, Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -394,7 +409,7 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                         return;
                     }
 
-                    String idXat = UtilitatsFirebase.creaIdXatUsuaris(viatgeActual.getConductorId(), usuari.getUid());
+                    String idXat = viatgeActual.getId() + "_" + usuari.getUid();
                     creaXatIObre(idXat, viatgeActual.getConductorNom(), viatgeActual.getConductorId(), usuari.getUid());
                 });
     }
