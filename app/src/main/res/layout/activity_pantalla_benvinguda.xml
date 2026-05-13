@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_conductor_fons"
-    android:padding="@dimen/page_padding">
+    android:paddingHorizontal="@dimen/page_padding"
+    android:paddingTop="@dimen/page_padding_vertical"
+    android:paddingBottom="@dimen/page_padding_vertical">
 
     <TextView
         android:id="@+id/selectorIdioma"

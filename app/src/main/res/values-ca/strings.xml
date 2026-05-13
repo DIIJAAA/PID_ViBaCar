@@ -47,7 +47,7 @@
     <string name="boto_continua_perfil">Continua amb el perfil</string>
 
     <string name="perfil_config_titol">Configura el teu perfil</string>
-    <string name="perfil_config_subtitol">Crea un perfil identificable: foto obligat&#242;ria i una bio breu.</string>
+    <string name="perfil_config_subtitol">Crea un perfil identificable: pots afegir una foto i una bio breu.</string>
     <string name="boto_tria_foto">Tria foto de perfil</string>
     <string name="titol_dades_vehicle">Vehicle per publicar trajectes</string>
     <string name="etiqueta_model_cotxe">Model del cotxe</string>
@@ -130,6 +130,7 @@
 
     <string name="perfil_titol">El meu perfil</string>
     <string name="boto_editar_perfil">Editar perfil</string>
+    <string name="boto_veure_perfil_public">Veure el meu perfil</string>
     <string name="perfil_sobre_mi">Sobre mi</string>
     <string name="perfil_comentaris">Comentaris</string>
     <string name="perfil_comentaris_titol">Comentaris i valoracions</string>
@@ -146,7 +147,6 @@
     <string name="bustia_buit">Encara no tens xats. S\'obriran quan alg&#250; accepti una reserva.</string>
     <string name="boto_bustia_xats">B&#250;stia de xats</string>
     <string name="xat_sense_missatges">Sense missatges encara</string>
-    <string name="xat_subtitol_format">%1$s | %2$s</string>
     <string name="xat_darrer_missatge_meu_format">Tu: %1$s</string>
 
     <string name="boto_puntuar">Puntuar</string>
@@ -206,7 +206,7 @@
     <string name="missatge_reserva_rebutjada">Reserva rebutjada</string>
     <string name="missatge_reserva_cancelada">Reserva cancel&#183;lada</string>
     <string name="missatge_puntuacio_guardada">Puntuaci&#243; desada</string>
-    <string name="error_valoracio_permisos">No es pot desar la valoraci&#243;. Desplega les regles noves de Firestore i torna-ho a provar.</string>
+    <string name="error_valoracio_permisos">No es pot desar la valoraci&#243;. Revisa els permisos i torna-ho a provar.</string>
     <string name="error_valoracio_ja_feta">Aquest viatge ja ha estat valorat.</string>
     <string name="missatge_recuperacio_contrasenya">Hem enviat el correu per recuperar la contrasenya</string>
     <string name="canvi_contrasenya_titol">Canviar contrasenya</string>
@@ -245,11 +245,11 @@
     <string name="notif_reserva_acceptada">La teva reserva %1$s &#8594; %2$s ha estat acceptada. Ja pots obrir el xat.</string>
     <string name="notif_reserva_rebutjada">La teva reserva %1$s &#8594; %2$s ha estat rebutjada.</string>
     <string name="notif_nou_seguidor">%1$s ha comen&#231;at a seguir-te.</string>
+    <string name="notif_nova_valoracio">%1$s t\'ha deixat una valoraci&#243;. Pots veure-la al teu perfil p&#250;blic.</string>
 
     <string name="text_o">o</string>
     <string name="text_google">Google</string>
     <string name="boto_continuar_google">Continuar amb Google</string>
-    <string name="error_foto_buida">Has de triar una foto de perfil</string>
     <string name="default_web_client_id">70040389779-0g8u3t1pve30p7t0shj3ov77musinnm3.apps.googleusercontent.com</string>
     <string name="notificacions_canal_nom">Notificacions ViBaCar</string>
     <string name="notificacions_canal_descripcio">Avisos de reserves i missatges</string>

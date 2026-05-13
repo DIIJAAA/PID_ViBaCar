@@ -209,6 +209,7 @@ public class NotificacionsActivity extends AppCompatActivity {
         if (notif == null) {
             return;
         }
+        FirebaseUser usuari = auth.getCurrentUser();
         if (Notificacio.TIPUS_RESERVA_ACCEPTADA.equals(notif.getTipus())
                 && !TextUtils.isEmpty(notif.getReferenciaId())) {
             obreXat(notif.getReferenciaId());
@@ -220,7 +221,22 @@ public class NotificacionsActivity extends AppCompatActivity {
             return;
         }
         if (Notificacio.TIPUS_NOVA_RESERVA.equals(notif.getTipus())) {
-            startActivity(new android.content.Intent(this, PerfilActivity.class));
+            android.content.Intent intent = new android.content.Intent(this, SollicitudsActivity.class);
+            startActivity(intent);
+            return;
+        }
+        if (Notificacio.TIPUS_VIATGE_COMPLETAT.equals(notif.getTipus())) {
+            android.content.Intent intent = new android.content.Intent(this, PerfilActivity.class);
+            intent.putExtra(PerfilActivity.EXTRA_MOSTRA_PASSATS, true);
+            intent.putExtra(PerfilActivity.EXTRA_RESERVA_DESTACADA, notif.getReferenciaId());
+            startActivity(intent);
+            return;
+        }
+        if (Notificacio.TIPUS_NOVA_VALORACIO.equals(notif.getTipus())) {
+            if (usuari == null) return;
+            android.content.Intent intent = new android.content.Intent(this, VeurePerfilActivity.class);
+            intent.putExtra(VeurePerfilActivity.EXTRA_UID, usuari.getUid());
+            startActivity(intent);
             return;
         }
         if (Notificacio.TIPUS_NOU_SEGUIDOR.equals(notif.getTipus())

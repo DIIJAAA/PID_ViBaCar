@@ -8,6 +8,8 @@ public class Reserva {
     private String passatgerId;
     private String passatgerNom;
     private String conductorNom;
+    private String passatgerFotoUri;
+    private String conductorFotoUri;
     private String origen;
     private String desti;
     private long sortidaMillis;
@@ -67,6 +69,22 @@ public class Reserva {
 
     public void setPassatgerNom(String passatgerNom) {
         this.passatgerNom = passatgerNom;
+    }
+
+    public String getPassatgerFotoUri() {
+        return passatgerFotoUri;
+    }
+
+    public void setPassatgerFotoUri(String passatgerFotoUri) {
+        this.passatgerFotoUri = passatgerFotoUri;
+    }
+
+    public String getConductorFotoUri() {
+        return conductorFotoUri;
+    }
+
+    public void setConductorFotoUri(String conductorFotoUri) {
+        this.conductorFotoUri = conductorFotoUri;
     }
 
     public String getOrigen() {

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Xat;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -67,18 +66,6 @@ public class AdaptadorXats extends RecyclerView.Adapter<AdaptadorXats.XatViewHol
         holder.txtNom.setText(nomAltre);
         holder.txtInicial.setText(inicial(nomAltre));
 
-        String origen = valorDefecte(xat.getOrigen());
-        String desti = valorDefecte(xat.getDesti());
-        if (xat.getSortidaMillis() > 0) {
-            holder.txtRuta.setText(context.getString(
-                    R.string.xat_subtitol_format,
-                    context.getString(R.string.text_ruta_format, origen, desti),
-                    UtilitatsData.formatData(xat.getSortidaMillis())
-            ));
-        } else {
-            holder.txtRuta.setText(context.getString(R.string.text_ruta_format, origen, desti));
-        }
-
         if (TextUtils.isEmpty(xat.getDarrerMissatge())) {
             holder.txtDarrerMissatge.setText(R.string.xat_sense_missatges);
         } else {
@@ -129,7 +116,6 @@ public class AdaptadorXats extends RecyclerView.Adapter<AdaptadorXats.XatViewHol
     static class XatViewHolder extends RecyclerView.ViewHolder {
         final TextView txtInicial;
         final TextView txtNom;
-        final TextView txtRuta;
         final TextView txtDarrerMissatge;
         final TextView txtHora;
 
@@ -137,7 +123,6 @@ public class AdaptadorXats extends RecyclerView.Adapter<AdaptadorXats.XatViewHol
             super(itemView);
             txtInicial = itemView.findViewById(R.id.txtInicial);
             txtNom = itemView.findViewById(R.id.txtNom);
-            txtRuta = itemView.findViewById(R.id.txtRuta);
             txtDarrerMissatge = itemView.findViewById(R.id.txtDarrerMissatge);
             txtHora = itemView.findViewById(R.id.txtHora);
         }

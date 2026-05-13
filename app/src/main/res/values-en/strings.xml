@@ -43,7 +43,7 @@
     <string name="boto_continua_perfil">Continue to profile</string>
 
     <string name="perfil_config_titol">Set up your profile</string>
-    <string name="perfil_config_subtitol">Create an identifiable profile: required photo and a short bio.</string>
+    <string name="perfil_config_subtitol">Create an identifiable profile: you can add a photo and a short bio.</string>
     <string name="boto_tria_foto">Choose profile photo</string>
     <string name="titol_dades_vehicle">Vehicle for publishing rides</string>
     <string name="etiqueta_model_cotxe">Car model</string>
@@ -122,6 +122,7 @@
 
     <string name="perfil_titol">My profile</string>
     <string name="boto_editar_perfil">Edit profile</string>
+    <string name="boto_veure_perfil_public">View my profile</string>
     <string name="perfil_sobre_mi">About me</string>
     <string name="perfil_comentaris">Comments</string>
     <string name="perfil_comentaris_titol">Comments and ratings</string>
@@ -138,7 +139,6 @@
     <string name="bustia_buit">You do not have chats yet. They will open when someone accepts a booking.</string>
     <string name="boto_bustia_xats">Chat inbox</string>
     <string name="xat_sense_missatges">No messages yet</string>
-    <string name="xat_subtitol_format">%1$s | %2$s</string>
     <string name="xat_darrer_missatge_meu_format">You: %1$s</string>
 
     <string name="boto_puntuar">Rate</string>
@@ -196,7 +196,7 @@
     <string name="missatge_reserva_rebutjada">Reservation rejected</string>
     <string name="missatge_reserva_cancelada">Reservation cancelled</string>
     <string name="missatge_puntuacio_guardada">Rating saved</string>
-    <string name="error_valoracio_permisos">The rating cannot be saved. Deploy the new Firestore rules and try again.</string>
+    <string name="error_valoracio_permisos">The rating cannot be saved. Check permissions and try again.</string>
     <string name="error_valoracio_ja_feta">This ride has already been rated.</string>
     <string name="missatge_recuperacio_contrasenya">We sent the password recovery email</string>
     <string name="missatge_places_esgotades">This ride has no free seats left</string>
@@ -231,11 +231,11 @@
 
     <string name="notif_nou_missatge">New message from %1$s</string>
     <string name="notif_reserva_acceptada">Your booking %1$s &#8594; %2$s has been accepted. You can now open the chat.</string>
+    <string name="notif_nova_valoracio">%1$s left you a rating. You can see it on your public profile.</string>
     <string name="notif_reserva_rebutjada">Your booking %1$s &#8594; %2$s has been rejected.</string>
     <string name="text_o">or</string>
     <string name="text_google">Google</string>
     <string name="boto_continuar_google">Continue with Google</string>
-    <string name="error_foto_buida">You must choose a profile photo</string>
     <string name="default_web_client_id">70040389779-0g8u3t1pve30p7t0shj3ov77musinnm3.apps.googleusercontent.com</string>
     <string name="notificacions_canal_nom">ViBaCar notifications</string>
     <string name="notificacions_canal_descripcio">Booking and message alerts</string>

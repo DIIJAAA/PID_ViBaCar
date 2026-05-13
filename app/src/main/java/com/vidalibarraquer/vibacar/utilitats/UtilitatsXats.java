@@ -52,8 +52,9 @@ public final class UtilitatsXats {
             consultesPendents[0]--;
             if (consultesPendents[0] > 0) return;
 
-            String idXat = triaMillorXat(candidats, uidA, uidB);
+            String idXat = UtilitatsFirebase.creaIdXatUsuaris(uidA, uidB);
             dades.put("darreraActualitzacio", System.currentTimeMillis());
+            completaDadesDesDeXatAnterior(candidats, dades);
 
             db.collection(UtilitatsFirebase.COL_XATS)
                     .document(idXat)
@@ -109,18 +110,26 @@ public final class UtilitatsXats {
         }
     }
 
-    private static String triaMillorXat(List<DocumentSnapshot> candidats, String uidA, String uidB) {
-        if (candidats.isEmpty()) {
-            return UtilitatsFirebase.creaIdXatUsuaris(uidA, uidB);
-        }
-
+    private static void completaDadesDesDeXatAnterior(List<DocumentSnapshot> candidats, Map<String, Object> dades) {
+        if (candidats.isEmpty()) return;
         DocumentSnapshot millor = candidats.get(0);
         for (DocumentSnapshot candidat : candidats) {
             if (valorActivitat(candidat) > valorActivitat(millor)) {
                 millor = candidat;
             }
         }
-        return millor.getId();
+        copiaSiFalta(millor, dades, "viatgeId");
+        copiaSiFalta(millor, dades, "origen");
+        copiaSiFalta(millor, dades, "desti");
+        copiaSiFalta(millor, dades, "sortidaMillis");
+        copiaSiFalta(millor, dades, "darrerMissatge");
+        copiaSiFalta(millor, dades, "darrerEmissorId");
+    }
+
+    private static void copiaSiFalta(DocumentSnapshot doc, Map<String, Object> dades, String camp) {
+        if (dades.containsKey(camp)) return;
+        Object valor = doc.get(camp);
+        if (valor != null) dades.put(camp, valor);
     }
 
     private static long valorActivitat(DocumentSnapshot doc) {

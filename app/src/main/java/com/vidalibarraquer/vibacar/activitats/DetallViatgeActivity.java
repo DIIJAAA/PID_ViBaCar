@@ -315,12 +315,13 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
                     String nomPassatger = usuariDoc.contains("nom")
                             ? String.valueOf(usuariDoc.get("nom"))
                             : emailFallback;
-                    creaReserva(usuari.getUid(), nomPassatger);
+                    String fotoPassatger = usuariDoc.getString("fotoUri");
+                    creaReserva(usuari.getUid(), nomPassatger, fotoPassatger);
                 })
-                .addOnFailureListener(e -> creaReserva(usuari.getUid(), emailFallback));
+                .addOnFailureListener(e -> creaReserva(usuari.getUid(), emailFallback, null));
     }
 
-    private void creaReserva(String passatgerId, String nomPassatger) {
+    private void creaReserva(String passatgerId, String nomPassatger, @Nullable String fotoPassatger) {
         if (viatgeActual == null) return;
 
         String idReserva = viatgeActual.getId() + "_" + passatgerId;
@@ -331,7 +332,9 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
         reserva.put("conductorId", viatgeActual.getConductorId());
         reserva.put("passatgerId", passatgerId);
         reserva.put("passatgerNom", nomPassatger);
+        reserva.put("passatgerFotoUri", fotoPassatger);
         reserva.put("conductorNom", viatgeActual.getConductorNom());
+        reserva.put("conductorFotoUri", viatgeActual.getConductorFotoUri());
         reserva.put("origen", viatgeActual.getOrigen());
         reserva.put("desti", viatgeActual.getDesti());
         reserva.put("sortidaMillis", viatgeActual.getSortidaMillis());
@@ -398,20 +401,21 @@ public class DetallViatgeActivity extends AppCompatActivity implements OnMapRead
             return;
         }
 
-        String idReserva = viatgeActual.getId() + "_" + usuari.getUid();
         db.collection(UtilitatsFirebase.COL_RESERVES)
-                .document(idReserva)
+                .whereEqualTo("passatgerId", usuari.getUid())
+                .whereEqualTo("conductorId", viatgeActual.getConductorId())
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
                 .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (!documentSnapshot.exists()
-                            || !UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(documentSnapshot.getString("estat"))) {
+                .addOnSuccessListener(reserves -> {
+                    if (reserves.isEmpty()) {
                         Toast.makeText(this, R.string.missatge_xat_despres_acceptar, Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    String idXat = viatgeActual.getId() + "_" + usuari.getUid();
-                    creaXatIObre(idXat, viatgeActual.getConductorNom(), viatgeActual.getConductorId(), usuari.getUid());
-                });
+                    String idLlegat = reserves.getDocuments().get(0).getId();
+                    creaXatIObre(idLlegat, viatgeActual.getConductorNom(), viatgeActual.getConductorId(), usuari.getUid());
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, R.string.error_generica, Toast.LENGTH_SHORT).show());
     }
 
     private void confirmaEliminacio() {

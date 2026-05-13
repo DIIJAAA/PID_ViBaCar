@@ -32,15 +32,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.adaptadors.AdaptadorReserves;
-import com.vidalibarraquer.vibacar.adaptadors.AdaptadorValoracions;
 import com.vidalibarraquer.vibacar.models.Reserva;
 import com.vidalibarraquer.vibacar.models.Usuari;
-import com.vidalibarraquer.vibacar.models.Valoracio;
 import com.vidalibarraquer.vibacar.models.Viatge;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsAvatar;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsData;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsFirebase;
+import com.vidalibarraquer.vibacar.utilitats.UtilitatsNotificacions;
 import com.vidalibarraquer.vibacar.utilitats.UtilitatsXats;
+import com.vidalibarraquer.vibacar.models.Notificacio;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -51,26 +51,31 @@ import java.util.Map;
 
 public class PerfilActivity extends AppCompatActivity {
 
+    public static final String EXTRA_MOSTRA_PASSATS = "mostra_passats";
+    public static final String EXTRA_RESERVA_DESTACADA = "reserva_destacada";
+
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private AdaptadorReserves adaptadorReserves;
-    private AdaptadorValoracions adaptadorValoracions;
     private TextView txtNom;
     private TextView txtDades;
     private TextView txtInicialAvatar;
     private TextView txtBuit;
-    private TextView txtBuitValoracionsRebudes;
     private TextView txtTotalValoracions;
     private ShapeableImageView imatgePerfil;
     private ImageView iconaVerificat;
     private RatingBar barraReputacio;
+    private String fotoPerfilActual;
     private boolean mostraPassats;
-    private boolean dialogValoracioMostrat;
+    private String reservaDestacadaId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil);
+
+        mostraPassats = getIntent().getBooleanExtra(EXTRA_MOSTRA_PASSATS, false);
+        reservaDestacadaId = getIntent().getStringExtra(EXTRA_RESERVA_DESTACADA);
 
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
@@ -79,7 +84,6 @@ public class PerfilActivity extends AppCompatActivity {
         txtDades = findViewById(R.id.txtDades);
         txtInicialAvatar = findViewById(R.id.txtInicialAvatar);
         txtBuit = findViewById(R.id.txtBuit);
-        txtBuitValoracionsRebudes = findViewById(R.id.txtBuitValoracionsRebudes);
         txtTotalValoracions = findViewById(R.id.txtTotalValoracions);
         imatgePerfil = findViewById(R.id.imatgePerfil);
         iconaVerificat = findViewById(R.id.iconaVerificat);
@@ -152,13 +156,9 @@ public class PerfilActivity extends AppCompatActivity {
         llistaReserves.setLayoutManager(new LinearLayoutManager(this));
         llistaReserves.setAdapter(adaptadorReserves);
 
-        RecyclerView llistaValoracionsRebudes = findViewById(R.id.llistaValoracionsRebudes);
-        adaptadorValoracions = new AdaptadorValoracions();
-        llistaValoracionsRebudes.setLayoutManager(new LinearLayoutManager(this));
-        llistaValoracionsRebudes.setAdapter(adaptadorValoracions);
-
         findViewById(R.id.botoEnrere).setOnClickListener(v -> finish());
         findViewById(R.id.botoEditarPerfil).setOnClickListener(v -> startActivity(new Intent(this, ConfiguraPerfilActivity.class)));
+        findViewById(R.id.botoVeurePerfilPublic).setOnClickListener(v -> obrePerfilPublicPropi());
         findViewById(R.id.botoCanviarContrasenya).setOnClickListener(v -> enviaCanviContrasenya());
         findViewById(R.id.botoTancarSessio).setOnClickListener(v -> {
             auth.signOut();
@@ -174,7 +174,6 @@ public class PerfilActivity extends AppCompatActivity {
         });
         findViewById(R.id.botoPassats).setOnClickListener(v -> {
             mostraPassats = true;
-            dialogValoracioMostrat = false;
             actualitzaBotonsFiltre();
             carregaLlista();
         });
@@ -185,8 +184,15 @@ public class PerfilActivity extends AppCompatActivity {
         super.onResume();
         actualitzaBotonsFiltre();
         carregaCapcalera();
-        carregaValoracionsRebudes();
         carregaLlista();
+    }
+
+    private void obrePerfilPublicPropi() {
+        FirebaseUser usuari = auth.getCurrentUser();
+        if (usuari == null) return;
+        Intent intent = new Intent(this, VeurePerfilActivity.class);
+        intent.putExtra(VeurePerfilActivity.EXTRA_UID, usuari.getUid());
+        startActivity(intent);
     }
 
     private void carregaCapcalera() {
@@ -212,6 +218,7 @@ public class PerfilActivity extends AppCompatActivity {
                             : perfil.getBio().trim();
                     txtDades.setText(bio);
                     iconaVerificat.setVisibility(usuari.isEmailVerified() ? View.VISIBLE : View.GONE);
+                    fotoPerfilActual = perfil.getFotoUri();
 
                     UtilitatsAvatar.mostraAvatar(imatgePerfil, txtInicialAvatar, perfil.getFotoUri(), perfil.getNom());
                 });
@@ -324,28 +331,6 @@ public class PerfilActivity extends AppCompatActivity {
                 });
     }
 
-    private void carregaValoracionsRebudes() {
-        FirebaseUser usuari = auth.getCurrentUser();
-        if (usuari == null || adaptadorValoracions == null) return;
-
-        db.collection(UtilitatsFirebase.COL_USUARIS)
-                .document(usuari.getUid())
-                .collection("valoracions")
-                .get()
-                .addOnSuccessListener(docs -> {
-                    List<Valoracio> valoracions = new ArrayList<>();
-                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
-                        Valoracio valoracio = doc.toObject(Valoracio.class);
-                        valoracio.setId(doc.getId());
-                        valoracions.add(valoracio);
-                    }
-                    valoracions.sort(Comparator.comparingLong(Valoracio::getDataMillis).reversed());
-                    adaptadorValoracions.actualitzaDades(valoracions);
-                    txtBuitValoracionsRebudes.setVisibility(valoracions.isEmpty() ? View.VISIBLE : View.GONE);
-                })
-                .addOnFailureListener(e -> txtBuitValoracionsRebudes.setVisibility(View.VISIBLE));
-    }
-
     private void carregaReservesComConductor(List<Reserva> resultat, FirebaseUser usuari) {
         if (!mostraPassats) {
             carregaViatgesPropis(resultat, usuari);
@@ -385,6 +370,7 @@ public class PerfilActivity extends AppCompatActivity {
                         reservaPropia.setViatgeId(doc.getId());
                         reservaPropia.setConductorId(usuari.getUid());
                         reservaPropia.setConductorNom(getString(R.string.nom_marca));
+                        reservaPropia.setConductorFotoUri(fotoPerfilActual);
                         reservaPropia.setOrigen(viatge.getOrigen());
                         reservaPropia.setDesti(viatge.getDesti());
                         reservaPropia.setSortidaMillis(viatge.getSortidaMillis());
@@ -401,23 +387,16 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void mostraReserves(List<Reserva> resultat, FirebaseUser usuari) {
-        resultat.sort(Comparator.comparingLong(Reserva::getSortidaMillis));
+        resultat.sort((a, b) -> {
+            if (reservaDestacadaId != null) {
+                boolean aDestacada = reservaDestacadaId.equals(a.getId());
+                boolean bDestacada = reservaDestacadaId.equals(b.getId());
+                if (aDestacada != bDestacada) return aDestacada ? -1 : 1;
+            }
+            return Long.compare(a.getSortidaMillis(), b.getSortidaMillis());
+        });
         adaptadorReserves.actualitzaDades(resultat, mostraPassats);
         txtBuit.setVisibility(resultat.isEmpty() ? View.VISIBLE : View.GONE);
-
-        if (mostraPassats && !dialogValoracioMostrat) {
-            for (Reserva r : resultat) {
-                boolean potValorarConductor = usuari.getUid().equals(r.getConductorId()) && !r.isConductorValorada();
-                boolean potValorarPassatger = usuari.getUid().equals(r.getPassatgerId()) && !r.isValorada();
-                if (!r.getId().startsWith("viatge_")
-                        && UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA.equals(r.getEstat())
-                        && (potValorarConductor || potValorarPassatger)) {
-                    dialogValoracioMostrat = true;
-                    obreDialegPuntuacio(r);
-                    break;
-                }
-            }
-        }
     }
 
     private boolean filtreData(long sortidaMillis) {
@@ -544,6 +523,13 @@ public class PerfilActivity extends AppCompatActivity {
             transaction.set(valoracioRef, dadesValoracio, SetOptions.merge());
             return true;
         }).addOnSuccessListener(unused -> {
+            UtilitatsNotificacions.publica(
+                    db,
+                    uidValorat,
+                    Notificacio.TIPUS_NOVA_VALORACIO,
+                    getString(R.string.notif_nova_valoracio, nomValorador),
+                    valoracioRef.getId()
+            );
             Toast.makeText(this, R.string.missatge_puntuacio_guardada, Toast.LENGTH_SHORT).show();
             carregaCapcalera();
             carregaLlista();

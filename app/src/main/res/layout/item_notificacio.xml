@@ -4,7 +4,10 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
     android:orientation="horizontal"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:paddingHorizontal="5dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <View
         android:id="@+id/puntNoLlegit"

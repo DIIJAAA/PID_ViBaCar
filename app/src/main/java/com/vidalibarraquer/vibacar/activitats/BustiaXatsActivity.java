@@ -167,6 +167,7 @@ public class BustiaXatsActivity extends AppCompatActivity {
     private void afegeixXatDeduplicat(Map<String, Xat> indexXats, Xat xat) {
         if (xat.getConductorId() == null || xat.getPassatgerId() == null) return;
         String clau = UtilitatsFirebase.creaIdXatUsuaris(xat.getConductorId(), xat.getPassatgerId());
+        xat.setId(clau);
         Xat existent = indexXats.get(clau);
         if (existent == null) {
             indexXats.put(clau, xat);

@@ -23,9 +23,13 @@ android {
             val file = rootProject.file("local.properties")
             if (file.exists()) file.inputStream().use { load(it) }
         }
-        manifestPlaceholders["MAPS_API_KEY"] =
+        val mapsApiKey =
             providers.gradleProperty("MAPS_API_KEY").orNull
                 ?: localProperties.getProperty("MAPS_API_KEY", "")
+        check(mapsApiKey.isNotBlank()) {
+            "Falta MAPS_API_KEY. Defineix-la a gradle.properties o a local.properties."
+        }
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,6 +65,7 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.storage)
     implementation(libs.play.services.maps)
     implementation(libs.play.services.auth)
     testImplementation(libs.junit)

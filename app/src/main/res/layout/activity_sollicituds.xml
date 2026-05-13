@@ -5,9 +5,10 @@
     android:layout_height="match_parent"
     android:background="@color/color_fons"
     android:paddingStart="20dp"
-    android:paddingTop="24dp"
     android:paddingEnd="20dp"
-    android:paddingBottom="16dp">
+    android:paddingHorizontal="5dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <ImageButton
         android:id="@+id/botoEnrere"

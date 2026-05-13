@@ -3,6 +3,7 @@ package com.vidalibarraquer.vibacar.activitats;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -24,6 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.vidalibarraquer.vibacar.R;
 import com.vidalibarraquer.vibacar.models.Usuari;
 import com.vidalibarraquer.vibacar.utilitats.GestorIdioma;
@@ -48,12 +51,14 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
     private LinearProgressIndicator indicadorCarrega;
     private boolean primerCop;
     private String fotoUri;
+    private Uri fotoSeleccionadaUri;
     private Runnable accioDespresPermisNotificacions;
 
     private final ActivityResultLauncher<String> selectorFoto = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
+                    fotoSeleccionadaUri = uri;
                     fotoUri = uri.toString();
                     actualitzaAvatar();
                 }
@@ -148,15 +153,46 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         String nom = obteText(campNom);
         String bio = obteText(campBio);
 
-        if (TextUtils.isEmpty(fotoUri)) {
-            txtMissatge.setText(R.string.error_foto_buida);
-            return;
-        }
         if (TextUtils.isEmpty(nom)) {
             txtMissatge.setText(R.string.error_nom_buit);
             return;
         }
 
+        mostrarCarrega(true);
+        if (fotoSeleccionadaUri != null) {
+            pujaFotoIDesaPerfil(usuari, nom, bio);
+            return;
+        }
+        desaPerfilAmbFoto(usuari, nom, bio, fotoUri);
+    }
+
+    private void pujaFotoIDesaPerfil(FirebaseUser usuari, String nom, String bio) {
+        StorageReference ref = FirebaseStorage.getInstance()
+                .getReference()
+                .child("usuaris")
+                .child(usuari.getUid())
+                .child("perfil.jpg");
+
+        ref.putFile(fotoSeleccionadaUri)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful() && task.getException() != null) {
+                        throw task.getException();
+                    }
+                    return ref.getDownloadUrl();
+                })
+                .addOnSuccessListener(uri -> {
+                    fotoUri = uri.toString();
+                    fotoSeleccionadaUri = null;
+                    desaPerfilAmbFoto(usuari, nom, bio, fotoUri);
+                })
+                .addOnFailureListener(e -> {
+                    mostrarCarrega(false);
+                    txtMissatge.setText(R.string.error_generica);
+                });
+    }
+
+    private void desaPerfilAmbFoto(FirebaseUser usuari, String nom, String bio, String fotoDefinitiva) {
+        String fotoPerfil = fotoDefinitiva == null ? "" : fotoDefinitiva;
         Map<String, Object> dades = new HashMap<>();
         dades.put("uid", usuari.getUid());
         dades.put("nom", nom);
@@ -164,23 +200,73 @@ public class ConfiguraPerfilActivity extends AppCompatActivity {
         dades.put("telefon", "");
         dades.put("rol", "usuari");
         dades.put("bio", bio);
-        dades.put("fotoUri", fotoUri);
+        dades.put("fotoUri", fotoPerfil);
         dades.put("idioma", GestorIdioma.obteIdiomaGuardat(this));
         dades.put("perfilCompletat", true);
         dades.put("emailVerified", usuari.isEmailVerified());
 
-        mostrarCarrega(true);
         db.collection(UtilitatsFirebase.COL_USUARIS)
                 .document(usuari.getUid())
                 .set(dades, SetOptions.merge())
                 .addOnSuccessListener(unused -> {
-                    mostrarCarrega(false);
-                    demanaPermisNotificacionsSiCal(() -> navegaDespresDeGuardar(usuari));
+                    actualitzaFotoViatgesActius(usuari.getUid(), fotoPerfil, () -> {
+                        mostrarCarrega(false);
+                        demanaPermisNotificacionsSiCal(() -> navegaDespresDeGuardar(usuari));
+                    });
                 })
                 .addOnFailureListener(e -> {
                     mostrarCarrega(false);
                     txtMissatge.setText(R.string.error_generica);
                 });
+    }
+
+    private void actualitzaFotoViatgesActius(String uid, String fotoDefinitiva, Runnable continuacio) {
+        db.collection(UtilitatsFirebase.COL_VIATGES)
+                .whereEqualTo("conductorId", uid)
+                .whereEqualTo("estat", UtilitatsFirebase.ESTAT_VIATGE_DISPONIBLE)
+                .get()
+                .addOnSuccessListener(docs -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
+                        doc.getReference().set(
+                                java.util.Collections.singletonMap("conductorFotoUri", fotoDefinitiva),
+                                SetOptions.merge()
+                        );
+                    }
+                    actualitzaFotoReservesComConductor(uid, fotoDefinitiva, continuacio);
+                })
+                .addOnFailureListener(e -> actualitzaFotoReservesComConductor(uid, fotoDefinitiva, continuacio));
+    }
+
+    private void actualitzaFotoReservesComConductor(String uid, String fotoDefinitiva, Runnable continuacio) {
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("conductorId", uid)
+                .get()
+                .addOnSuccessListener(docs -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
+                        doc.getReference().set(
+                                java.util.Collections.singletonMap("conductorFotoUri", fotoDefinitiva),
+                                SetOptions.merge()
+                        );
+                    }
+                    actualitzaFotoReservesComPassatger(uid, fotoDefinitiva, continuacio);
+                })
+                .addOnFailureListener(e -> actualitzaFotoReservesComPassatger(uid, fotoDefinitiva, continuacio));
+    }
+
+    private void actualitzaFotoReservesComPassatger(String uid, String fotoDefinitiva, Runnable continuacio) {
+        db.collection(UtilitatsFirebase.COL_RESERVES)
+                .whereEqualTo("passatgerId", uid)
+                .get()
+                .addOnSuccessListener(docs -> {
+                    for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
+                        doc.getReference().set(
+                                java.util.Collections.singletonMap("passatgerFotoUri", fotoDefinitiva),
+                                SetOptions.merge()
+                        );
+                    }
+                    continuacio.run();
+                })
+                .addOnFailureListener(e -> continuacio.run());
     }
 
     private void actualitzaAvatar() {

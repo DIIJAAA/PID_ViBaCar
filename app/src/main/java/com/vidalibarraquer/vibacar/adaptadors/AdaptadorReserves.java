@@ -76,7 +76,8 @@ public class AdaptadorReserves extends RecyclerView.Adapter<AdaptadorReserves.Re
                 ? context.getString(R.string.etiqueta_rol_passatger)
                 : context.getString(R.string.etiqueta_rol_conductor);
 
-        UtilitatsAvatar.mostraAvatar(holder.imatgeAltre, holder.txtInicialAltre, null, nomAltre);
+        String fotoAltre = socConductor ? reserva.getPassatgerFotoUri() : reserva.getConductorFotoUri();
+        UtilitatsAvatar.mostraAvatar(holder.imatgeAltre, holder.txtInicialAltre, fotoAltre, nomAltre);
         holder.txtNomAltre.setText(nomAltre);
         holder.txtRol.setText(rolAltre);
         holder.txtEstat.setText(textEstat(reserva.getEstat()));

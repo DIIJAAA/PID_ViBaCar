@@ -49,7 +49,7 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
 
     public static final String EXTRA_CONDUCTOR_ID = "filtre_conductor_id";
 
-    private static final float RADI_KM = 15f;
+    private static final float RADI_KM = 8f;
     private static final long FINESTRA_DIA_MS = 24L * 60L * 60L * 1000L;
 
     private FirebaseAuth auth;
@@ -225,12 +225,6 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
         String text = getString(R.string.notif_viatge_completat, origen, desti);
         String idNotificacio = "fi_" + viatge.getId();
 
-        UtilitatsNotificacions.publicaAmbId(db, viatge.getConductorId(),
-                idNotificacio + "_cond",
-                Notificacio.TIPUS_VIATGE_COMPLETAT,
-                text,
-                viatge.getId());
-
         db.collection(UtilitatsFirebase.COL_RESERVES)
                 .whereEqualTo("viatgeId", viatge.getId())
                 .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
@@ -238,11 +232,17 @@ public class PantallaPassatgerActivity extends AppCompatActivity {
                 .addOnSuccessListener(docs -> {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot doc : docs) {
                         String passatgerId = doc.getString("passatgerId");
+                        String reservaId = doc.getId();
+                        UtilitatsNotificacions.publicaAmbId(db, viatge.getConductorId(),
+                                idNotificacio + "_cond_" + reservaId,
+                                Notificacio.TIPUS_VIATGE_COMPLETAT,
+                                text,
+                                reservaId);
                         UtilitatsNotificacions.publicaAmbId(db, passatgerId,
                                 idNotificacio + "_" + passatgerId,
                                 Notificacio.TIPUS_VIATGE_COMPLETAT,
                                 text,
-                                viatge.getId());
+                                reservaId);
                     }
                 });
     }

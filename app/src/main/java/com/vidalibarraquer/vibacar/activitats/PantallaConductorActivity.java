@@ -208,12 +208,6 @@ public class PantallaConductorActivity extends AppCompatActivity {
         String text = getString(R.string.notif_viatge_completat, origen, desti);
         String prefix = "fi_" + viatge.getId();
 
-        UtilitatsNotificacions.publicaAmbId(db, viatge.getConductorId(),
-                prefix + "_cond",
-                Notificacio.TIPUS_VIATGE_COMPLETAT,
-                text,
-                viatge.getId());
-
         db.collection(UtilitatsFirebase.COL_RESERVES)
                 .whereEqualTo("viatgeId", viatge.getId())
                 .whereEqualTo("estat", UtilitatsFirebase.ESTAT_RESERVA_ACCEPTADA)
@@ -221,11 +215,17 @@ public class PantallaConductorActivity extends AppCompatActivity {
                 .addOnSuccessListener(reserves -> {
                     for (com.google.firebase.firestore.QueryDocumentSnapshot reserva : reserves) {
                         String passatgerId = reserva.getString("passatgerId");
+                        String reservaId = reserva.getId();
+                        UtilitatsNotificacions.publicaAmbId(db, viatge.getConductorId(),
+                                prefix + "_cond_" + reservaId,
+                                Notificacio.TIPUS_VIATGE_COMPLETAT,
+                                text,
+                                reservaId);
                         UtilitatsNotificacions.publicaAmbId(db, passatgerId,
                                 prefix + "_" + passatgerId,
                                 Notificacio.TIPUS_VIATGE_COMPLETAT,
                                 text,
-                                viatge.getId());
+                                reservaId);
                     }
                 });
     }
